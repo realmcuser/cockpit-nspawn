@@ -49,7 +49,7 @@ dnf install ./cockpit-nspawn-*.noarch.rpm
 ### From source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/cockpit-nspawn
+git clone https://github.com/realmcuser/cockpit-nspawn
 cd cockpit-nspawn
 
 # Fetch the cockpit lib files (required for building)

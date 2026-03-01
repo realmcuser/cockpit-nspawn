@@ -3,7 +3,7 @@ Version:        0.1.0
 Release:        1%{?dist}
 Summary:        Cockpit UI for systemd-nspawn containers
 License:        LGPL-2.1-or-later
-URL:            https://github.com/YOURNAME/cockpit-nspawn
+URL:            https://github.com/realmcuser/cockpit-nspawn
 Source0:        cockpit-nspawn.tar.gz
 BuildArch:      noarch
 

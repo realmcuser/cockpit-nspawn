@@ -1,0 +1,473 @@
+# German translations for cockpit-nspawn
+# SPDX-License-Identifier: LGPL-2.1-or-later
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-03-01 00:00+0000\n"
+"PO-Revision-Date: 2026-03-01 00:00+0000\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/app.jsx:93
+msgid "Loading containers..."
+msgstr "Container werden geladen..."
+
+#: src/app.jsx:100
+msgid "Containers (nspawn)"
+msgstr "Container (nspawn)"
+
+#: src/app.jsx:75
+msgid "$0 started"
+msgstr "$0 gestartet"
+
+#: src/app.jsx:76
+msgid "$0 stopped"
+msgstr "$0 gestoppt"
+
+#: src/app.jsx:77
+msgid "$0 terminated"
+msgstr "$0 beendet"
+
+#: src/app.jsx:78
+msgid "$0 removed"
+msgstr "$0 entfernt"
+
+#: src/app.jsx:80
+msgid "Failed to start $0"
+msgstr "$0 konnte nicht gestartet werden"
+
+#: src/app.jsx:81
+msgid "Failed to stop $0"
+msgstr "$0 konnte nicht gestoppt werden"
+
+#: src/app.jsx:82
+msgid "Failed to terminate $0"
+msgstr "$0 konnte nicht beendet werden"
+
+#: src/app.jsx:83
+msgid "Failed to remove $0"
+msgstr "$0 konnte nicht entfernt werden"
+
+#: src/machines.jsx:93
+msgid "Filter containers..."
+msgstr "Container filtern..."
+
+#: src/machines.jsx:100
+msgid "Create container"
+msgstr "Container erstellen"
+
+#: src/machines.jsx:105
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: src/machines.jsx:115
+msgid "Expand"
+msgstr "Erweitern"
+
+#: src/machines.jsx:116
+msgid "Name"
+msgstr "Name"
+
+#: src/machines.jsx:117
+msgid "Status"
+msgstr "Status"
+
+#: src/machines.jsx:118
+msgid "OS"
+msgstr "OS"
+
+#: src/machines.jsx:119
+msgid "IP address"
+msgstr "IP-Adresse"
+
+#: src/machines.jsx:120
+msgid "Type"
+msgstr "Typ"
+
+#: src/machines.jsx:121
+msgid "Actions"
+msgstr "Aktionen"
+
+#: src/machines.jsx:125
+msgid "No containers found"
+msgstr "Keine Container gefunden"
+
+#: src/MachineActions.jsx:45
+msgid "Actions for $0"
+msgstr "Aktionen für $0"
+
+#: src/MachineActions.jsx:54
+msgid "Start"
+msgstr "Starten"
+
+#: src/MachineActions.jsx:60
+msgid "Stop"
+msgstr "Stoppen"
+
+#: src/MachineActions.jsx:65
+msgid "Force stop"
+msgstr "Erzwingen"
+
+#: src/MachineActions.jsx:72
+msgid "Open terminal"
+msgstr "Terminal öffnen"
+
+#: src/MachineActions.jsx:82
+msgid "Show logs"
+msgstr "Protokolle anzeigen"
+
+#: src/MachineActions.jsx:88
+msgid "Export…"
+msgstr "Exportieren…"
+
+#: src/MachineActions.jsx:94
+msgid "Hide details"
+msgstr "Details ausblenden"
+
+#: src/MachineActions.jsx:94
+msgid "Show details"
+msgstr "Details anzeigen"
+
+#: src/MachineActions.jsx:101
+msgid "Remove"
+msgstr "Entfernen"
+
+#: src/MachineActions.jsx:141
+msgid "Remove container"
+msgstr "Container entfernen"
+
+#: src/MachineActions.jsx:143
+msgid "Are you sure you want to remove $0? This action cannot be undone."
+msgstr "Möchten Sie $0 wirklich entfernen? Diese Aktion kann nicht rückgängig gemacht werden."
+
+#: src/MachineActions.jsx:151
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: src/MachineDetails.jsx:73
+msgid "Path"
+msgstr "Pfad"
+
+#: src/MachineDetails.jsx:80
+msgid "Operating system"
+msgstr "Betriebssystem"
+
+#: src/MachineDetails.jsx:87
+msgid "IP addresses"
+msgstr "IP-Adressen"
+
+#: src/MachineDetails.jsx:107
+msgid "Leader PID"
+msgstr "Leader-PID"
+
+#: src/MachineDetails.jsx:114
+msgid "Started"
+msgstr "Gestartet"
+
+#: src/MachineDetails.jsx:120
+msgid "Shortcuts"
+msgstr "Verknüpfungen"
+
+#: src/MachineDetails.jsx:124
+msgid "System logs"
+msgstr "Systemprotokolle"
+
+#: src/MachineDetails.jsx:129
+msgid "Files"
+msgstr "Dateien"
+
+#: src/MachineLogs.jsx:20
+msgid "All levels"
+msgstr "Alle Ebenen"
+
+#: src/MachineLogs.jsx:21
+msgid "Emergency (0)"
+msgstr "Notfall (0)"
+
+#: src/MachineLogs.jsx:22
+msgid "Alert (1)"
+msgstr "Alarm (1)"
+
+#: src/MachineLogs.jsx:23
+msgid "Critical (2)"
+msgstr "Kritisch (2)"
+
+#: src/MachineLogs.jsx:24
+msgid "Error (3)"
+msgstr "Fehler (3)"
+
+#: src/MachineLogs.jsx:25
+msgid "Warning (4)"
+msgstr "Warnung (4)"
+
+#: src/MachineLogs.jsx:26
+msgid "Info (6)"
+msgstr "Info (6)"
+
+#: src/MachineLogs.jsx:27
+msgid "Debug (7)"
+msgstr "Debug (7)"
+
+#: src/MachineLogs.jsx:100
+msgid "Log error for $0"
+msgstr "Protokollfehler für $0"
+
+#: src/MachineLogs.jsx:133
+msgid "Logs for $0"
+msgstr "Protokolle für $0"
+
+#: src/MachineLogs.jsx:135
+msgid "Logs — $0"
+msgstr "Protokolle — $0"
+
+#: src/MachineLogs.jsx:163
+msgid "Following real time"
+msgstr "Echtzeit wird verfolgt"
+
+#: src/MachineLogs.jsx:163
+msgid "Follow real time"
+msgstr "Echtzeit verfolgen"
+
+#: src/MachineLogs.jsx:168
+msgid "Clear"
+msgstr "Leeren"
+
+#: src/MachineLogs.jsx:172
+msgid "$0 line"
+msgid_plural "$0 lines"
+msgstr[0] "$0 Zeile"
+msgstr[1] "$0 Zeilen"
+
+#: src/MachineLogs.jsx:191
+msgid "Waiting for logs..."
+msgstr "Warte auf Protokolle..."
+
+#: src/MachineLogs.jsx:212
+msgid "Close"
+msgstr "Schließen"
+
+#: src/MachineTerminal.jsx:97
+msgid "Terminal for $0"
+msgstr "Terminal für $0"
+
+#: src/MachineTerminal.jsx:100
+msgid "Terminal — $0"
+msgstr "Terminal — $0"
+
+#: src/ExportMachineDialog.jsx:117
+msgid "Export $0"
+msgstr "$0 exportieren"
+
+#: src/ExportMachineDialog.jsx:121
+msgid "Creates the archive on the server and starts a browser download. Streams directly via HTTP, works for large files."
+msgstr "Erstellt das Archiv auf dem Server und startet einen Browser-Download. Direkt via HTTP gestreamt, funktioniert auch für große Dateien."
+
+#: src/ExportMachineDialog.jsx:125
+msgid "Temporary file:"
+msgstr "Temporäre Datei:"
+
+#: src/ExportMachineDialog.jsx:125
+msgid "(removed automatically)"
+msgstr "(wird automatisch entfernt)"
+
+#: src/ExportMachineDialog.jsx:132
+msgid "Creating archive on server…"
+msgstr "Archiv wird auf dem Server erstellt…"
+
+#: src/ExportMachineDialog.jsx:134
+msgid "written"
+msgstr "geschrieben"
+
+#: src/ExportMachineDialog.jsx:141
+msgid "Export complete — $0."
+msgstr "Export abgeschlossen — $0."
+
+#: src/ExportMachineDialog.jsx:143
+msgid "Click the button to start the download."
+msgstr "Klicken Sie auf die Schaltfläche, um den Download zu starten."
+
+#: src/ExportMachineDialog.jsx:145
+msgid "The file streams directly from the server. The temporary file is removed automatically after the download starts."
+msgstr "Die Datei wird direkt vom Server gestreamt. Die temporäre Datei wird automatisch gelöscht, nachdem der Download gestartet wurde."
+
+#: src/ExportMachineDialog.jsx:152
+msgid "Download started — check your browser's download bar for $0."
+msgstr "Download gestartet — überprüfen Sie die Download-Leiste des Browsers für $0."
+
+#: src/ExportMachineDialog.jsx:161
+msgid "Export failed"
+msgstr "Export fehlgeschlagen"
+
+#: src/ExportMachineDialog.jsx:170
+msgid "Start export"
+msgstr "Export starten"
+
+#: src/ExportMachineDialog.jsx:176
+msgid "Download $0"
+msgstr "$0 herunterladen"
+
+#: src/ExportMachineDialog.jsx:182
+msgid "Close and clean up"
+msgstr "Schließen und aufräumen"
+
+#: src/CreateMachineDialog.jsx:350
+msgid "Method"
+msgstr "Methode"
+
+#: src/CreateMachineDialog.jsx:357
+msgid "Bootstrap (DNF)"
+msgstr "Bootstrap (DNF)"
+
+#: src/CreateMachineDialog.jsx:362
+msgid "Pull from URL"
+msgstr "Von URL laden"
+
+#: src/CreateMachineDialog.jsx:367
+msgid "Clone existing"
+msgstr "Vorhandenen klonen"
+
+#: src/CreateMachineDialog.jsx:376
+msgid "Container name"
+msgstr "Container-Name"
+
+#: src/CreateMachineDialog.jsx:378
+msgid "my-container"
+msgstr "mein-container"
+
+#: src/CreateMachineDialog.jsx:386
+msgid "Distribution"
+msgstr "Distribution"
+
+#: src/CreateMachineDialog.jsx:402
+msgid "Version"
+msgstr "Version"
+
+#: src/CreateMachineDialog.jsx:414
+msgid "Repo: $0"
+msgstr "Repo: $0"
+
+#: src/CreateMachineDialog.jsx:422
+msgid "Root password"
+msgstr "Root-Passwort"
+
+#: src/CreateMachineDialog.jsx:428
+msgid "Leave empty to set via terminal later"
+msgstr "Leer lassen, um es später über das Terminal zu setzen"
+
+#: src/CreateMachineDialog.jsx:432
+msgid "Can always be set afterwards via the terminal in this module"
+msgstr "Kann jederzeit nachträglich über das Terminal in diesem Modul gesetzt werden"
+
+#: src/CreateMachineDialog.jsx:437
+msgid "Network"
+msgstr "Netzwerk"
+
+#: src/CreateMachineDialog.jsx:440
+msgid "Private (NAT)"
+msgstr "Privat (NAT)"
+
+#: src/CreateMachineDialog.jsx:446
+msgid "Bridge (own LAN IP)"
+msgstr "Bridge (eigene LAN-IP)"
+
+#: src/CreateMachineDialog.jsx:452
+msgid "Bridge name"
+msgstr "Bridge-Name"
+
+#: src/CreateMachineDialog.jsx:458
+msgid "The network bridge must exist on the host"
+msgstr "Die Netzwerk-Bridge muss auf dem Host vorhanden sein"
+
+#: src/CreateMachineDialog.jsx:461
+msgid "The bridge $0 must be configured before the container starts."
+msgstr "Die Bridge $0 muss konfiguriert sein, bevor der Container startet."
+
+#: src/CreateMachineDialog.jsx:463
+msgid "Create it under"
+msgstr "Erstellen Sie es unter"
+
+#: src/CreateMachineDialog.jsx:468
+msgid "Cockpit → Network → Add bridge"
+msgstr "Cockpit → Netzwerk → Bridge hinzufügen"
+
+#: src/CreateMachineDialog.jsx:470
+msgid "Note: does not work with WiFi adapter — requires wired network."
+msgstr "Hinweis: Funktioniert nicht mit WLAN-Adapter — benötigt kabelgebundenes Netzwerk."
+
+#: src/CreateMachineDialog.jsx:476
+msgid "Start container immediately after creation"
+msgstr "Container sofort nach der Erstellung starten"
+
+#: src/CreateMachineDialog.jsx:498
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: src/CreateMachineDialog.jsx:506
+msgid "Name (optional)"
+msgstr "Name (optional)"
+
+#: src/CreateMachineDialog.jsx:509
+msgid "Leave empty for automatic name from URL"
+msgstr "Leer lassen für automatischen Namen aus URL"
+
+#: src/CreateMachineDialog.jsx:527
+msgid "Source"
+msgstr "Quelle"
+
+#: src/CreateMachineDialog.jsx:537
+msgid "New name"
+msgstr "Neuer Name"
+
+#: src/CreateMachineDialog.jsx:541
+msgid "my-new-container"
+msgstr "mein-neuer-container"
+
+#: src/CreateMachineDialog.jsx:551
+msgid "Output"
+msgstr "Ausgabe"
+
+#: src/CreateMachineDialog.jsx:575
+msgid "Container created!"
+msgstr "Container erstellt!"
+
+#: src/CreateMachineDialog.jsx:577
+msgid "$0 is ready to use."
+msgstr "$0 ist einsatzbereit."
+
+#: src/CreateMachineDialog.jsx:579
+msgid "$0 has been cloned."
+msgstr "$0 wurde geklont."
+
+#: src/CreateMachineDialog.jsx:581
+msgid "Container pulled and ready."
+msgstr "Container geladen und bereit."
+
+#: src/CreateMachineDialog.jsx:586
+msgid "Error occurred"
+msgstr "Fehler aufgetreten"
+
+#: src/CreateMachineDialog.jsx:600
+msgid "Bootstrapping..."
+msgstr "Bootstrap läuft..."
+
+#: src/CreateMachineDialog.jsx:601
+msgid "Creating..."
+msgstr "Wird erstellt..."
+
+#: src/CreateMachineDialog.jsx:602
+msgid "Create"
+msgstr "Erstellen"
+
+#: src/CreateMachineDialog.jsx:149
+msgid "Container created"
+msgstr "Container erstellt"
+
+#: src/CreateMachineDialog.jsx:155
+msgid "Container cloned"
+msgstr "Container geklont"
+
+#: src/CreateMachineDialog.jsx:323
+msgid "Container $0 created"
+msgstr "Container $0 erstellt"

@@ -1,0 +1,477 @@
+# Swedish translations for cockpit-nspawn
+# SPDX-License-Identifier: LGPL-2.1-or-later
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-03-01 00:00+0000\n"
+"PO-Revision-Date: 2026-03-01 00:00+0000\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# app.jsx
+#: src/app.jsx:93
+msgid "Loading containers..."
+msgstr "Hämtar containers..."
+
+#: src/app.jsx:100
+msgid "Containers (nspawn)"
+msgstr "Containers (nspawn)"
+
+#: src/app.jsx:75
+msgid "$0 started"
+msgstr "$0 startad"
+
+#: src/app.jsx:76
+msgid "$0 stopped"
+msgstr "$0 stoppad"
+
+#: src/app.jsx:77
+msgid "$0 terminated"
+msgstr "$0 avslutad"
+
+#: src/app.jsx:78
+msgid "$0 removed"
+msgstr "$0 borttagen"
+
+#: src/app.jsx:80
+msgid "Failed to start $0"
+msgstr "Kunde inte starta $0"
+
+#: src/app.jsx:81
+msgid "Failed to stop $0"
+msgstr "Kunde inte stoppa $0"
+
+#: src/app.jsx:82
+msgid "Failed to terminate $0"
+msgstr "Kunde inte avsluta $0"
+
+#: src/app.jsx:83
+msgid "Failed to remove $0"
+msgstr "Kunde inte ta bort $0"
+
+# machines.jsx
+#: src/machines.jsx:93
+msgid "Filter containers..."
+msgstr "Filtrera containers..."
+
+#: src/machines.jsx:100
+msgid "Create container"
+msgstr "Skapa container"
+
+#: src/machines.jsx:105
+msgid "Refresh"
+msgstr "Uppdatera"
+
+#: src/machines.jsx:115
+msgid "Expand"
+msgstr "Expandera"
+
+#: src/machines.jsx:116
+msgid "Name"
+msgstr "Namn"
+
+#: src/machines.jsx:117
+msgid "Status"
+msgstr "Status"
+
+#: src/machines.jsx:118
+msgid "OS"
+msgstr "OS"
+
+#: src/machines.jsx:119
+msgid "IP address"
+msgstr "IP-adress"
+
+#: src/machines.jsx:120
+msgid "Type"
+msgstr "Typ"
+
+#: src/machines.jsx:121
+msgid "Actions"
+msgstr "Åtgärder"
+
+#: src/machines.jsx:125
+msgid "No containers found"
+msgstr "Inga containers hittades"
+
+# MachineActions.jsx
+#: src/MachineActions.jsx:45
+msgid "Actions for $0"
+msgstr "Åtgärder för $0"
+
+#: src/MachineActions.jsx:54
+msgid "Start"
+msgstr "Starta"
+
+#: src/MachineActions.jsx:60
+msgid "Stop"
+msgstr "Stoppa"
+
+#: src/MachineActions.jsx:65
+msgid "Force stop"
+msgstr "Forcera stopp"
+
+#: src/MachineActions.jsx:72
+msgid "Open terminal"
+msgstr "Öppna terminal"
+
+#: src/MachineActions.jsx:82
+msgid "Show logs"
+msgstr "Visa loggar"
+
+#: src/MachineActions.jsx:88
+msgid "Export…"
+msgstr "Exportera…"
+
+#: src/MachineActions.jsx:94
+msgid "Hide details"
+msgstr "Dölj detaljer"
+
+#: src/MachineActions.jsx:94
+msgid "Show details"
+msgstr "Visa detaljer"
+
+#: src/MachineActions.jsx:101
+msgid "Remove"
+msgstr "Ta bort"
+
+#: src/MachineActions.jsx:141
+msgid "Remove container"
+msgstr "Ta bort container"
+
+#: src/MachineActions.jsx:143
+msgid "Are you sure you want to remove $0? This action cannot be undone."
+msgstr "Är du säker på att du vill ta bort $0? Denna åtgärd kan inte ångras."
+
+#: src/MachineActions.jsx:151
+msgid "Cancel"
+msgstr "Avbryt"
+
+# MachineDetails.jsx
+#: src/MachineDetails.jsx:73
+msgid "Path"
+msgstr "Sökväg"
+
+#: src/MachineDetails.jsx:80
+msgid "Operating system"
+msgstr "Operativsystem"
+
+#: src/MachineDetails.jsx:87
+msgid "IP addresses"
+msgstr "IP-adresser"
+
+#: src/MachineDetails.jsx:107
+msgid "Leader PID"
+msgstr "Leader PID"
+
+#: src/MachineDetails.jsx:114
+msgid "Started"
+msgstr "Startad"
+
+#: src/MachineDetails.jsx:120
+msgid "Shortcuts"
+msgstr "Genvägar"
+
+#: src/MachineDetails.jsx:124
+msgid "System logs"
+msgstr "Systemloggar"
+
+#: src/MachineDetails.jsx:129
+msgid "Files"
+msgstr "Filer"
+
+# MachineLogs.jsx
+#: src/MachineLogs.jsx:20
+msgid "All levels"
+msgstr "Alla nivåer"
+
+#: src/MachineLogs.jsx:21
+msgid "Emergency (0)"
+msgstr "Nödfall (0)"
+
+#: src/MachineLogs.jsx:22
+msgid "Alert (1)"
+msgstr "Alert (1)"
+
+#: src/MachineLogs.jsx:23
+msgid "Critical (2)"
+msgstr "Kritisk (2)"
+
+#: src/MachineLogs.jsx:24
+msgid "Error (3)"
+msgstr "Fel (3)"
+
+#: src/MachineLogs.jsx:25
+msgid "Warning (4)"
+msgstr "Varning (4)"
+
+#: src/MachineLogs.jsx:26
+msgid "Info (6)"
+msgstr "Info (6)"
+
+#: src/MachineLogs.jsx:27
+msgid "Debug (7)"
+msgstr "Debug (7)"
+
+#: src/MachineLogs.jsx:100
+msgid "Log error for $0"
+msgstr "Loggfel för $0"
+
+#: src/MachineLogs.jsx:133
+msgid "Logs for $0"
+msgstr "Loggar för $0"
+
+#: src/MachineLogs.jsx:135
+msgid "Logs — $0"
+msgstr "Loggar — $0"
+
+#: src/MachineLogs.jsx:163
+msgid "Following real time"
+msgstr "Följer realtid"
+
+#: src/MachineLogs.jsx:163
+msgid "Follow real time"
+msgstr "Följ realtid"
+
+#: src/MachineLogs.jsx:168
+msgid "Clear"
+msgstr "Rensa"
+
+#: src/MachineLogs.jsx:172
+msgid "$0 line"
+msgid_plural "$0 lines"
+msgstr[0] "$0 rad"
+msgstr[1] "$0 rader"
+
+#: src/MachineLogs.jsx:191
+msgid "Waiting for logs..."
+msgstr "Väntar på loggar..."
+
+#: src/MachineLogs.jsx:212
+msgid "Close"
+msgstr "Stäng"
+
+# MachineTerminal.jsx
+#: src/MachineTerminal.jsx:97
+msgid "Terminal for $0"
+msgstr "Terminal för $0"
+
+#: src/MachineTerminal.jsx:100
+msgid "Terminal — $0"
+msgstr "Terminal — $0"
+
+# ExportMachineDialog.jsx
+#: src/ExportMachineDialog.jsx:117
+msgid "Export $0"
+msgstr "Exportera $0"
+
+#: src/ExportMachineDialog.jsx:121
+msgid "Creates the archive on the server and starts a browser download. Streams directly via HTTP, works for large files."
+msgstr "Skapar ett arkiv på servern och startar en webbläsarnedladdning. Strömmar direkt via HTTP, fungerar för stora filer."
+
+#: src/ExportMachineDialog.jsx:125
+msgid "Temporary file:"
+msgstr "Tillfällig fil:"
+
+#: src/ExportMachineDialog.jsx:125
+msgid "(removed automatically)"
+msgstr "(tas bort automatiskt)"
+
+#: src/ExportMachineDialog.jsx:132
+msgid "Creating archive on server…"
+msgstr "Skapar arkiv på servern…"
+
+#: src/ExportMachineDialog.jsx:134
+msgid "written"
+msgstr "skrivet"
+
+#: src/ExportMachineDialog.jsx:141
+msgid "Export complete — $0."
+msgstr "Export klar — $0."
+
+#: src/ExportMachineDialog.jsx:143
+msgid "Click the button to start the download."
+msgstr "Klicka på knappen för att starta nedladdningen."
+
+#: src/ExportMachineDialog.jsx:145
+msgid "The file streams directly from the server. The temporary file is removed automatically after the download starts."
+msgstr "Filen strömmas direkt från servern. Den tillfälliga filen tas bort automatiskt efter att nedladdningen startat."
+
+#: src/ExportMachineDialog.jsx:152
+msgid "Download started — check your browser's download bar for $0."
+msgstr "Nedladdning startad — kolla webbläsarens nedladdningsfält efter $0."
+
+#: src/ExportMachineDialog.jsx:161
+msgid "Export failed"
+msgstr "Export misslyckades"
+
+#: src/ExportMachineDialog.jsx:170
+msgid "Start export"
+msgstr "Starta export"
+
+#: src/ExportMachineDialog.jsx:176
+msgid "Download $0"
+msgstr "Ladda ner $0"
+
+#: src/ExportMachineDialog.jsx:182
+msgid "Close and clean up"
+msgstr "Stäng och rensa"
+
+# CreateMachineDialog.jsx
+#: src/CreateMachineDialog.jsx:350
+msgid "Method"
+msgstr "Metod"
+
+#: src/CreateMachineDialog.jsx:357
+msgid "Bootstrap (DNF)"
+msgstr "Bootstrap (DNF)"
+
+#: src/CreateMachineDialog.jsx:362
+msgid "Pull from URL"
+msgstr "Hämta från URL"
+
+#: src/CreateMachineDialog.jsx:367
+msgid "Clone existing"
+msgstr "Klona befintlig"
+
+#: src/CreateMachineDialog.jsx:376
+msgid "Container name"
+msgstr "Containernamn"
+
+#: src/CreateMachineDialog.jsx:378
+msgid "my-container"
+msgstr "min-container"
+
+#: src/CreateMachineDialog.jsx:386
+msgid "Distribution"
+msgstr "Distribution"
+
+#: src/CreateMachineDialog.jsx:402
+msgid "Version"
+msgstr "Version"
+
+#: src/CreateMachineDialog.jsx:414
+msgid "Repo: $0"
+msgstr "Repo: $0"
+
+#: src/CreateMachineDialog.jsx:422
+msgid "Root password"
+msgstr "Root-lösenord"
+
+#: src/CreateMachineDialog.jsx:428
+msgid "Leave empty to set via terminal later"
+msgstr "Lämna tomt för att sätta via terminal senare"
+
+#: src/CreateMachineDialog.jsx:432
+msgid "Can always be set afterwards via the terminal in this module"
+msgstr "Kan alltid sättas efteråt via terminalen i denna modul"
+
+#: src/CreateMachineDialog.jsx:437
+msgid "Network"
+msgstr "Nätverk"
+
+#: src/CreateMachineDialog.jsx:440
+msgid "Private (NAT)"
+msgstr "Privat (NAT)"
+
+#: src/CreateMachineDialog.jsx:446
+msgid "Bridge (own LAN IP)"
+msgstr "Bridge (eget LAN-IP)"
+
+#: src/CreateMachineDialog.jsx:452
+msgid "Bridge name"
+msgstr "Bridge-namn"
+
+#: src/CreateMachineDialog.jsx:458
+msgid "The network bridge must exist on the host"
+msgstr "Nätverksbryggan måste finnas på värdsystemet"
+
+#: src/CreateMachineDialog.jsx:461
+msgid "The bridge $0 must be configured before the container starts."
+msgstr "Bryggan $0 måste vara konfigurerad innan containern startas."
+
+#: src/CreateMachineDialog.jsx:463
+msgid "Create it under"
+msgstr "Skapa den under"
+
+#: src/CreateMachineDialog.jsx:468
+msgid "Cockpit → Network → Add bridge"
+msgstr "Cockpit → Nätverk → Lägg till brygga"
+
+#: src/CreateMachineDialog.jsx:470
+msgid "Note: does not work with WiFi adapter — requires wired network."
+msgstr "Obs: fungerar inte med WiFi-adapter — kräver kabelnätverk."
+
+#: src/CreateMachineDialog.jsx:476
+msgid "Start container immediately after creation"
+msgstr "Starta container direkt efter skapande"
+
+#: src/CreateMachineDialog.jsx:498
+msgid "Automatic"
+msgstr "Automatisk"
+
+#: src/CreateMachineDialog.jsx:506
+msgid "Name (optional)"
+msgstr "Namn (valfritt)"
+
+#: src/CreateMachineDialog.jsx:509
+msgid "Leave empty for automatic name from URL"
+msgstr "Lämna tomt för automatiskt namn från URL"
+
+#: src/CreateMachineDialog.jsx:527
+msgid "Source"
+msgstr "Källa"
+
+#: src/CreateMachineDialog.jsx:537
+msgid "New name"
+msgstr "Nytt namn"
+
+#: src/CreateMachineDialog.jsx:541
+msgid "my-new-container"
+msgstr "mitt-nytt-container"
+
+#: src/CreateMachineDialog.jsx:551
+msgid "Output"
+msgstr "Utdata"
+
+#: src/CreateMachineDialog.jsx:575
+msgid "Container created!"
+msgstr "Container skapad!"
+
+#: src/CreateMachineDialog.jsx:577
+msgid "$0 is ready to use."
+msgstr "$0 är klar och redo att användas."
+
+#: src/CreateMachineDialog.jsx:579
+msgid "$0 has been cloned."
+msgstr "$0 har klonats."
+
+#: src/CreateMachineDialog.jsx:581
+msgid "Container pulled and ready."
+msgstr "Container hämtad och redo."
+
+#: src/CreateMachineDialog.jsx:586
+msgid "Error occurred"
+msgstr "Fel uppstod"
+
+#: src/CreateMachineDialog.jsx:600
+msgid "Bootstrapping..."
+msgstr "Bootstrappar..."
+
+#: src/CreateMachineDialog.jsx:601
+msgid "Creating..."
+msgstr "Skapar..."
+
+#: src/CreateMachineDialog.jsx:149
+msgid "Container created"
+msgstr "Container skapad"
+
+#: src/CreateMachineDialog.jsx:155
+msgid "Container cloned"
+msgstr "Container klonad"
+
+#: src/CreateMachineDialog.jsx:323
+msgid "Container $0 created"
+msgstr "Container $0 skapad"

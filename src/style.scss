@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+@use "page.scss";
+
+.nspawn-log-viewer {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: 0.82em;
+  padding: 1rem;
+  overflow-y: auto;
+  border-radius: 4px;
+}

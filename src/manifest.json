@@ -1,0 +1,16 @@
+{
+    "requires": {
+        "cockpit": "300"
+    },
+    "menu": {
+        "index": {
+            "label": "Containers (nspawn)",
+            "order": 45,
+            "keywords": [
+                {
+                    "matches": ["nspawn", "container", "machinectl", "machine"]
+                }
+            ]
+        }
+    }
+}

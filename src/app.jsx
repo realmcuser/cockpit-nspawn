@@ -1,0 +1,149 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+    Alert,
+    AlertGroup,
+    AlertActionCloseButton,
+    Page,
+    PageSection,
+    Spinner,
+    EmptyState,
+    EmptyStateBody,
+    Title,
+} from '@patternfly/react-core';
+
+import cockpit from 'cockpit';
+import { spawnMachinectl, parseMachinectlJson } from './utils.js';
+import { Machines } from './machines.jsx';
+
+const { gettext: _, format } = cockpit;
+
+const POLL_INTERVAL = 5000;
+
+export function Application() {
+    const [machines, setMachines] = useState([]);
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [notifications, setNotifications] = useState([]);
+
+    const addNotification = useCallback((notification) => {
+        const id = Date.now();
+        setNotifications(prev => [...prev, { id, ...notification }]);
+        if (notification.type !== 'danger') {
+            setTimeout(() => setNotifications(prev => prev.filter(n => n.id !== id)), 10000);
+        }
+    }, []);
+
+    const removeNotification = useCallback((id) => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+    }, []);
+
+    const fetchData = useCallback(() => {
+        const listPromise = spawnMachinectl(['list', '--output=json', '--no-pager'])
+            .then(output => parseMachinectlJson(output))
+            .catch(ex => {
+                console.warn('machinectl list:', ex.message);
+                return [];
+            });
+
+        const imagesPromise = spawnMachinectl(['list-images', '--output=json', '--no-pager'])
+            .then(output => parseMachinectlJson(output))
+            .catch(ex => {
+                console.warn('machinectl list-images:', ex.message);
+                return [];
+            });
+
+        Promise.all([listPromise, imagesPromise]).then(([machineList, imageList]) => {
+            setMachines(machineList);
+            setImages(imageList);
+            setLoading(false);
+        });
+    }, []);
+
+    useEffect(() => {
+        fetchData();
+        const timer = setInterval(fetchData, POLL_INTERVAL);
+        return () => clearInterval(timer);
+    }, [fetchData]);
+
+    const handleAction = useCallback((action, machineName) => {
+        const commands = {
+            start: ['start', machineName],
+            stop: ['poweroff', machineName],
+            terminate: ['terminate', machineName],
+            remove: ['remove', machineName],
+        };
+        const cmd = commands[action];
+        if (!cmd) return;
+
+        spawnMachinectl(cmd)
+            .then(() => {
+                const title = {
+                    start: format(_("$0 started"), machineName),
+                    stop: format(_("$0 stopped"), machineName),
+                    terminate: format(_("$0 terminated"), machineName),
+                    remove: format(_("$0 removed"), machineName),
+                }[action] || `${machineName}: ${action}`;
+                addNotification({ type: 'success', title });
+                setTimeout(fetchData, 800);
+            })
+            .catch(ex => {
+                const title = {
+                    start: format(_("Failed to start $0"), machineName),
+                    stop: format(_("Failed to stop $0"), machineName),
+                    terminate: format(_("Failed to terminate $0"), machineName),
+                    remove: format(_("Failed to remove $0"), machineName),
+                }[action] || `${machineName}: ${action} failed`;
+                addNotification({
+                    type: 'danger',
+                    title,
+                    detail: ex.message,
+                });
+            });
+    }, [addNotification, fetchData]);
+
+    if (loading) {
+        return (
+            <Page>
+                <PageSection>
+                    <EmptyState>
+                        <Spinner size="xl" />
+                        <EmptyStateBody>{_("Loading containers...")}</EmptyStateBody>
+                    </EmptyState>
+                </PageSection>
+            </Page>
+        );
+    }
+
+    return (
+        <Page>
+            <AlertGroup isToast isLiveRegion>
+                {notifications.map(n => (
+                    <Alert
+                        key={n.id}
+                        variant={n.type}
+                        title={n.title}
+                        actionClose={<AlertActionCloseButton onClose={() => removeNotification(n.id)} />}
+                    >
+                        {n.detail && <p>{n.detail}</p>}
+                    </Alert>
+                ))}
+            </AlertGroup>
+
+            <PageSection>
+                <Title headingLevel="h1" size="2xl">{_("Containers (nspawn)")}</Title>
+            </PageSection>
+
+            <PageSection>
+                <Machines
+                    machines={machines}
+                    images={images}
+                    onAction={handleAction}
+                    onAddNotification={addNotification}
+                    onRefresh={fetchData}
+                />
+            </PageSection>
+        </Page>
+    );
+}

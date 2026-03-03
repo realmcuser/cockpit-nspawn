@@ -17,6 +17,18 @@ import cockpit from 'cockpit';
 import { spawnMachinectl, parseMachinectlJson } from './utils.js';
 import { Machines } from './machines.jsx';
 
+function removeMachine(name) {
+    return spawnMachinectl(['remove', name])
+        .catch(() => {
+            // Fallback: machinectl remove fails on some distros (e.g. AlmaLinux 10).
+            // Remove the directory and nspawn config directly instead.
+            return cockpit.spawn(
+                ['sh', '-c', `rm -rf /var/lib/machines/${name}; rm -f /etc/systemd/nspawn/${name}.nspawn`],
+                { superuser: 'require', err: 'message' }
+            );
+        });
+}
+
 const { gettext: _, format } = cockpit;
 
 const POLL_INTERVAL = 5000;
@@ -72,12 +84,15 @@ export function Application() {
             start: ['start', machineName],
             stop: ['poweroff', machineName],
             terminate: ['terminate', machineName],
-            remove: ['remove', machineName],
         };
-        const cmd = commands[action];
-        if (!cmd) return;
 
-        spawnMachinectl(cmd)
+        const promise = action === 'remove'
+            ? removeMachine(machineName)
+            : spawnMachinectl(commands[action]);
+
+        if (!promise) return;
+
+        promise
             .then(() => {
                 const title = {
                     start: format(_("$0 started"), machineName),

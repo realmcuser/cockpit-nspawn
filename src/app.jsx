@@ -17,11 +17,30 @@ import cockpit from 'cockpit';
 import { spawnMachinectl, parseMachinectlJson } from './utils.js';
 import { Machines } from './machines.jsx';
 
+const { gettext: _, format } = cockpit;
+
+const POLL_INTERVAL = 5000;
+
+function fetchEnabledMachines() {
+    return cockpit.spawn(
+        ['sh', '-c', 'ls /etc/systemd/system/machines.target.wants/ 2>/dev/null || true'],
+        { superuser: 'require', err: 'ignore' }
+    ).then(output => {
+        const names = new Set();
+        output.split('\n').forEach(file => {
+            const match = file.trim().match(/^systemd-nspawn@(.+)\.service$/);
+            if (match) names.add(match[1]);
+        });
+        return names;
+    }).catch(() => new Set());
+}
+
 function removeMachine(name) {
-    return spawnMachinectl(['remove', name])
+    // Disable autostart first (ignore errors if not enabled)
+    return spawnMachinectl(['disable', name]).catch(() => null)
+        .then(() => spawnMachinectl(['remove', name]))
         .catch(() => {
             // Fallback: machinectl remove fails on some distros (e.g. AlmaLinux 10).
-            // Remove the directory and nspawn config directly instead.
             return cockpit.spawn(
                 ['sh', '-c', `rm -rf /var/lib/machines/${name}; rm -f /etc/systemd/nspawn/${name}.nspawn`],
                 { superuser: 'require', err: 'message' }
@@ -29,13 +48,10 @@ function removeMachine(name) {
         });
 }
 
-const { gettext: _, format } = cockpit;
-
-const POLL_INTERVAL = 5000;
-
 export function Application() {
     const [machines, setMachines] = useState([]);
     const [images, setImages] = useState([]);
+    const [enabledMachines, setEnabledMachines] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState([]);
 
@@ -66,11 +82,13 @@ export function Application() {
                 return [];
             });
 
-        Promise.all([listPromise, imagesPromise]).then(([machineList, imageList]) => {
-            setMachines(machineList);
-            setImages(imageList);
-            setLoading(false);
-        });
+        Promise.all([listPromise, imagesPromise, fetchEnabledMachines()])
+            .then(([machineList, imageList, enabled]) => {
+                setMachines(machineList);
+                setImages(imageList);
+                setEnabledMachines(enabled);
+                setLoading(false);
+            });
     }, []);
 
     useEffect(() => {
@@ -84,6 +102,8 @@ export function Application() {
             start: ['start', machineName],
             stop: ['poweroff', machineName],
             terminate: ['terminate', machineName],
+            'autostart-enable': ['enable', machineName],
+            'autostart-disable': ['disable', machineName],
         };
 
         const promise = action === 'remove'
@@ -99,6 +119,8 @@ export function Application() {
                     stop: format(_("$0 stopped"), machineName),
                     terminate: format(_("$0 terminated"), machineName),
                     remove: format(_("$0 removed"), machineName),
+                    'autostart-enable': format(_("Autostart enabled for $0"), machineName),
+                    'autostart-disable': format(_("Autostart disabled for $0"), machineName),
                 }[action] || `${machineName}: ${action}`;
                 addNotification({ type: 'success', title });
                 setTimeout(fetchData, 800);
@@ -109,6 +131,8 @@ export function Application() {
                     stop: format(_("Failed to stop $0"), machineName),
                     terminate: format(_("Failed to terminate $0"), machineName),
                     remove: format(_("Failed to remove $0"), machineName),
+                    'autostart-enable': format(_("Failed to enable autostart for $0"), machineName),
+                    'autostart-disable': format(_("Failed to disable autostart for $0"), machineName),
                 }[action] || `${machineName}: ${action} failed`;
                 addNotification({
                     type: 'danger',
@@ -154,6 +178,7 @@ export function Application() {
                 <Machines
                     machines={machines}
                     images={images}
+                    enabledMachines={enabledMachines}
                     onAction={handleAction}
                     onAddNotification={addNotification}
                     onRefresh={fetchData}

@@ -116,6 +116,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
     const [network, setNetwork] = useState('private');
     const [bridgeName, setBridgeName] = useState('bridge0');
     const [autoStart, setAutoStart] = useState(true);
+    const [autoEnable, setAutoEnable] = useState(false);
 
     // Running / output
     const [running, setRunning] = useState(false);
@@ -326,7 +327,13 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
             await cockpit.spawn(['systemctl', 'daemon-reload'], { superuser: 'require', err: 'out' });
             append('daemon-reload klar.\n');
 
-            // Step 6: optional start
+            // Step 6: optional enable autostart
+            if (autoEnable) {
+                append(`\n=== Aktiverar autostart för ${name} ===\n`);
+                await spawnMachinectl(['enable', name]).stream(append);
+            }
+
+            // Step 7: optional start
             if (autoStart) {
                 append(`\n=== Startar ${name} ===\n`);
                 await spawnMachinectl(['start', name]).stream(append);
@@ -492,6 +499,13 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 </>
                             )}
 
+                            <Checkbox
+                                id="auto-enable"
+                                label={_("Enable automatic start at boot")}
+                                isChecked={autoEnable}
+                                onChange={(_e, checked) => setAutoEnable(checked)}
+                                isDisabled={running}
+                            />
                             <Checkbox
                                 id="auto-start"
                                 label={_("Start container immediately after creation")}

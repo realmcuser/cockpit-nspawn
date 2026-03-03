@@ -20,7 +20,7 @@ import { ExportMachineDialog } from "./ExportMachineDialog.jsx";
 
 const { gettext: _, format } = cockpit;
 
-export function MachineActions({ machine, onAction, onAddNotification, onExpand, isExpanded }) {
+export function MachineActions({ machine, isAutostart, onAction, onAddNotification, onExpand, isExpanded }) {
     const [open, setOpen] = useState(false);
     const [showTerminal, setShowTerminal] = useState(false);
     const [showLogs, setShowLogs] = useState(false);
@@ -80,6 +80,12 @@ export function MachineActions({ machine, onAction, onAddNotification, onExpand,
                         </>
                     )}
                     <Divider />
+                    <DropdownItem
+                        key="autostart"
+                        onClick={() => doAction(isAutostart ? "autostart-disable" : "autostart-enable")}
+                    >
+                        {isAutostart ? _("Disable autostart") : _("Enable autostart")}
+                    </DropdownItem>
                     <DropdownItem
                         key="logs"
                         onClick={() => { setOpen(false); setShowLogs(true); }}

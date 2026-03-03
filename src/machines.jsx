@@ -57,7 +57,7 @@ function StatusBadge({ state }) {
     return <Badge style={{ backgroundColor: color === "green" ? "#3e8635" : "#6a6e73", color: "white" }}>{state}</Badge>;
 }
 
-export function Machines({ machines, images, onAction, onAddNotification, onRefresh }) {
+export function Machines({ machines, images, enabledMachines, onAction, onAddNotification, onRefresh }) {
     const [filter, setFilter] = useState("");
     const [expandedRows, setExpandedRows] = useState(new Set());
     const [showCreate, setShowCreate] = useState(false);
@@ -143,7 +143,16 @@ export function Machines({ machines, images, onAction, onAddNotification, onRefr
                                     <strong>{m.machine}</strong>
                                 </Td>
                                 <Td dataLabel={_("Status")}>
-                                    <StatusBadge state={m.state} />
+                                    <Flex spaceItems={{ default: 'spaceItemsSm' }} alignItems={{ default: 'alignItemsCenter' }}>
+                                        <FlexItem><StatusBadge state={m.state} /></FlexItem>
+                                        {enabledMachines && enabledMachines.has(m.machine) && (
+                                            <FlexItem>
+                                                <Badge style={{ backgroundColor: '#06c', color: 'white', fontSize: '0.7em' }}>
+                                                    {_("autostart")}
+                                                </Badge>
+                                            </FlexItem>
+                                        )}
+                                    </Flex>
                                 </Td>
                                 <Td dataLabel={_("OS")}>
                                     {m.os
@@ -162,6 +171,7 @@ export function Machines({ machines, images, onAction, onAddNotification, onRefr
                                 <Td dataLabel={_("Actions")} isActionCell>
                                     <MachineActions
                                         machine={m}
+                                        isAutostart={enabledMachines ? enabledMachines.has(m.machine) : false}
                                         onAction={onAction}
                                         onAddNotification={onAddNotification}
                                         onExpand={() => toggleExpand(m.machine)}

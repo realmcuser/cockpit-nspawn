@@ -475,3 +475,11 @@ msgstr "Container klonad"
 #: src/CreateMachineDialog.jsx:323
 msgid "Container $0 created"
 msgstr "Container $0 skapad"
+
+#: src/CreateMachineDialog.jsx:535
+msgid "NAT networking via systemd-networkd"
+msgstr "NAT-nätverk via systemd-networkd"
+
+#: src/CreateMachineDialog.jsx:537
+msgid "Bootstrap will enable systemd-networkd and create a shared NAT bridge (vz-cockpit-nspawn, 10.99.0.1/24) on the host. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge."
+msgstr "Bootstrap aktiverar systemd-networkd och skapar en delad NAT-bridge (vz-cockpit-nspawn, 10.99.0.1/24) på hosten. IP-vidarebefordring aktiveras. Detta körs bara en gång — alla efterföljande NAT-containers återanvänder samma bridge."

@@ -370,7 +370,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         ['dnf', 'install', '-y', '--setopt=install_weak_deps=False', 'systemd-networkd'],
                         { superuser: 'require', err: 'out' }
                     ).stream(append);
-                } catch (_) {
+                } catch (installErr) {
                     // Package not found by that name — check if the service unit is already present
                     // (bundled in base systemd, as on AlmaLinux 10)
                     try {
@@ -379,7 +379,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                             { superuser: 'require', err: 'out' }
                         );
                         append('systemd-networkd ingår i systemd-paketet — inget separat paket behövs.\n');
-                    } catch (_) {
+                    } catch (catErr) {
                         throw new Error(_("systemd-networkd is missing and could not be installed. Check that the package is available."));
                     }
                 }

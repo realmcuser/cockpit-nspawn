@@ -314,13 +314,69 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 'Boot=yes',
                 '',
                 '[Network]',
-                network === 'bridge' ? `Bridge=${bridgeName.trim()}` : '# Privat nätverk (standard)',
+                network === 'bridge' ? `Bridge=${bridgeName.trim()}` : 'Zone=cockpit-nspawn',
                 '',
             ].join('\n');
 
             await cockpit.file(`/etc/systemd/nspawn/${name}.nspawn`, { superuser: 'require' })
                 .replace(nspawnContent);
             append(`Konfiguration: /etc/systemd/nspawn/${name}.nspawn\n`);
+
+            // NAT host-side setup — only needed once, but idempotent and safe to repeat.
+            // systemd-nspawn Zone= creates a bridge vz-cockpit-nspawn; systemd-networkd
+            // assigns 10.99.0.1/24 to it, runs a DHCP server, and enables IP masquerade.
+            if (network === 'private') {
+                append('\n=== Konfigurerar NAT-nätverk på hosten (körs en gång) ===\n');
+
+                // Enable persistent IP forwarding
+                await cockpit.file('/etc/sysctl.d/90-nspawn-nat.conf', { superuser: 'require' })
+                    .replace('net.ipv4.ip_forward = 1\n');
+                await cockpit.spawn(
+                    ['sysctl', '-p', '/etc/sysctl.d/90-nspawn-nat.conf'],
+                    { superuser: 'require', err: 'out' }
+                ).stream(append);
+
+                // Create networkd config for the shared NAT zone bridge
+                await cockpit.spawn(['mkdir', '-p', '/etc/systemd/network'], { superuser: 'require' });
+                const networkdConf = [
+                    '[Match]',
+                    'Name=vz-cockpit-nspawn',
+                    '',
+                    '[Network]',
+                    'Description=cockpit-nspawn NAT zone bridge',
+                    'Address=10.99.0.1/24',
+                    'IPMasquerade=ipv4',
+                    'DHCPServer=yes',
+                    '',
+                    '[DHCPServer]',
+                    'PoolOffset=10',
+                    'PoolSize=100',
+                    'EmitDNS=yes',
+                    'DNS=8.8.8.8',
+                    'EmitRouter=yes',
+                    '',
+                ].join('\n');
+                await cockpit.file(
+                    '/etc/systemd/network/80-cockpit-nspawn.network',
+                    { superuser: 'require' }
+                ).replace(networkdConf);
+
+                // Enable systemd-networkd so it manages vz-cockpit-nspawn
+                try {
+                    await cockpit.spawn(
+                        ['systemctl', 'enable', 'systemd-networkd'],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    await cockpit.spawn(
+                        ['systemctl', 'start', 'systemd-networkd'],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    append('systemd-networkd aktiverat — hanterar vz-cockpit-nspawn (10.99.0.1/24).\n');
+                } catch (e) {
+                    append(`Varning: systemd-networkd: ${e.message}\n`);
+                }
+                append('NAT konfigurerat. Containers i zonen: 10.99.0.11–10.99.0.110\n');
+            }
 
             // Step 5: daemon-reload
             append('\n=== Reloadar systemd ===\n');
@@ -465,6 +521,15 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     isDisabled={running}
                                 />
                             </FormGroup>
+
+                            {network === 'private' && (
+                                <Alert
+                                    isInline variant="info"
+                                    title={_("NAT networking via systemd-networkd")}
+                                >
+                                    <p>{_("Bootstrap will enable systemd-networkd and create a shared NAT bridge (vz-cockpit-nspawn, 10.99.0.1/24) on the host. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge.")}</p>
+                                </Alert>
+                            )}
 
                             {network === 'bridge' && (
                                 <>

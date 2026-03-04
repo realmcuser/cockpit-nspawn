@@ -361,12 +361,28 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     { superuser: 'require' }
                 ).replace(networkdConf);
 
-                // Install systemd-networkd if not present (separate package on all distros)
-                append('Installerar systemd-networkd om det saknas...\n');
-                await cockpit.spawn(
-                    ['dnf', 'install', '-y', '--setopt=install_weak_deps=False', 'systemd-networkd'],
-                    { superuser: 'require', err: 'out' }
-                ).stream(append);
+                // Install systemd-networkd if not present.
+                // Fedora / AlmaLinux 9: separate 'systemd-networkd' package.
+                // AlmaLinux 10 / RHEL 10: bundled in base 'systemd' — no separate package exists.
+                append('Kontrollerar systemd-networkd...\n');
+                try {
+                    await cockpit.spawn(
+                        ['dnf', 'install', '-y', '--setopt=install_weak_deps=False', 'systemd-networkd'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+                } catch (_) {
+                    // Package not found by that name — check if the service unit is already present
+                    // (bundled in base systemd, as on AlmaLinux 10)
+                    try {
+                        await cockpit.spawn(
+                            ['systemctl', 'cat', 'systemd-networkd'],
+                            { superuser: 'require', err: 'out' }
+                        );
+                        append('systemd-networkd ingår i systemd-paketet — inget separat paket behövs.\n');
+                    } catch (_) {
+                        throw new Error(_("systemd-networkd is missing and could not be installed. Check that the package is available."));
+                    }
+                }
 
                 // Enable systemd-networkd so it manages vz-cockpit-nspawn
                 try {

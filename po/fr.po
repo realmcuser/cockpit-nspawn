@@ -473,6 +473,11 @@ msgid "Container $0 created"
 msgstr "Conteneur $0 créé"
 
 #: src/CreateMachineDialog.jsx:535
+#: src/CreateMachineDialog.jsx:383
+msgid "systemd-networkd is missing and could not be installed. Check that the package is available."
+msgstr "systemd-networkd est manquant et n'a pas pu être installé. Vérifiez que le paquet est disponible."
+
+#: src/CreateMachineDialog.jsx:535
 msgid "NAT networking via systemd-networkd"
 msgstr "Réseau NAT via systemd-networkd"
 

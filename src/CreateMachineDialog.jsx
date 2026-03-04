@@ -314,7 +314,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 'Boot=yes',
                 '',
                 '[Network]',
-                network === 'bridge' ? `Bridge=${bridgeName.trim()}` : 'Zone=cockpit-nspawn',
+                network === 'bridge' ? `Bridge=${bridgeName.trim()}` : 'Bridge=br-nspawn',
                 '',
             ].join('\n');
 
@@ -322,9 +322,10 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 .replace(nspawnContent);
             append(`Konfiguration: /etc/systemd/nspawn/${name}.nspawn\n`);
 
-            // NAT host-side setup — only needed once, but idempotent and safe to repeat.
-            // systemd-nspawn Zone= creates a bridge vz-cockpit-nspawn; systemd-networkd
-            // assigns 10.99.0.1/24 to it, runs a DHCP server, and enables IP masquerade.
+            // NAT host-side setup — idempotent, safe to repeat.
+            // Uses NetworkManager's built-in "shared" mode: assigns IP, runs dnsmasq
+            // for DHCP, and adds masquerade. Works on Fedora, AlmaLinux 9 and 10
+            // without any extra packages — NetworkManager is always present.
             if (network === 'private') {
                 append('\n=== Konfigurerar NAT-nätverk på hosten (körs en gång) ===\n');
 
@@ -336,69 +337,36 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     { superuser: 'require', err: 'out' }
                 ).stream(append);
 
-                // Create networkd config for the shared NAT zone bridge
-                await cockpit.spawn(['mkdir', '-p', '/etc/systemd/network'], { superuser: 'require' });
-                const networkdConf = [
-                    '[Match]',
-                    'Name=vz-cockpit-nspawn',
-                    '',
-                    '[Network]',
-                    'Description=cockpit-nspawn NAT zone bridge',
-                    'Address=10.99.0.1/24',
-                    'IPMasquerade=ipv4',
-                    'DHCPServer=yes',
-                    '',
-                    '[DHCPServer]',
-                    'PoolOffset=10',
-                    'PoolSize=100',
-                    'EmitDNS=yes',
-                    'DNS=8.8.8.8',
-                    'EmitRouter=yes',
-                    '',
-                ].join('\n');
-                await cockpit.file(
-                    '/etc/systemd/network/80-cockpit-nspawn.network',
-                    { superuser: 'require' }
-                ).replace(networkdConf);
-
-                // Install systemd-networkd if not present.
-                // Fedora / AlmaLinux 9: separate 'systemd-networkd' package.
-                // AlmaLinux 10 / RHEL 10: bundled in base 'systemd' — no separate package exists.
-                append('Kontrollerar systemd-networkd...\n');
+                // Create shared NAT bridge via NetworkManager if not already present
+                let natBridgeExists = false;
                 try {
                     await cockpit.spawn(
-                        ['dnf', 'install', '-y', '--setopt=install_weak_deps=False', 'systemd-networkd'],
+                        ['nmcli', '-t', 'con', 'show', 'cockpit-nspawn'],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    natBridgeExists = true;
+                    append('NAT-brygga br-nspawn finns redan.\n');
+                } catch (checkErr) { /* doesn't exist yet */ }
+
+                if (!natBridgeExists) {
+                    await cockpit.spawn(
+                        ['nmcli', 'con', 'add', 'type', 'bridge',
+                         'con-name', 'cockpit-nspawn', 'ifname', 'br-nspawn'],
                         { superuser: 'require', err: 'out' }
                     ).stream(append);
-                } catch (installErr) {
-                    // Package not found by that name — check if the service unit is already present
-                    // (bundled in base systemd, as on AlmaLinux 10)
-                    try {
-                        await cockpit.spawn(
-                            ['systemctl', 'cat', 'systemd-networkd'],
-                            { superuser: 'require', err: 'out' }
-                        );
-                        append('systemd-networkd ingår i systemd-paketet — inget separat paket behövs.\n');
-                    } catch (catErr) {
-                        throw new Error(_("systemd-networkd is missing and could not be installed. Check that the package is available."));
-                    }
-                }
-
-                // Enable systemd-networkd so it manages vz-cockpit-nspawn
-                try {
                     await cockpit.spawn(
-                        ['systemctl', 'enable', 'systemd-networkd'],
+                        ['nmcli', 'con', 'modify', 'cockpit-nspawn',
+                         'ipv4.method', 'shared',
+                         'ipv4.addresses', '10.99.0.1/24',
+                         'connection.autoconnect', 'yes'],
                         { superuser: 'require', err: 'out' }
-                    );
+                    ).stream(append);
                     await cockpit.spawn(
-                        ['systemctl', 'start', 'systemd-networkd'],
+                        ['nmcli', 'con', 'up', 'cockpit-nspawn'],
                         { superuser: 'require', err: 'out' }
-                    );
-                    append('systemd-networkd aktiverat — hanterar vz-cockpit-nspawn (10.99.0.1/24).\n');
-                } catch (e) {
-                    append(`Varning: systemd-networkd: ${e.message}\n`);
+                    ).stream(append);
+                    append('NAT-brygga br-nspawn skapad: 10.99.0.1/24 (DHCP + masquerade via NetworkManager).\n');
                 }
-                append('NAT konfigurerat. Containers i zonen: 10.99.0.11–10.99.0.110\n');
             }
 
             // Step 5: daemon-reload
@@ -548,9 +516,9 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                             {network === 'private' && (
                                 <Alert
                                     isInline variant="info"
-                                    title={_("NAT networking via systemd-networkd")}
+                                    title={_("NAT networking via NetworkManager")}
                                 >
-                                    <p>{_("Bootstrap will enable systemd-networkd and create a shared NAT bridge (vz-cockpit-nspawn, 10.99.0.1/24) on the host. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge.")}</p>
+                                    <p>{_("Bootstrap will create a shared NAT bridge (br-nspawn, 10.99.0.1/24) on the host using NetworkManager. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge.")}</p>
                                 </Alert>
                             )}
 

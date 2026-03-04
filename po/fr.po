@@ -473,14 +473,9 @@ msgid "Container $0 created"
 msgstr "Conteneur $0 créé"
 
 #: src/CreateMachineDialog.jsx:535
-#: src/CreateMachineDialog.jsx:383
-msgid "systemd-networkd is missing and could not be installed. Check that the package is available."
-msgstr "systemd-networkd est manquant et n'a pas pu être installé. Vérifiez que le paquet est disponible."
-
-#: src/CreateMachineDialog.jsx:535
-msgid "NAT networking via systemd-networkd"
-msgstr "Réseau NAT via systemd-networkd"
+msgid "NAT networking via NetworkManager"
+msgstr "Réseau NAT via NetworkManager"
 
 #: src/CreateMachineDialog.jsx:537
-msgid "Bootstrap will enable systemd-networkd and create a shared NAT bridge (vz-cockpit-nspawn, 10.99.0.1/24) on the host. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge."
-msgstr "Le bootstrap activera systemd-networkd et créera un pont NAT partagé (vz-cockpit-nspawn, 10.99.0.1/24) sur l'hôte. Le transfert IP sera activé. Ceci ne s'exécute qu'une seule fois — tous les conteneurs NAT suivants réutilisent le même pont."
+msgid "Bootstrap will create a shared NAT bridge (br-nspawn, 10.99.0.1/24) on the host using NetworkManager. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge."
+msgstr "Le bootstrap créera un pont NAT partagé (br-nspawn, 10.99.0.1/24) sur l'hôte via NetworkManager. Le transfert IP sera activé. Ceci ne s'exécute qu'une seule fois — tous les conteneurs NAT suivants réutilisent le même pont."

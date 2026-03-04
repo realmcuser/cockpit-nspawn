@@ -361,6 +361,13 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     { superuser: 'require' }
                 ).replace(networkdConf);
 
+                // Install systemd-networkd if not present (separate package on all distros)
+                append('Installerar systemd-networkd om det saknas...\n');
+                await cockpit.spawn(
+                    ['dnf', 'install', '-y', '--setopt=install_weak_deps=False', 'systemd-networkd'],
+                    { superuser: 'require', err: 'out' }
+                ).stream(append);
+
                 // Enable systemd-networkd so it manages vz-cockpit-nspawn
                 try {
                     await cockpit.spawn(

@@ -80,7 +80,7 @@ export function MachineVncInfo({ machine, onClose }) {
                         padding: '0.75rem', borderRadius: '4px',
                         fontSize: '0.85rem', marginTop: '0.5rem',
                     }}>
-                        {`dnf install tigervnc-server xorg-x11-twm xterm\nvncserver :1 -geometry 1920x1080 -depth 24`}
+                        {`# Minimal (alla distros, standardrepos):\ndnf install tigervnc-server xorg-x11-twm xterm\n\n# XFCE (AlmaLinux 9/10 via EPEL, Fedora standardrepos):\ndnf install epel-release   # endast AlmaLinux\ndnf install tigervnc-server xfce4-session xfwm4 xfce4-panel\n\n# LXQt (Fedora-containers):\ndnf install tigervnc-server lxqt-session lxqt-panel openbox\n\n# Starta VNC-session (display :1 = port 5901):\nvncserver :1 -geometry 1920x1080 -depth 24`}
                     </pre>
                     <p style={{ marginTop: '0.75rem', fontSize: '0.9rem' }}>
                         {_("Open the .vnc file with Remmina, TigerVNC Viewer, or another VNC client.")}

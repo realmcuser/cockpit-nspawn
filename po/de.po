@@ -479,3 +479,51 @@ msgstr "NAT-Netzwerk über NetworkManager"
 #: src/CreateMachineDialog.jsx:537
 msgid "Bootstrap will create a shared NAT bridge (br-nspawn, 10.99.0.1/24) on the host using NetworkManager. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge."
 msgstr "Das Bootstrap erstellt eine gemeinsame NAT-Bridge (br-nspawn, 10.99.0.1/24) auf dem Host über NetworkManager. IP-Weiterleitung wird aktiviert. Dies läuft nur einmal — alle weiteren NAT-Container nutzen dieselbe Bridge."
+
+#: src/MachineActions.jsx:86
+msgid "Open display…"
+msgstr "Display öffnen…"
+
+#: src/MachineVncInfo.jsx:41
+msgid "Display: $0"
+msgstr "Display: $0"
+
+#: src/MachineVncInfo.jsx:45
+msgid "No IP address available"
+msgstr "Keine IP-Adresse verfügbar"
+
+#: src/MachineVncInfo.jsx:47
+msgid "The container does not have an IP address. Start it and wait a moment, then try again."
+msgstr "Der Container hat keine IP-Adresse. Starten Sie ihn und warten Sie einen Moment, dann versuchen Sie es erneut."
+
+#: src/MachineVncInfo.jsx:54
+msgid "VNC is unencrypted"
+msgstr "VNC ist unverschlüsselt"
+
+#: src/MachineVncInfo.jsx:56
+msgid "VNC does not encrypt the connection. Use only on trusted networks or via SSH tunnel."
+msgstr "VNC verschlüsselt die Verbindung nicht. Nur in vertrauenswürdigen Netzwerken oder über SSH-Tunnel verwenden."
+
+#: src/MachineVncInfo.jsx:61
+msgid "Connection address"
+msgstr "Verbindungsadresse"
+
+#: src/MachineVncInfo.jsx:63
+msgid "Copy"
+msgstr "Kopieren"
+
+#: src/MachineVncInfo.jsx:63
+msgid "Copied"
+msgstr "Kopiert"
+
+#: src/MachineVncInfo.jsx:71
+msgid "Download $0.vnc"
+msgstr "$0.vnc herunterladen"
+
+#: src/MachineVncInfo.jsx:77
+msgid "Requirements inside the container:"
+msgstr "Voraussetzungen im Container:"
+
+#: src/MachineVncInfo.jsx:86
+msgid "Open the .vnc file with Remmina, TigerVNC Viewer, or another VNC client."
+msgstr "Öffnen Sie die .vnc-Datei mit Remmina, TigerVNC Viewer oder einem anderen VNC-Client."

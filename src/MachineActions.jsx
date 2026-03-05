@@ -17,6 +17,7 @@ import cockpit from "cockpit";
 import { MachineTerminal } from "./MachineTerminal.jsx";
 import { MachineLogs } from "./MachineLogs.jsx";
 import { ExportMachineDialog } from "./ExportMachineDialog.jsx";
+import { MachineVncInfo } from "./MachineVncInfo.jsx";
 
 const { gettext: _, format } = cockpit;
 
@@ -26,6 +27,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showLogs, setShowLogs] = useState(false);
     const [showExport, setShowExport] = useState(false);
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+    const [showVnc, setShowVnc] = useState(false);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -76,6 +78,12 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                                 onClick={() => { setOpen(false); setShowTerminal(true); }}
                             >
                                 {_("Open terminal")}
+                            </DropdownItem>
+                            <DropdownItem
+                                key="vnc"
+                                onClick={() => { setOpen(false); setShowVnc(true); }}
+                            >
+                                {_("Open display…")}
                             </DropdownItem>
                         </>
                     )}
@@ -131,6 +139,13 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                     machineName={name}
                     onClose={() => setShowLogs(false)}
                     onAddNotification={onAddNotification}
+                />
+            )}
+
+            {showVnc && (
+                <MachineVncInfo
+                    machine={machine}
+                    onClose={() => setShowVnc(false)}
                 />
             )}
 

@@ -80,7 +80,7 @@ export function MachineVncInfo({ machine, onClose }) {
                         padding: '0.75rem', borderRadius: '4px',
                         fontSize: '0.85rem', marginTop: '0.5rem',
                     }}>
-                        {`dnf install tigervnc-server openbox\nvncserver :1 -geometry 1920x1080 -depth 24`}
+                        {`dnf install tigervnc-server xorg-x11-twm xterm\nvncserver :1 -geometry 1920x1080 -depth 24`}
                     </pre>
                     <p style={{ marginTop: '0.75rem', fontSize: '0.9rem' }}>
                         {_("Open the .vnc file with Remmina, TigerVNC Viewer, or another VNC client.")}

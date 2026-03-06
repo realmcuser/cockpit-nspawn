@@ -104,6 +104,7 @@ const DESKTOP_CONFIG = {
     },
     kde: {
         session: 'plasma',
+        crbFirst: { almalinux: true, fedora: false },
         epelFirst: { almalinux: true, fedora: false },
         packages: [
             'tigervnc-server',
@@ -447,6 +448,16 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 }
                 if (!systemdReady)
                     append('Varning: systemd verkar inte klart — fortsätter ändå.\n');
+
+                // Enable CRB repo first if needed (AlmaLinux + KDE: deps not in base/EPEL)
+                if (deCfg.crbFirst?.[distro]) {
+                    append('Aktiverar CRB-repo...\n');
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'dnf', 'config-manager', '--set-enabled', 'crb'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+                }
 
                 // Install EPEL first if needed (AlmaLinux + XFCE/KDE)
                 if (deCfg.epelFirst?.[distro]) {

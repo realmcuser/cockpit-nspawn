@@ -555,3 +555,23 @@ msgstr "Skrivbordsmiljö installeras efter bootstrap"
 #: src/CreateMachineDialog.jsx:697
 msgid "The desktop environment is installed inside the running container after bootstrap. The container will be started automatically."
 msgstr "Skrivbordsmiljön installeras inuti den körande containern efter bootstrap. Containern startas automatiskt."
+
+#: src/CreateMachineDialog.jsx:703
+msgid "Enable automatic start at boot"
+msgstr "Aktivera automatisk start vid uppstart"
+
+#: src/EditNetworkDialog.jsx:115
+msgid "Change network: $0"
+msgstr "Ändra nätverk: $0"
+
+#: src/EditNetworkDialog.jsx:122
+msgid "Error"
+msgstr "Fel"
+
+#: src/EditNetworkDialog.jsx:147
+msgid "A shared NAT bridge (br-nspawn, 10.99.0.1/24) will be created on the host if it does not already exist."
+msgstr "En delad NAT-brygga (br-nspawn, 10.99.0.1/24) skapas på hosten om den inte redan finns."
+
+#: src/MachineActions.jsx:90
+msgid "Change network…"
+msgstr "Ändra nätverk…"

@@ -18,6 +18,7 @@ import { MachineTerminal } from "./MachineTerminal.jsx";
 import { MachineLogs } from "./MachineLogs.jsx";
 import { ExportMachineDialog } from "./ExportMachineDialog.jsx";
 import { MachineVncInfo } from "./MachineVncInfo.jsx";
+import { EditNetworkDialog } from "./EditNetworkDialog.jsx";
 
 const { gettext: _, format } = cockpit;
 
@@ -28,6 +29,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showExport, setShowExport] = useState(false);
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
     const [showVnc, setShowVnc] = useState(false);
+    const [showEditNetwork, setShowEditNetwork] = useState(false);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -116,6 +118,17 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                         <>
                             <Divider />
                             <DropdownItem
+                                key="edit-network"
+                                onClick={() => { setOpen(false); setShowEditNetwork(true); }}
+                            >
+                                {_("Change network…")}
+                            </DropdownItem>
+                        </>
+                    )}
+                    {!isRunning && (
+                        <>
+                            <Divider />
+                            <DropdownItem
                                 key="remove"
                                 onClick={() => { setOpen(false); setShowRemoveConfirm(true); }}
                                 style={{ color: "#c9190b" }}
@@ -146,6 +159,13 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 <MachineVncInfo
                     machine={machine}
                     onClose={() => setShowVnc(false)}
+                />
+            )}
+
+            {showEditNetwork && (
+                <EditNetworkDialog
+                    machineName={name}
+                    onClose={() => setShowEditNetwork(false)}
                 />
             )}
 

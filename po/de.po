@@ -551,3 +551,23 @@ msgstr "Desktop-Umgebung wird nach Bootstrap installiert"
 #: src/CreateMachineDialog.jsx:697
 msgid "The desktop environment is installed inside the running container after bootstrap. The container will be started automatically."
 msgstr "Die Desktop-Umgebung wird nach dem Bootstrap im laufenden Container installiert. Der Container wird automatisch gestartet."
+
+#: src/CreateMachineDialog.jsx:703
+msgid "Enable automatic start at boot"
+msgstr "Automatischen Start beim Booten aktivieren"
+
+#: src/EditNetworkDialog.jsx:115
+msgid "Change network: $0"
+msgstr "Netzwerk ändern: $0"
+
+#: src/EditNetworkDialog.jsx:122
+msgid "Error"
+msgstr "Fehler"
+
+#: src/EditNetworkDialog.jsx:147
+msgid "A shared NAT bridge (br-nspawn, 10.99.0.1/24) will be created on the host if it does not already exist."
+msgstr "Eine gemeinsame NAT-Brücke (br-nspawn, 10.99.0.1/24) wird auf dem Host erstellt, falls sie noch nicht vorhanden ist."
+
+#: src/MachineActions.jsx:90
+msgid "Change network…"
+msgstr "Netzwerk ändern…"

@@ -118,6 +118,7 @@ const DESKTOP_CONFIG = {
     },
     gnome: {
         session: 'gnome-xorg',
+        crbFirst: { almalinux: true, fedora: false },
         epelFirst: { almalinux: false, fedora: false },
         packages: [
             'tigervnc-server',

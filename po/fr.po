@@ -656,3 +656,15 @@ msgstr "Plus d'info sur la limite mémoire"
 #: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
 msgid "More info for CPU quota"
 msgstr "Plus d'info sur le quota CPU"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston (Wayland)"
+msgstr "Weston (Wayland)"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston: minimal Wayland desktop"
+msgstr "Weston : bureau Wayland minimal"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston provides a minimal Wayland compositor accessible via RDP (port 3389). A terminal (weston-terminal) is available on the desktop. XFCE, KDE, and GNOME require X11 and are not available on Fedora 40+."
+msgstr "Weston fournit un compositeur Wayland minimal accessible via RDP (port 3389). Un terminal (weston-terminal) est disponible sur le bureau. XFCE, KDE et GNOME nécessitent X11 et ne sont pas disponibles sur Fedora 40+."

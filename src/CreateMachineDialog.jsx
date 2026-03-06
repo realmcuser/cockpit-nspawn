@@ -136,6 +136,15 @@ const DESKTOP_CONFIG = {
             'gnome-session', 'gnome-shell', 'gnome-terminal',
         ],
     },
+    weston: {
+        westonMode: true,
+        epelFirst: { almalinux: false, fedora: false },
+        crbFirst: { almalinux: false, fedora: false },
+        // Weston: standalone Wayland compositor with built-in RDP server (FreeRDP).
+        // Only offered for Fedora 40+ where X11-based DEs (xrdp) are no longer viable.
+        isAvailable: (distro, version) => distro === 'fedora' && Number(version) >= 40,
+        packages: ['weston', 'openssl'],
+    },
 };
 
 function detectFormat(url) {
@@ -519,26 +528,72 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     { superuser: 'require', err: 'out' }
                 ).stream(append);
 
-                // Configure xrdp: write startwm.sh with the DE start command.
-                // xrdp calls this script to launch the desktop session per connection.
-                const startwm = `#!/bin/sh\nexec ${deCfg.startCommand}\n`;
-                await cockpit.file(
-                    `/var/lib/machines/${name}/etc/xrdp/startwm.sh`,
-                    { superuser: 'require' }
-                ).replace(startwm);
-                await cockpit.spawn(
-                    ['chmod', '+x', `/var/lib/machines/${name}/etc/xrdp/startwm.sh`],
-                    { superuser: 'require' }
-                );
+                if (deCfg.westonMode) {
+                    // Generate self-signed TLS cert for Weston's FreeRDP backend
+                    append('Genererar TLS-certifikat för Weston RDP...\n');
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'openssl', 'req', '-x509', '-newkey', 'rsa:2048',
+                         '-keyout', '/etc/weston-rdp-tls.key',
+                         '-out', '/etc/weston-rdp-tls.crt',
+                         '-days', '3650', '-nodes', '-subj', '/CN=weston-rdp'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
 
-                // Enable xrdp service inside the container
-                await cockpit.spawn(
-                    ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                     'systemctl', 'enable', '--now', 'xrdp'],
-                    { superuser: 'require', err: 'out' }
-                ).stream(append);
+                    // Write weston-rdp.service
+                    const westonService = [
+                        '[Unit]',
+                        'Description=Weston RDP compositor',
+                        'After=network.target',
+                        '',
+                        '[Service]',
+                        'Type=simple',
+                        'User=root',
+                        'Environment=XDG_RUNTIME_DIR=/run/user/0',
+                        'Environment=HOME=/root',
+                        'ExecStartPre=/bin/mkdir -p /run/user/0',
+                        'ExecStart=/usr/bin/weston --backend=rdp --rdp-tls-cert=/etc/weston-rdp-tls.crt --rdp-tls-key=/etc/weston-rdp-tls.key --port=3389 --width=1920 --height=1080 --no-resizeable',
+                        'Restart=on-failure',
+                        '',
+                        '[Install]',
+                        'WantedBy=multi-user.target',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/etc/systemd/system/weston-rdp.service`,
+                        { superuser: 'require' }
+                    ).replace(westonService);
 
-                append(`\nSkrivbordsmiljö installerad. RDP-server kör på port 3389.\n`);
+                    // Enable and start weston-rdp
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'systemctl', 'enable', '--now', 'weston-rdp'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+
+                    append(`\nWeston RDP-server kör på port 3389.\n`);
+                } else {
+                    // Configure xrdp: write startwm.sh with the DE start command.
+                    // xrdp calls this script to launch the desktop session per connection.
+                    const startwm = `#!/bin/sh\nexec ${deCfg.startCommand}\n`;
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/etc/xrdp/startwm.sh`,
+                        { superuser: 'require' }
+                    ).replace(startwm);
+                    await cockpit.spawn(
+                        ['chmod', '+x', `/var/lib/machines/${name}/etc/xrdp/startwm.sh`],
+                        { superuser: 'require' }
+                    );
+
+                    // Enable xrdp service inside the container
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'systemctl', 'enable', '--now', 'xrdp'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+
+                    append(`\nSkrivbordsmiljö installerad. RDP-server kör på port 3389.\n`);
+                }
             }
 
             append(`\n=== Klar! Container ${name} skapad ===\n`);
@@ -739,9 +794,17 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     isDisabled={running || DESKTOP_CONFIG.kde.isAvailable?.(distro, version) === false}
                                 />
                                 <Radio
-                                    id="de-gnome" name="boot-desktop" label="GNOME"
+                                    id="de-gnome" name="boot-desktop"
+                                    label={DESKTOP_CONFIG.gnome.isAvailable?.(distro, version) === false ? "GNOME (" + _("not available for this version") + ")" : "GNOME"}
                                     isChecked={desktop === 'gnome'} onChange={() => setDesktop('gnome')}
-                                    isDisabled={running}
+                                    isDisabled={running || DESKTOP_CONFIG.gnome.isAvailable?.(distro, version) === false}
+                                />
+                                <Radio
+                                    id="de-weston" name="boot-desktop"
+                                    label={DESKTOP_CONFIG.weston.isAvailable?.(distro, version) === false ? "Weston (" + _("not available for this version") + ")" : _("Weston (Wayland)")}
+                                    isChecked={desktop === 'weston'}
+                                    onChange={() => setDesktop('weston')}
+                                    isDisabled={running || DESKTOP_CONFIG.weston.isAvailable?.(distro, version) === false}
                                 />
                             </FormGroup>
 
@@ -750,6 +813,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     title={_("KDE Plasma availability on AlmaLinux")}
                                 >
                                     {_("KDE Plasma is not officially supported on AlmaLinux. Installation requires EPEL and may result in an older Plasma version.")}
+                                </Alert>
+                            )}
+
+                            {desktop === 'weston' && (
+                                <Alert isInline variant="info"
+                                    title={_("Weston: minimal Wayland desktop")}
+                                >
+                                    {_("Weston provides a minimal Wayland compositor accessible via RDP (port 3389). A terminal (weston-terminal) is available on the desktop. XFCE, KDE, and GNOME require X11 and are not available on Fedora 40+.")}
                                 </Alert>
                             )}
 

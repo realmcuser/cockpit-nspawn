@@ -36,13 +36,13 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 
 Desktop environments are bootstrapped via DNF and use **xrdp** for remote access (port 3389). VNC is not used — xrdp is encrypted by default and works with all major RDP clients including the Windows built-in client.
 
-| Distribution | XFCE | KDE Plasma | GNOME |
-|---|---|---|---|
-| AlmaLinux 9 | ✅ | ✅ | ✅ |
-| AlmaLinux 10 | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet |
-| Fedora 43 | ✅ | ❌ Plasma 6 is Wayland-only | 🔲 untested |
+| Distribution | XFCE | KDE Plasma | GNOME | Weston (Wayland) |
+|---|---|---|---|---|
+| AlmaLinux 9 | ✅ | ✅ | ✅ | ❌ not offered |
+| AlmaLinux 10 | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not offered |
+| Fedora 43 | ❌ xrdp requires X11 | ❌ Plasma 6 is Wayland-only | ❌ xrdp requires X11 | ✅ |
 
-KDE Plasma 6 (Fedora 40+) dropped X11 support and is therefore incompatible with xrdp's X11 backend. GNOME on Fedora 43 likely works but has not been tested.
+KDE Plasma 6 (Fedora 40+) dropped X11 support, making it incompatible with xrdp's X11 backend. Weston is the viable path for graphical containers on Fedora 40+: it is a standalone Wayland compositor with a built-in FreeRDP/RDP server, no GPU required, and works headlessly in containers. Users get a terminal (weston-terminal) on the desktop and can launch any Wayland-native application from it.
 
 ## Tested On
 

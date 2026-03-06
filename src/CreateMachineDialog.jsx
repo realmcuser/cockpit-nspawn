@@ -124,6 +124,8 @@ const DESKTOP_CONFIG = {
         session: 'gnome-xorg',
         crbFirst: { almalinux: true, fedora: false },
         epelFirst: { almalinux: false, fedora: false },
+        // tigervnc-server was removed from RHEL 10 / AlmaLinux 10
+        isAvailable: (distro, version) => !(distro === 'almalinux' && Number(version) >= 10),
         packages: [
             'tigervnc-server',
             'gnome-session', 'gnome-shell', 'gnome-terminal',
@@ -689,6 +691,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                         </p>
                                     </Alert>
                                 </>
+                            )}
+
+                            {distro === 'almalinux' && Number(version) >= 10 && (
+                                <Alert isInline variant="info"
+                                    title={_("Desktop environments not available for AlmaLinux 10")}
+                                >
+                                    {_("TigerVNC (tigervnc-server) was removed from RHEL 10 and AlmaLinux 10. Desktop environment bootstrap requires VNC and is not supported for this version.")}
+                                </Alert>
                             )}
 
                             <FormGroup role="group" isInline fieldId="boot-desktop" label={_("Desktop environment")}>

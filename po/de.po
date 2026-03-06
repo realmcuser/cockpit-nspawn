@@ -605,6 +605,14 @@ msgstr "Ressourcengrenzen: $0"
 msgid "not available for this version"
 msgstr "für diese Version nicht verfügbar"
 
+#: src/CreateMachineDialog.jsx
+msgid "Desktop environments not available for AlmaLinux 10"
+msgstr "Desktop-Umgebungen für AlmaLinux 10 nicht verfügbar"
+
+#: src/CreateMachineDialog.jsx
+msgid "TigerVNC (tigervnc-server) was removed from RHEL 10 and AlmaLinux 10. Desktop environment bootstrap requires VNC and is not supported for this version."
+msgstr "TigerVNC (tigervnc-server) wurde aus RHEL 10 und AlmaLinux 10 entfernt. Das Bootstrap einer Desktop-Umgebung erfordert VNC und wird für diese Version nicht unterstützt."
+
 #: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
 msgid "Maximum RAM the container may use. If the limit is exceeded, processes inside the container are killed by the OOM killer."
 msgstr "Maximaler RAM, den der Container verwenden darf. Wird das Limit überschritten, werden Prozesse im Container vom OOM-Killer beendet."

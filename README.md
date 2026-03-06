@@ -23,14 +23,26 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 - Open a shell inside a running container
 - Stream live logs from the container via journald
 - Create containers via DNF bootstrap (AlmaLinux, Fedora), URL pull, or clone
-  - Optional desktop environment at bootstrap: XFCE, KDE Plasma, or GNOME — installed inside the running container automatically, with TigerVNC configured and started via systemd
+  - Optional desktop environment at bootstrap: XFCE, KDE Plasma, or GNOME — installed inside the running container automatically, with xrdp configured and started via systemd
   - Network mode: Bridge (own LAN IP) or NAT (shared NetworkManager bridge, 10.99.0.1/24)
   - Autostart at boot, root password, optional autostart
 - Change network mode (NAT ↔ Bridge) on stopped containers
-- Open display — shows VNC connection info and downloads a `.vnc` file for Remmina, TigerVNC Viewer, etc.
+- Open display — shows RDP connection info and downloads a `.rdp` file that opens directly in Windows Remote Desktop (mstsc.exe), Remmina, or xfreerdp. RDP is encrypted by default.
 - Export containers as tarballs with direct browser download streaming
 - Enable/disable autostart at boot per container
 - Interface available in English, Swedish, German, French, and Spanish
+
+## Desktop Environment Support
+
+Desktop environments are bootstrapped via DNF and use **xrdp** for remote access (port 3389). VNC is not used — xrdp is encrypted by default and works with all major RDP clients including the Windows built-in client.
+
+| Distribution | XFCE | KDE Plasma | GNOME |
+|---|---|---|---|
+| AlmaLinux 9 | ✅ | ✅ | ✅ |
+| AlmaLinux 10 | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet |
+| Fedora 43 | ✅ | ❌ Plasma 6 is Wayland-only | 🔲 untested |
+
+KDE Plasma 6 (Fedora 40+) dropped X11 support and is therefore incompatible with xrdp's X11 backend. GNOME on Fedora 43 likely works but has not been tested.
 
 ## Tested On
 

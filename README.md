@@ -23,7 +23,13 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 - Open a shell inside a running container
 - Stream live logs from the container via journald
 - Create containers via DNF bootstrap (AlmaLinux, Fedora), URL pull, or clone
+  - Optional desktop environment at bootstrap: XFCE, KDE Plasma, or GNOME — installed inside the running container automatically, with TigerVNC configured and started via systemd
+  - Network mode: Bridge (own LAN IP) or NAT (shared NetworkManager bridge, 10.99.0.1/24)
+  - Autostart at boot, root password, optional autostart
+- Change network mode (NAT ↔ Bridge) on stopped containers
+- Open display — shows VNC connection info and downloads a `.vnc` file for Remmina, TigerVNC Viewer, etc.
 - Export containers as tarballs with direct browser download streaming
+- Enable/disable autostart at boot per container
 - Interface available in English, Swedish, German, French, and Spanish
 
 ## Tested On

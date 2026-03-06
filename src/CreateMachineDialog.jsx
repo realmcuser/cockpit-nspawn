@@ -129,8 +129,12 @@ const DESKTOP_CONFIG = {
         startCommand: 'gnome-session',
         epelFirst: { almalinux: true, fedora: false },
         crbFirst: { almalinux: true, fedora: false },
-        // xrdp + GNOME not yet available in EPEL 10 (as of early 2026)
-        isAvailable: (distro, version) => !(distro === 'almalinux' && Number(version) >= 10),
+        // xrdp + GNOME not yet available in EPEL 10; GNOME 47+ (Fedora 40+) is Wayland-only
+        isAvailable: (distro, version) => {
+            if (distro === 'almalinux' && Number(version) >= 10) return false;
+            if (distro === 'fedora' && Number(version) >= 40) return false;
+            return true;
+        },
         packages: [
             'xrdp', 'xorgxrdp',
             'gnome-session', 'gnome-shell', 'gnome-terminal',
@@ -574,7 +578,9 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     append(`\nWeston RDP-server kör på port 3389.\n`);
                 } else {
                     // Configure xrdp: write startwm.sh with the DE start command.
-                    // xrdp calls this script to launch the desktop session per connection.
+                    // xrdp's default startwm-bash.sh sources /usr/libexec/xrdp/startwm.sh
+                    // which goes through /etc/X11/xinit/Xsession — it does NOT read
+                    // /etc/xrdp/startwm.sh. We patch sesman.ini to use ours directly.
                     const startwm = `#!/bin/sh\nexec ${deCfg.startCommand}\n`;
                     await cockpit.file(
                         `/var/lib/machines/${name}/etc/xrdp/startwm.sh`,
@@ -583,6 +589,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     await cockpit.spawn(
                         ['chmod', '+x', `/var/lib/machines/${name}/etc/xrdp/startwm.sh`],
                         { superuser: 'require' }
+                    );
+
+                    // Patch sesman.ini: point DefaultWindowManager at our script
+                    await cockpit.spawn(
+                        ['sed', '-i',
+                         's|^DefaultWindowManager=.*|DefaultWindowManager=/etc/xrdp/startwm.sh|',
+                         `/var/lib/machines/${name}/etc/xrdp/sesman.ini`],
+                        { superuser: 'require', err: 'out' }
                     );
 
                     // Enable xrdp service inside the container

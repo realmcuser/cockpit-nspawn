@@ -520,13 +520,13 @@ msgstr "Copié"
 msgid "Download $0.vnc"
 msgstr "Télécharger $0.vnc"
 
-#: src/MachineVncInfo.jsx:77
-msgid "Requirements inside the container:"
-msgstr "Prérequis dans le conteneur :"
-
-#: src/MachineVncInfo.jsx:86
+#: src/MachineVncInfo.jsx:79
 msgid "Open the .vnc file with Remmina, TigerVNC Viewer, or another VNC client."
 msgstr "Ouvrez le fichier .vnc avec Remmina, TigerVNC Viewer ou un autre client VNC."
+
+#: src/MachineVncInfo.jsx:83
+msgid "Manual VNC setup (if not using bootstrap)"
+msgstr "Configuration VNC manuelle (sans utiliser le bootstrap)"
 
 #: src/CreateMachineDialog.jsx:662
 msgid "Desktop environment"

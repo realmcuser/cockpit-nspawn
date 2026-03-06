@@ -74,17 +74,21 @@ export function MachineVncInfo({ machine, onClose }) {
                 )}
 
                 <div style={{ marginTop: '1.5rem' }}>
-                    <p><strong>{_("Requirements inside the container:")}</strong></p>
-                    <pre style={{
-                        background: '#1a1a1a', color: '#f0f0f0',
-                        padding: '0.75rem', borderRadius: '4px',
-                        fontSize: '0.85rem', marginTop: '0.5rem',
-                    }}>
-                        {`# Minimal (alla distros, standardrepos):\ndnf install tigervnc-server xorg-x11-twm xterm\n\n# XFCE (AlmaLinux 9/10 via EPEL, Fedora standardrepos):\ndnf install epel-release   # endast AlmaLinux\ndnf install tigervnc-server xfce4-session xfwm4 xfce4-panel\n\n# LXQt (Fedora-containers):\ndnf install tigervnc-server lxqt-session lxqt-panel openbox\n\n# Starta VNC-session (display :1 = port 5901):\nvncserver :1 -geometry 1920x1080 -depth 24`}
-                    </pre>
-                    <p style={{ marginTop: '0.75rem', fontSize: '0.9rem' }}>
+                    <p style={{ marginBottom: '0.5rem' }}>
                         {_("Open the .vnc file with Remmina, TigerVNC Viewer, or another VNC client.")}
                     </p>
+                    <details>
+                        <summary style={{ cursor: 'pointer', fontSize: '0.9rem', color: 'var(--pf-v5-global--Color--200)' }}>
+                            {_("Manual VNC setup (if not using bootstrap)")}
+                        </summary>
+                        <pre style={{
+                            background: '#1a1a1a', color: '#f0f0f0',
+                            padding: '0.75rem', borderRadius: '4px',
+                            fontSize: '0.85rem', marginTop: '0.5rem',
+                        }}>
+                            {`# 1. Install inside the container:\ndnf install tigervnc-server xfce4-session xfwm4 xfce4-panel xfce4-terminal\n\n# 2. Configure VNC (~/.vnc/config):\necho -e "session=xfce\\ngeometry=1920x1080\\ndepth=24\\nalwaysshared\\nSecurityTypes=None" > ~/.vnc/config\n\n# 3. Set VNC user (/etc/tigervnc/vncserver.users):\necho ":1=root" > /etc/tigervnc/vncserver.users\n\n# 4. Enable and start:\nsystemctl enable --now vncserver@:1`}
+                        </pre>
+                    </details>
                 </div>
             </ModalBody>
             <ModalFooter>

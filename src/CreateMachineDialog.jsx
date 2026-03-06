@@ -473,7 +473,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 await cockpit.file(
                     `/var/lib/machines/${name}/root/.vnc/config`,
                     { superuser: 'require' }
-                ).replace(`session=${deCfg.session}\ngeometry=1920x1080\ndepth=24\nalwaysshared\n`);
+                ).replace(`session=${deCfg.session}\ngeometry=1920x1080\ndepth=24\nalwaysshared\nSecurityTypes=None\n`);
 
                 await cockpit.file(
                     `/var/lib/machines/${name}/etc/tigervnc/vncserver.users`,

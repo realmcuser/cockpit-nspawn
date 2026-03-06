@@ -449,22 +449,16 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 if (!systemdReady)
                     append('Varning: systemd verkar inte klart — fortsätter ändå.\n');
 
-                // Enable CRB repo first if needed (AlmaLinux + KDE: deps not in base/EPEL)
-                if (deCfg.crbFirst?.[distro]) {
-                    append('Aktiverar CRB-repo...\n');
-                    await cockpit.spawn(
-                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                         'dnf', 'config-manager', '--set-enabled', 'crb'],
-                        { superuser: 'require', err: 'out' }
-                    ).stream(append);
-                }
-
                 // Install EPEL first if needed (AlmaLinux + XFCE/KDE)
+                // Pass --enablerepo=crb when CRB is needed (AlmaLinux + KDE)
+                // — avoids needing dnf-plugins-core just for config-manager
+                const crbArgs = deCfg.crbFirst?.[distro] ? ['--enablerepo=crb'] : [];
+
                 if (deCfg.epelFirst?.[distro]) {
                     append('Installerar EPEL...\n');
                     await cockpit.spawn(
                         ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                         'dnf', 'install', '-y', 'epel-release'],
+                         'dnf', 'install', '-y', ...crbArgs, 'epel-release'],
                         { superuser: 'require', err: 'out' }
                     ).stream(append);
                 }
@@ -472,7 +466,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 // Install DE packages inside the running container
                 await cockpit.spawn(
                     ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                     'dnf', 'install', '-y', ...deCfg.packages],
+                     'dnf', 'install', '-y', ...crbArgs, ...deCfg.packages],
                     { superuser: 'require', err: 'out' }
                 ).stream(append);
 

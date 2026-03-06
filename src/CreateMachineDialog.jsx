@@ -316,25 +316,19 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
             // Ensure /etc/shadow exists first (sysusers may not create it).
             if (rootPassword) {
                 append('\n=== Sätter root-lösenord ===\n');
-
-                // Ensure /etc/shadow exists (create minimal version if absent)
                 const shadowPath = `${machineRoot}/etc/shadow`;
+
+                // Ensure /etc/shadow exists — write minimal entry if absent
                 try {
                     await cockpit.spawn(['test', '-f', shadowPath], { superuser: 'require' });
-                } catch (_) {
+                } catch (noShadow) {
                     append('Skapar /etc/shadow...\n');
-                    await cockpit.spawn(
-                        ['chroot', machineRoot, '/usr/sbin/pwconv'],
-                        { superuser: 'require', err: 'out' }
-                    ).catch(() =>
-                        cockpit.file(shadowPath, { superuser: 'require' })
-                            .replace('root:!:19000:0:99999:7:::\n')
-                    );
+                    await cockpit.file(shadowPath, { superuser: 'require' })
+                        .replace('root:!:19000:0:99999:7:::\n');
                 }
 
-                // Write password to a temp file and redirect from it — using
-                // cockpit.spawn's input: option with superuser: 'require' does
-                // not reliably close stdin, causing openssl -stdin to hang.
+                // Generate SHA-512 hash via openssl and write to /etc/shadow.
+                // Pass password via temp file — stdin approach hangs with superuser.
                 const tmpFile = '/tmp/.cockpit-nspawn-pw';
                 try {
                     await cockpit.file(tmpFile, { superuser: 'require' }).replace(rootPassword);
@@ -347,10 +341,12 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         ['sed', '-i', `s|^root:[^:]*:|root:${hash.trim()}:|`, shadowPath],
                         { superuser: 'require', err: 'out' }
                     );
+                    append('Root-lösenord satt.\n');
+                } catch (pwErr) {
+                    append(`Varning: kunde inte sätta lösenord (${pwErr.message}) — sätt det manuellt.\n`);
                 } finally {
                     await cockpit.spawn(['rm', '-f', tmpFile], { superuser: 'require' }).catch(() => {});
                 }
-                append('Root-lösenord satt.\n');
             }
 
             // Step 4: write .nspawn config
@@ -538,7 +534,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     { superuser: 'require', err: 'ignore' }
                 );
                 if (log.trim()) append(`\n--- dnf5.log (fel-rader) ---\n${log}\n`);
-            } catch (_) { /* log not present */ }
+            } catch (logErr) { /* log not present */ }
             setError(ex.message || 'Bootstrap misslyckades');
             setRunning(false);
         }

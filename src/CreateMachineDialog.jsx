@@ -466,14 +466,17 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 ).stream(append);
 
                 // Write VNC config files directly into container filesystem
+                // Use ~/.config/tigervnc/config (new path, TigerVNC 1.12+)
+                // ~/.vnc/config is deprecated and SecurityTypes is ignored there
                 await cockpit.spawn(
-                    ['mkdir', '-p', `/var/lib/machines/${name}/root/.vnc`],
+                    ['mkdir', '-p', `/var/lib/machines/${name}/root/.config/tigervnc`],
                     { superuser: 'require' }
                 );
+                const vncConfig = `session=${deCfg.session}\ngeometry=1920x1080\ndepth=24\nalwaysshared\nSecurityTypes=None\n`;
                 await cockpit.file(
-                    `/var/lib/machines/${name}/root/.vnc/config`,
+                    `/var/lib/machines/${name}/root/.config/tigervnc/config`,
                     { superuser: 'require' }
-                ).replace(`session=${deCfg.session}\ngeometry=1920x1080\ndepth=24\nalwaysshared\nSecurityTypes=None\n`);
+                ).replace(vncConfig);
 
                 await cockpit.file(
                     `/var/lib/machines/${name}/etc/tigervnc/vncserver.users`,

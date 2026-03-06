@@ -17,7 +17,7 @@ import cockpit from "cockpit";
 import { MachineTerminal } from "./MachineTerminal.jsx";
 import { MachineLogs } from "./MachineLogs.jsx";
 import { ExportMachineDialog } from "./ExportMachineDialog.jsx";
-import { MachineVncInfo } from "./MachineVncInfo.jsx";
+import { MachineRdpInfo } from "./MachineRdpInfo.jsx";
 import { EditNetworkDialog } from "./EditNetworkDialog.jsx";
 import { EditResourcesDialog } from "./EditResourcesDialog.jsx";
 
@@ -29,7 +29,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showLogs, setShowLogs] = useState(false);
     const [showExport, setShowExport] = useState(false);
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-    const [showVnc, setShowVnc] = useState(false);
+    const [showRdp, setShowRdp] = useState(false);
     const [showEditNetwork, setShowEditNetwork] = useState(false);
     const [showEditResources, setShowEditResources] = useState(false);
 
@@ -84,8 +84,8 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                                 {_("Open terminal")}
                             </DropdownItem>
                             <DropdownItem
-                                key="vnc"
-                                onClick={() => { setOpen(false); setShowVnc(true); }}
+                                key="rdp"
+                                onClick={() => { setOpen(false); setShowRdp(true); }}
                             >
                                 {_("Open display…")}
                             </DropdownItem>
@@ -163,10 +163,10 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 />
             )}
 
-            {showVnc && (
-                <MachineVncInfo
+            {showRdp && (
+                <MachineRdpInfo
                     machine={machine}
-                    onClose={() => setShowVnc(false)}
+                    onClose={() => setShowRdp(false)}
                 />
             )}
 

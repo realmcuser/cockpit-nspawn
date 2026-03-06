@@ -96,22 +96,22 @@ const DISTRO_TEMPLATES = {
 // ----------------------------------------------------------------
 const DESKTOP_CONFIG = {
     xfce: {
-        session: 'xfce',
-        crbFirst: { almalinux: true, fedora: false },
+        startCommand: 'startxfce4',
         epelFirst: { almalinux: true, fedora: false },
-        // XFCE not yet available in EPEL 10 (as of early 2026)
+        crbFirst: { almalinux: true, fedora: false },
+        // xrdp + XFCE not yet available in EPEL 10 (as of early 2026)
         isAvailable: (distro, version) => !(distro === 'almalinux' && Number(version) >= 10),
         packages: [
-            'tigervnc-server',
+            'xrdp', 'xorgxrdp',
             'xfce4-session', 'xfwm4', 'xfce4-panel',
             'xfdesktop', 'xfce4-terminal',
         ],
     },
     kde: {
-        session: 'plasma',
-        crbFirst: { almalinux: true, fedora: false },
+        startCommand: 'startplasma-x11',
         epelFirst: { almalinux: true, fedora: false },
-        // KDE Plasma 6 (Fedora 40+) is Wayland-only — no X11 session, incompatible with Xvnc
+        crbFirst: { almalinux: true, fedora: false },
+        // KDE Plasma 6 (Fedora 40+) is Wayland-only — no startplasma-x11, incompatible with xrdp
         // KDE not yet available in EPEL 10 (as of early 2026)
         isAvailable: (distro, version) => {
             if (distro === 'almalinux' && Number(version) >= 10) return false;
@@ -120,19 +120,19 @@ const DESKTOP_CONFIG = {
         },
         almalinuxWarning: true,
         packages: [
-            'tigervnc-server',
+            'xrdp', 'xorgxrdp',
             'plasma-desktop', 'plasma-workspace',
             'kde-settings-plasma', 'konsole',
         ],
     },
     gnome: {
-        session: 'gnome-xorg',
+        startCommand: 'gnome-session',
+        epelFirst: { almalinux: true, fedora: false },
         crbFirst: { almalinux: true, fedora: false },
-        epelFirst: { almalinux: false, fedora: false },
-        // tigervnc-server was removed from RHEL 10 / AlmaLinux 10
+        // xrdp + GNOME not yet available in EPEL 10 (as of early 2026)
         isAvailable: (distro, version) => !(distro === 'almalinux' && Number(version) >= 10),
         packages: [
-            'tigervnc-server',
+            'xrdp', 'xorgxrdp',
             'gnome-session', 'gnome-shell', 'gnome-terminal',
         ],
     },
@@ -519,32 +519,26 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     { superuser: 'require', err: 'out' }
                 ).stream(append);
 
-                // Write VNC config files directly into container filesystem
-                // Use ~/.config/tigervnc/config (new path, TigerVNC 1.12+)
-                // ~/.vnc/config is deprecated and SecurityTypes is ignored there
+                // Configure xrdp: write startwm.sh with the DE start command.
+                // xrdp calls this script to launch the desktop session per connection.
+                const startwm = `#!/bin/sh\nexec ${deCfg.startCommand}\n`;
+                await cockpit.file(
+                    `/var/lib/machines/${name}/etc/xrdp/startwm.sh`,
+                    { superuser: 'require' }
+                ).replace(startwm);
                 await cockpit.spawn(
-                    ['mkdir', '-p', `/var/lib/machines/${name}/root/.config/tigervnc`],
+                    ['chmod', '+x', `/var/lib/machines/${name}/etc/xrdp/startwm.sh`],
                     { superuser: 'require' }
                 );
-                const vncConfig = `session=${deCfg.session}\ngeometry=1920x1080\ndepth=24\nalwaysshared\nSecurityTypes=None\n`;
-                await cockpit.file(
-                    `/var/lib/machines/${name}/root/.config/tigervnc/config`,
-                    { superuser: 'require' }
-                ).replace(vncConfig);
 
-                await cockpit.file(
-                    `/var/lib/machines/${name}/etc/tigervnc/vncserver.users`,
-                    { superuser: 'require' }
-                ).replace(':1=root\n');
-
-                // Enable and start VNC service inside the container
+                // Enable xrdp service inside the container
                 await cockpit.spawn(
                     ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                     'systemctl', 'enable', '--now', 'vncserver@:1'],
+                     'systemctl', 'enable', '--now', 'xrdp'],
                     { superuser: 'require', err: 'out' }
                 ).stream(append);
 
-                append(`\nSkrivbordsmiljö installerad. VNC-server kör på port 5901.\n`);
+                append(`\nSkrivbordsmiljö installerad. RDP-server kör på port 3389.\n`);
             }
 
             append(`\n=== Klar! Container ${name} skapad ===\n`);
@@ -720,7 +714,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 <Alert isInline variant="info"
                                     title={_("Desktop environments not available for AlmaLinux 10")}
                                 >
-                                    {_("TigerVNC (tigervnc-server) was removed from RHEL 10 and AlmaLinux 10. Desktop environment bootstrap requires VNC and is not supported for this version.")}
+                                    {_("Desktop environment packages (XFCE, KDE, GNOME) and xrdp are not yet available in EPEL 10. Desktop environment bootstrap is not supported for AlmaLinux 10.")}
                                 </Alert>
                             )}
 

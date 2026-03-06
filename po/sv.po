@@ -488,49 +488,53 @@ msgstr "Bootstrap skapar en delad NAT-bridge (br-nspawn, 10.99.0.1/24) på hoste
 msgid "Open display…"
 msgstr "Öppna display…"
 
-#: src/MachineVncInfo.jsx:41
-msgid "Display: $0"
-msgstr "Display: $0"
+#: src/MachineRdpInfo.jsx
+msgid "Remote Desktop: $0"
+msgstr "Fjärrskrivbord: $0"
 
-#: src/MachineVncInfo.jsx:45
+#: src/MachineRdpInfo.jsx
 msgid "No IP address available"
 msgstr "Ingen IP-adress tillgänglig"
 
-#: src/MachineVncInfo.jsx:47
+#: src/MachineRdpInfo.jsx
 msgid "The container does not have an IP address. Start it and wait a moment, then try again."
 msgstr "Containern har ingen IP-adress. Starta den och vänta en stund, försök sedan igen."
 
-#: src/MachineVncInfo.jsx:54
-msgid "VNC is unencrypted"
-msgstr "VNC är okrypterat"
-
-#: src/MachineVncInfo.jsx:56
-msgid "VNC does not encrypt the connection. Use only on trusted networks or via SSH tunnel."
-msgstr "VNC krypterar inte anslutningen. Använd bara på betrodda nätverk eller via SSH-tunnel."
-
-#: src/MachineVncInfo.jsx:61
+#: src/MachineRdpInfo.jsx
 msgid "Connection address"
 msgstr "Anslutningsadress"
 
-#: src/MachineVncInfo.jsx:63
+#: src/MachineRdpInfo.jsx
 msgid "Copy"
 msgstr "Kopiera"
 
-#: src/MachineVncInfo.jsx:63
+#: src/MachineRdpInfo.jsx
 msgid "Copied"
 msgstr "Kopierat"
 
-#: src/MachineVncInfo.jsx:71
-msgid "Download $0.vnc"
-msgstr "Ladda ner $0.vnc"
+#: src/MachineRdpInfo.jsx
+msgid "Username"
+msgstr "Användarnamn"
 
-#: src/MachineVncInfo.jsx:79
-msgid "Open the .vnc file with Remmina, TigerVNC Viewer, or another VNC client."
-msgstr "Öppna .vnc-filen med Remmina, TigerVNC Viewer eller en annan VNC-klient."
+#: src/MachineRdpInfo.jsx
+msgid "Password required"
+msgstr "Lösenord krävs"
 
-#: src/MachineVncInfo.jsx:83
-msgid "Manual VNC setup (if not using bootstrap)"
-msgstr "Manuell VNC-setup (om bootstrap inte användes)"
+#: src/MachineRdpInfo.jsx
+msgid "RDP uses system authentication. Connect with the root password set during bootstrap. RDP encrypts the connection by default."
+msgstr "RDP använder systemautentisering. Anslut med root-lösenordet som sattes under bootstrap. RDP krypterar anslutningen som standard."
+
+#: src/MachineRdpInfo.jsx
+msgid "Download $0.rdp"
+msgstr "Ladda ner $0.rdp"
+
+#: src/MachineRdpInfo.jsx
+msgid "Open the .rdp file with Windows Remote Desktop (mstsc.exe), Remmina, or xfreerdp."
+msgstr "Öppna .rdp-filen med Windows Fjärrskrivbord (mstsc.exe), Remmina eller xfreerdp."
+
+#: src/MachineRdpInfo.jsx
+msgid "Manual RDP setup (if not using bootstrap)"
+msgstr "Manuell RDP-setup (om bootstrap inte användes)"
 
 #: src/CreateMachineDialog.jsx:662
 msgid "Desktop environment"
@@ -614,8 +618,8 @@ msgid "Desktop environments not available for AlmaLinux 10"
 msgstr "Skrivbordsmiljöer ej tillgängliga för AlmaLinux 10"
 
 #: src/CreateMachineDialog.jsx
-msgid "TigerVNC (tigervnc-server) was removed from RHEL 10 and AlmaLinux 10. Desktop environment bootstrap requires VNC and is not supported for this version."
-msgstr "TigerVNC (tigervnc-server) togs bort från RHEL 10 och AlmaLinux 10. Bootstrap av skrivbordsmiljö kräver VNC och stöds inte för denna version."
+msgid "Desktop environment packages (XFCE, KDE, GNOME) and xrdp are not yet available in EPEL 10. Desktop environment bootstrap is not supported for AlmaLinux 10."
+msgstr "Skrivbordsmiljöpaket (XFCE, KDE, GNOME) och xrdp finns ännu inte i EPEL 10. Bootstrap av skrivbordsmiljö stöds inte för AlmaLinux 10."
 
 #: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
 msgid "Maximum RAM the container may use. If the limit is exceeded, processes inside the container are killed by the OOM killer."

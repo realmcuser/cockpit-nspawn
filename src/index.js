@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 import 'patternfly/patternfly-6-cockpit.scss';
+import 'cockpit-dark-theme';
 import './style.scss';
 
 import React from 'react';

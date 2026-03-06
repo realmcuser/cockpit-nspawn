@@ -466,8 +466,9 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 if (!systemdReady)
                     append('Varning: systemd verkar inte klart — fortsätter ändå.\n');
 
-                // Install EPEL first if needed (AlmaLinux + XFCE/KDE/GNOME)
-                if (deCfg.epelFirst?.[distro]) {
+                // Install EPEL if needed — also required when crbFirst is set,
+                // because /usr/bin/crb is provided by epel-release
+                if (deCfg.epelFirst?.[distro] || deCfg.crbFirst?.[distro]) {
                     append('Installerar EPEL...\n');
                     await cockpit.spawn(
                         ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
@@ -476,8 +477,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     ).stream(append);
                 }
 
-                // Enable CRB via /usr/bin/crb (installed by epel-release on AlmaLinux)
-                // --enablerepo=crb alone is insufficient on AlmaLinux 10
+                // Enable CRB via /usr/bin/crb (provided by epel-release on AlmaLinux)
                 if (deCfg.crbFirst?.[distro]) {
                     append('Aktiverar CRB-repo...\n');
                     await cockpit.spawn(

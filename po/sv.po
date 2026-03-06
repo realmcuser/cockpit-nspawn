@@ -575,3 +575,32 @@ msgstr "En delad NAT-brygga (br-nspawn, 10.99.0.1/24) skapas på hosten om den i
 #: src/MachineActions.jsx:90
 msgid "Change network…"
 msgstr "Ändra nätverk…"
+
+#: src/MachineActions.jsx:97
+msgid "Resource limits…"
+msgstr "Resursgränser…"
+
+#: src/CreateMachineDialog.jsx:710
+msgid "Memory limit"
+msgstr "Minnesgräns"
+
+#: src/CreateMachineDialog.jsx:711
+msgid "e.g. 2G, 512M — leave empty for unlimited"
+msgstr "t.ex. 2G, 512M — lämna tomt för obegränsat"
+
+#: src/CreateMachineDialog.jsx:718
+msgid "CPU quota"
+msgstr "CPU-kvot"
+
+#: src/CreateMachineDialog.jsx:719
+msgid "e.g. 100% = 1 core, 200% = 2 cores — leave empty for unlimited"
+msgstr "t.ex. 100% = 1 kärna, 200% = 2 kärnor — lämna tomt för obegränsat"
+
+#: src/CreateMachineDialog.jsx:722
+#: src/EditResourcesDialog.jsx:84
+msgid "unlimited"
+msgstr "obegränsat"
+
+#: src/EditResourcesDialog.jsx:70
+msgid "Resource limits: $0"
+msgstr "Resursgränser: $0"

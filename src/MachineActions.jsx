@@ -19,6 +19,7 @@ import { MachineLogs } from "./MachineLogs.jsx";
 import { ExportMachineDialog } from "./ExportMachineDialog.jsx";
 import { MachineVncInfo } from "./MachineVncInfo.jsx";
 import { EditNetworkDialog } from "./EditNetworkDialog.jsx";
+import { EditResourcesDialog } from "./EditResourcesDialog.jsx";
 
 const { gettext: _, format } = cockpit;
 
@@ -30,6 +31,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
     const [showVnc, setShowVnc] = useState(false);
     const [showEditNetwork, setShowEditNetwork] = useState(false);
+    const [showEditResources, setShowEditResources] = useState(false);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -123,6 +125,12 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                             >
                                 {_("Change network…")}
                             </DropdownItem>
+                            <DropdownItem
+                                key="edit-resources"
+                                onClick={() => { setOpen(false); setShowEditResources(true); }}
+                            >
+                                {_("Resource limits…")}
+                            </DropdownItem>
                         </>
                     )}
                     {!isRunning && (
@@ -166,6 +174,13 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 <EditNetworkDialog
                     machineName={name}
                     onClose={() => setShowEditNetwork(false)}
+                />
+            )}
+
+            {showEditResources && (
+                <EditResourcesDialog
+                    machineName={name}
+                    onClose={() => setShowEditResources(false)}
                 />
             )}
 

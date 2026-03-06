@@ -571,3 +571,32 @@ msgstr "Un pont NAT partagé (br-nspawn, 10.99.0.1/24) sera créé sur l'hôte s
 #: src/MachineActions.jsx:90
 msgid "Change network…"
 msgstr "Modifier le réseau…"
+
+#: src/MachineActions.jsx:97
+msgid "Resource limits…"
+msgstr "Limites de ressources…"
+
+#: src/CreateMachineDialog.jsx:710
+msgid "Memory limit"
+msgstr "Limite mémoire"
+
+#: src/CreateMachineDialog.jsx:711
+msgid "e.g. 2G, 512M — leave empty for unlimited"
+msgstr "p.ex. 2G, 512M — laisser vide pour illimité"
+
+#: src/CreateMachineDialog.jsx:718
+msgid "CPU quota"
+msgstr "Quota CPU"
+
+#: src/CreateMachineDialog.jsx:719
+msgid "e.g. 100% = 1 core, 200% = 2 cores — leave empty for unlimited"
+msgstr "p.ex. 100% = 1 cœur, 200% = 2 cœurs — laisser vide pour illimité"
+
+#: src/CreateMachineDialog.jsx:722
+#: src/EditResourcesDialog.jsx:84
+msgid "unlimited"
+msgstr "illimité"
+
+#: src/EditResourcesDialog.jsx:70
+msgid "Resource limits: $0"
+msgstr "Limites de ressources : $0"

@@ -151,6 +151,8 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
     const [network, setNetwork] = useState('private');
     const [bridgeName, setBridgeName] = useState('bridge0');
     const [desktop, setDesktop] = useState('none');
+    const [memoryMax, setMemoryMax] = useState('');
+    const [cpuQuota, setCpuQuota] = useState('');
     const [autoStart, setAutoStart] = useState(true);
     const [autoEnable, setAutoEnable] = useState(false);
 
@@ -345,14 +347,21 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
             append('\n=== Skriver nspawn-konfiguration ===\n');
             await cockpit.spawn(['mkdir', '-p', '/etc/systemd/nspawn'], { superuser: 'require', err: 'out' });
 
-            const nspawnContent = [
+            const nspawnLines = [
                 '[Exec]',
                 'Boot=yes',
                 '',
                 '[Network]',
                 network === 'bridge' ? `Bridge=${bridgeName.trim()}` : 'Bridge=br-nspawn',
                 '',
-            ].join('\n');
+            ];
+            if (memoryMax.trim() || cpuQuota.trim()) {
+                nspawnLines.push('[Resource]');
+                if (memoryMax.trim()) nspawnLines.push(`MemoryMax=${memoryMax.trim()}`);
+                if (cpuQuota.trim()) nspawnLines.push(`CPUQuota=${cpuQuota.trim()}`);
+                nspawnLines.push('');
+            }
+            const nspawnContent = nspawnLines.join('\n');
 
             await cockpit.file(`/etc/systemd/nspawn/${name}.nspawn`, { superuser: 'require' })
                 .replace(nspawnContent);
@@ -705,6 +714,27 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     {_("The desktop environment is installed inside the running container after bootstrap. The container will be started automatically.")}
                                 </Alert>
                             )}
+
+                            <FormGroup label={_("Memory limit")} fieldId="mem-max"
+                                helperText={_("e.g. 2G, 512M — leave empty for unlimited")}
+                            >
+                                <TextInput
+                                    id="mem-max" value={memoryMax}
+                                    onChange={(_e, v) => setMemoryMax(v)}
+                                    placeholder={_("unlimited")}
+                                    isDisabled={running}
+                                />
+                            </FormGroup>
+                            <FormGroup label={_("CPU quota")} fieldId="cpu-quota"
+                                helperText={_("e.g. 100% = 1 core, 200% = 2 cores — leave empty for unlimited")}
+                            >
+                                <TextInput
+                                    id="cpu-quota" value={cpuQuota}
+                                    onChange={(_e, v) => setCpuQuota(v)}
+                                    placeholder={_("unlimited")}
+                                    isDisabled={running}
+                                />
+                            </FormGroup>
 
                             <Checkbox
                                 id="auto-enable"

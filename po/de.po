@@ -571,3 +571,32 @@ msgstr "Eine gemeinsame NAT-Brücke (br-nspawn, 10.99.0.1/24) wird auf dem Host 
 #: src/MachineActions.jsx:90
 msgid "Change network…"
 msgstr "Netzwerk ändern…"
+
+#: src/MachineActions.jsx:97
+msgid "Resource limits…"
+msgstr "Ressourcengrenzen…"
+
+#: src/CreateMachineDialog.jsx:710
+msgid "Memory limit"
+msgstr "Speicherlimit"
+
+#: src/CreateMachineDialog.jsx:711
+msgid "e.g. 2G, 512M — leave empty for unlimited"
+msgstr "z.B. 2G, 512M — leer lassen für unbegrenzt"
+
+#: src/CreateMachineDialog.jsx:718
+msgid "CPU quota"
+msgstr "CPU-Kontingent"
+
+#: src/CreateMachineDialog.jsx:719
+msgid "e.g. 100% = 1 core, 200% = 2 cores — leave empty for unlimited"
+msgstr "z.B. 100% = 1 Kern, 200% = 2 Kerne — leer lassen für unbegrenzt"
+
+#: src/CreateMachineDialog.jsx:722
+#: src/EditResourcesDialog.jsx:84
+msgid "unlimited"
+msgstr "unbegrenzt"
+
+#: src/EditResourcesDialog.jsx:70
+msgid "Resource limits: $0"
+msgstr "Ressourcengrenzen: $0"

@@ -601,6 +601,10 @@ msgstr "unbegrenzt"
 msgid "Resource limits: $0"
 msgstr "Ressourcengrenzen: $0"
 
+#: src/CreateMachineDialog.jsx
+msgid "not available for this version"
+msgstr "für diese Version nicht verfügbar"
+
 #: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
 msgid "Maximum RAM the container may use. If the limit is exceeded, processes inside the container are killed by the OOM killer."
 msgstr "Maximaler RAM, den der Container verwenden darf. Wird das Limit überschritten, werden Prozesse im Container vom OOM-Killer beendet."

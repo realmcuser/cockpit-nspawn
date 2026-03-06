@@ -99,6 +99,8 @@ const DESKTOP_CONFIG = {
         session: 'xfce',
         crbFirst: { almalinux: true, fedora: false },
         epelFirst: { almalinux: true, fedora: false },
+        // XFCE not yet available in EPEL 10 (as of early 2026)
+        isAvailable: (distro, version) => !(distro === 'almalinux' && Number(version) >= 10),
         packages: [
             'tigervnc-server',
             'xfce4-session', 'xfwm4', 'xfce4-panel',
@@ -109,12 +111,14 @@ const DESKTOP_CONFIG = {
         session: 'plasma',
         crbFirst: { almalinux: true, fedora: false },
         epelFirst: { almalinux: true, fedora: false },
+        // KDE not yet available in EPEL 10 (as of early 2026)
+        isAvailable: (distro, version) => !(distro === 'almalinux' && Number(version) >= 10),
+        almalinuxWarning: true,
         packages: [
             'tigervnc-server',
             'plasma-desktop', 'plasma-workspace',
             'kde-settings-plasma', 'konsole',
         ],
-        almalinuxWarning: true,
     },
     gnome: {
         session: 'gnome-xorg',
@@ -694,14 +698,18 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     isDisabled={running}
                                 />
                                 <Radio
-                                    id="de-xfce" name="boot-desktop" label="XFCE"
-                                    isChecked={desktop === 'xfce'} onChange={() => setDesktop('xfce')}
-                                    isDisabled={running}
+                                    id="de-xfce" name="boot-desktop"
+                                    label={DESKTOP_CONFIG.xfce.isAvailable?.(distro, version) === false ? "XFCE (" + _("not available for this version") + ")" : "XFCE"}
+                                    isChecked={desktop === 'xfce'}
+                                    onChange={() => setDesktop('xfce')}
+                                    isDisabled={running || DESKTOP_CONFIG.xfce.isAvailable?.(distro, version) === false}
                                 />
                                 <Radio
-                                    id="de-kde" name="boot-desktop" label="KDE Plasma"
-                                    isChecked={desktop === 'kde'} onChange={() => setDesktop('kde')}
-                                    isDisabled={running}
+                                    id="de-kde" name="boot-desktop"
+                                    label={DESKTOP_CONFIG.kde.isAvailable?.(distro, version) === false ? "KDE Plasma (" + _("not available for this version") + ")" : "KDE Plasma"}
+                                    isChecked={desktop === 'kde'}
+                                    onChange={() => setDesktop('kde')}
+                                    isDisabled={running || DESKTOP_CONFIG.kde.isAvailable?.(distro, version) === false}
                                 />
                                 <Radio
                                     id="de-gnome" name="boot-desktop" label="GNOME"

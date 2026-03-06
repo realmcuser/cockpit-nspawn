@@ -111,8 +111,13 @@ const DESKTOP_CONFIG = {
         session: 'plasma',
         crbFirst: { almalinux: true, fedora: false },
         epelFirst: { almalinux: true, fedora: false },
+        // KDE Plasma 6 (Fedora 40+) is Wayland-only — no X11 session, incompatible with Xvnc
         // KDE not yet available in EPEL 10 (as of early 2026)
-        isAvailable: (distro, version) => !(distro === 'almalinux' && Number(version) >= 10),
+        isAvailable: (distro, version) => {
+            if (distro === 'almalinux' && Number(version) >= 10) return false;
+            if (distro === 'fedora' && Number(version) >= 40) return false;
+            return true;
+        },
         almalinuxWarning: true,
         packages: [
             'tigervnc-server',
@@ -310,13 +315,35 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 append(`Varning: authselect misslyckades (${e.message}) — fortsätter ändå.\n`);
             }
 
+            // Mask systemd-firstboot.service to prevent interactive boot blocking.
+            // Some package sets (e.g. KDE on Fedora) write "!unprovisioned" to
+            // root's shadow entry, causing systemd-firstboot to block boot entirely.
+            try {
+                await cockpit.spawn(
+                    ['systemctl', '--root', machineRoot, 'mask', 'systemd-firstboot.service'],
+                    { superuser: 'require', err: 'out' }
+                );
+            } catch (maskErr) {
+                append(`Varning: kunde inte maskas systemd-firstboot (${maskErr.message}).\n`);
+            }
+
             // Step 4: set root password.
             // Generate SHA-512 hash via openssl and write directly to /etc/shadow.
             // Pass password via stdin to handle special characters safely.
             // Ensure /etc/shadow exists first (sysusers may not create it).
+            const shadowPath = `${machineRoot}/etc/shadow`;
+
+            // Neutralize "!unprovisioned" shadow entry — some package sets (e.g. KDE)
+            // write this marker, causing systemd-firstboot to block boot waiting for input.
+            try {
+                await cockpit.spawn(
+                    ['sed', '-i', 's/^root:!unprovisioned:/root:!:/', shadowPath],
+                    { superuser: 'require', err: 'out' }
+                );
+            } catch (shadowNormErr) { /* shadow may not exist yet */ }
+
             if (rootPassword) {
                 append('\n=== Sätter root-lösenord ===\n');
-                const shadowPath = `${machineRoot}/etc/shadow`;
 
                 // Ensure /etc/shadow exists — write minimal entry if absent
                 try {

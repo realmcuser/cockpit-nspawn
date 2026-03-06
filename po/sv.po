@@ -604,3 +604,43 @@ msgstr "obegränsat"
 #: src/EditResourcesDialog.jsx:70
 msgid "Resource limits: $0"
 msgstr "Resursgränser: $0"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Maximum RAM the container may use. If the limit is exceeded, processes inside the container are killed by the OOM killer."
+msgstr "Maximalt RAM som containern får använda. Om gränsen överskrids avslutas processer inuti containern av OOM-killern."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Examples:"
+msgstr "Exempel:"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Leave empty for no limit."
+msgstr "Lämna tomt för ingen gräns."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Maximum CPU time the container may use. 100% equals one full CPU core."
+msgstr "Maximal CPU-tid som containern får använda. 100% motsvarar en hel CPU-kärna."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "half a core"
+msgstr "halv kärna"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "one core"
+msgstr "en kärna"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "two cores"
+msgstr "två kärnor"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "four cores"
+msgstr "fyra kärnor"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "More info for Memory limit"
+msgstr "Mer info om minnesgräns"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "More info for CPU quota"
+msgstr "Mer info om CPU-kvot"

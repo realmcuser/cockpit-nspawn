@@ -9,9 +9,11 @@ import {
     ModalBody,
     ModalFooter,
     ModalHeader,
+    Popover,
     Spinner,
     TextInput,
 } from '@patternfly/react-core';
+import { HelpIcon } from '@patternfly/react-icons';
 
 import cockpit from 'cockpit';
 
@@ -87,8 +89,31 @@ export function EditResourcesDialog({ machineName, onClose }) {
 
                 {!loading && (
                     <>
-                        <FormGroup label={_("Memory limit")} fieldId="res-mem"
-                            helperText={_("e.g. 2G, 512M — leave empty for unlimited")}
+                        <FormGroup
+                            label={_("Memory limit")} fieldId="res-mem"
+                            labelHelp={
+                                <Popover
+                                    headerContent={_("Memory limit")}
+                                    bodyContent={
+                                        <div>
+                                            <p>{_("Maximum RAM the container may use. If the limit is exceeded, processes inside the container are killed by the OOM killer.")}</p>
+                                            <br />
+                                            <p><strong>{_("Examples:")}</strong></p>
+                                            <ul style={{ paddingLeft: '1.2em' }}>
+                                                <li><code>512M</code> — 512 megabytes</li>
+                                                <li><code>2G</code> — 2 gigabytes</li>
+                                                <li><code>4G</code> — 4 gigabytes</li>
+                                            </ul>
+                                            <br />
+                                            <p>{_("Leave empty for no limit.")}</p>
+                                        </div>
+                                    }
+                                >
+                                    <button className="pf-v5-c-form__group-label-help" aria-label={_("More info for Memory limit")}>
+                                        <HelpIcon />
+                                    </button>
+                                </Popover>
+                            }
                         >
                             <TextInput
                                 id="res-mem"
@@ -97,8 +122,32 @@ export function EditResourcesDialog({ machineName, onClose }) {
                                 placeholder={_("unlimited")}
                             />
                         </FormGroup>
-                        <FormGroup label={_("CPU quota")} fieldId="res-cpu"
-                            helperText={_("e.g. 100% = 1 core, 200% = 2 cores — leave empty for unlimited")}
+                        <FormGroup
+                            label={_("CPU quota")} fieldId="res-cpu"
+                            labelHelp={
+                                <Popover
+                                    headerContent={_("CPU quota")}
+                                    bodyContent={
+                                        <div>
+                                            <p>{_("Maximum CPU time the container may use. 100% equals one full CPU core.")}</p>
+                                            <br />
+                                            <p><strong>{_("Examples:")}</strong></p>
+                                            <ul style={{ paddingLeft: '1.2em' }}>
+                                                <li><code>50%</code> — {_("half a core")}</li>
+                                                <li><code>100%</code> — {_("one core")}</li>
+                                                <li><code>200%</code> — {_("two cores")}</li>
+                                                <li><code>400%</code> — {_("four cores")}</li>
+                                            </ul>
+                                            <br />
+                                            <p>{_("Leave empty for no limit.")}</p>
+                                        </div>
+                                    }
+                                >
+                                    <button className="pf-v5-c-form__group-label-help" aria-label={_("More info for CPU quota")}>
+                                        <HelpIcon />
+                                    </button>
+                                </Popover>
+                            }
                             style={{ marginTop: '1rem' }}
                         >
                             <TextInput

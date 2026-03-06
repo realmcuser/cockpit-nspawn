@@ -34,7 +34,9 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 
 ## Desktop Environment Support
 
-Desktop environments are bootstrapped via DNF and use **xrdp** for remote access (port 3389). VNC is not used — xrdp is encrypted by default and works with all major RDP clients including the Windows built-in client.
+> **⚠️ Experimental** — Desktop environment bootstrap is under active development and should be considered experimental. Functionality varies by distribution and may not work in all configurations.
+
+Desktop environments are bootstrapped via DNF and use **xrdp** (X11-based DEs) or **Weston** (Wayland) for remote access on port 3389. RDP is encrypted by default and works with all major RDP clients including the Windows built-in client (mstsc.exe), Remmina, and xfreerdp.
 
 | Distribution | XFCE | KDE Plasma | GNOME | Weston (Wayland) |
 |---|---|---|---|---|

@@ -462,16 +462,23 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 if (!systemdReady)
                     append('Varning: systemd verkar inte klart — fortsätter ändå.\n');
 
-                // Install EPEL first if needed (AlmaLinux + XFCE/KDE)
-                // Pass --enablerepo=crb when CRB is needed (AlmaLinux + KDE)
-                // — avoids needing dnf-plugins-core just for config-manager
-                const crbArgs = deCfg.crbFirst?.[distro] ? ['--enablerepo=crb'] : [];
-
+                // Install EPEL first if needed (AlmaLinux + XFCE/KDE/GNOME)
                 if (deCfg.epelFirst?.[distro]) {
                     append('Installerar EPEL...\n');
                     await cockpit.spawn(
                         ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                         'dnf', 'install', '-y', ...crbArgs, 'epel-release'],
+                         'dnf', 'install', '-y', 'epel-release'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+                }
+
+                // Enable CRB via /usr/bin/crb (installed by epel-release on AlmaLinux)
+                // --enablerepo=crb alone is insufficient on AlmaLinux 10
+                if (deCfg.crbFirst?.[distro]) {
+                    append('Aktiverar CRB-repo...\n');
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         '/usr/bin/crb', 'enable'],
                         { superuser: 'require', err: 'out' }
                     ).stream(append);
                 }
@@ -479,7 +486,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 // Install DE packages inside the running container
                 await cockpit.spawn(
                     ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                     'dnf', 'install', '-y', ...crbArgs, ...deCfg.packages],
+                     'dnf', 'install', '-y', ...deCfg.packages],
                     { superuser: 'require', err: 'out' }
                 ).stream(append);
 

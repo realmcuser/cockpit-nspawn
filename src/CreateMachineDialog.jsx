@@ -737,7 +737,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                             </div>
                                         }
                                     >
-                                        <button className="pf-v5-c-form__group-label-help" aria-label={_("More info for Memory limit")}>
+                                        <button type="button" className="pf-v5-c-form__group-label-help" aria-label={_("More info for Memory limit")}>
                                             <HelpIcon />
                                         </button>
                                     </Popover>
@@ -771,7 +771,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                             </div>
                                         }
                                     >
-                                        <button className="pf-v5-c-form__group-label-help" aria-label={_("More info for CPU quota")}>
+                                        <button type="button" className="pf-v5-c-form__group-label-help" aria-label={_("More info for CPU quota")}>
                                             <HelpIcon />
                                         </button>
                                     </Popover>

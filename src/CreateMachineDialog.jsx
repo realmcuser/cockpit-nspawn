@@ -97,6 +97,7 @@ const DISTRO_TEMPLATES = {
 const DESKTOP_CONFIG = {
     xfce: {
         session: 'xfce',
+        crbFirst: { almalinux: true, fedora: false },
         epelFirst: { almalinux: true, fedora: false },
         packages: [
             'tigervnc-server',

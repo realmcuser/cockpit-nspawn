@@ -527,3 +527,27 @@ msgstr "Voraussetzungen im Container:"
 #: src/MachineVncInfo.jsx:86
 msgid "Open the .vnc file with Remmina, TigerVNC Viewer, or another VNC client."
 msgstr "Öffnen Sie die .vnc-Datei mit Remmina, TigerVNC Viewer oder einem anderen VNC-Client."
+
+#: src/CreateMachineDialog.jsx:662
+msgid "Desktop environment"
+msgstr "Desktop-Umgebung"
+
+#: src/CreateMachineDialog.jsx:664
+msgid "None (server only)"
+msgstr "Keine (nur Server)"
+
+#: src/CreateMachineDialog.jsx:687
+msgid "KDE Plasma availability on AlmaLinux"
+msgstr "KDE Plasma-Verfügbarkeit auf AlmaLinux"
+
+#: src/CreateMachineDialog.jsx:689
+msgid "KDE Plasma is not officially supported on AlmaLinux. Installation requires EPEL and may result in an older Plasma version."
+msgstr "KDE Plasma wird auf AlmaLinux nicht offiziell unterstützt. Die Installation erfordert EPEL und kann eine ältere Plasma-Version ergeben."
+
+#: src/CreateMachineDialog.jsx:695
+msgid "Desktop environment installed after bootstrap"
+msgstr "Desktop-Umgebung wird nach Bootstrap installiert"
+
+#: src/CreateMachineDialog.jsx:697
+msgid "The desktop environment is installed inside the running container after bootstrap. The container will be started automatically."
+msgstr "Die Desktop-Umgebung wird nach dem Bootstrap im laufenden Container installiert. Der Container wird automatisch gestartet."

@@ -88,6 +88,40 @@ const DISTRO_TEMPLATES = {
     },
 };
 
+// ----------------------------------------------------------------
+// Desktop environment configuration — installed inside the running
+// container after bootstrap, so scriptlets run correctly.
+// ----------------------------------------------------------------
+const DESKTOP_CONFIG = {
+    xfce: {
+        session: 'xfce',
+        epelFirst: { almalinux: true, fedora: false },
+        packages: [
+            'tigervnc-server',
+            'xfce4-session', 'xfwm4', 'xfce4-panel',
+            'xfdesktop', 'xfce4-terminal',
+        ],
+    },
+    kde: {
+        session: 'plasma',
+        epelFirst: { almalinux: true, fedora: false },
+        packages: [
+            'tigervnc-server',
+            'plasma-desktop', 'plasma-workspace',
+            'kde-settings-plasma', 'konsole',
+        ],
+        almalinuxWarning: true,
+    },
+    gnome: {
+        session: 'gnome-xorg',
+        epelFirst: { almalinux: false, fedora: false },
+        packages: [
+            'tigervnc-server',
+            'gnome-session', 'gnome-shell', 'gnome-terminal',
+        ],
+    },
+};
+
 function detectFormat(url) {
     const u = url.toLowerCase();
     if (u.match(/\.(raw|img)(\.gz|\.xz|\.bz2)?(\?.*)?$/)) return 'raw';
@@ -115,6 +149,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
     const [rootPassword, setRootPassword] = useState('');
     const [network, setNetwork] = useState('private');
     const [bridgeName, setBridgeName] = useState('bridge0');
+    const [desktop, setDesktop] = useState('none');
     const [autoStart, setAutoStart] = useState(true);
     const [autoEnable, setAutoEnable] = useState(false);
 
@@ -386,6 +421,75 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 await spawnMachinectl(['start', name]).stream(append);
             }
 
+            // Step 8: install desktop environment inside the running container.
+            // Done post-boot so that DNF scriptlets (icon caches, dbus, glib-schemas
+            // etc.) run correctly inside the container rather than in the installroot.
+            if (desktop !== 'none' && autoStart) {
+                const deCfg = DESKTOP_CONFIG[desktop];
+                append(`\n=== Installerar skrivbordsmiljö (${desktop.toUpperCase()}) ===\n`);
+                append('(Kan ta 5–15 minuter — hämtar paket från internet)\n\n');
+
+                // Wait for container systemd to finish initializing
+                append('Väntar på att containerns systemd ska vara klart...\n');
+                let systemdReady = false;
+                for (let i = 0; i < 60; i++) {
+                    try {
+                        const st = await cockpit.spawn(
+                            ['systemctl', `--machine=${name}`, 'is-system-running'],
+                            { superuser: 'require', err: 'out' }
+                        );
+                        if (st.trim() === 'running' || st.trim() === 'degraded') {
+                            systemdReady = true;
+                            break;
+                        }
+                    } catch (waitErr) { /* not ready yet */ }
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                if (!systemdReady)
+                    append('Varning: systemd verkar inte klart — fortsätter ändå.\n');
+
+                // Install EPEL first if needed (AlmaLinux + XFCE/KDE)
+                if (deCfg.epelFirst?.[distro]) {
+                    append('Installerar EPEL...\n');
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'dnf', 'install', '-y', 'epel-release'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+                }
+
+                // Install DE packages inside the running container
+                await cockpit.spawn(
+                    ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                     'dnf', 'install', '-y', ...deCfg.packages],
+                    { superuser: 'require', err: 'out' }
+                ).stream(append);
+
+                // Write VNC config files directly into container filesystem
+                await cockpit.spawn(
+                    ['mkdir', '-p', `/var/lib/machines/${name}/root/.vnc`],
+                    { superuser: 'require' }
+                );
+                await cockpit.file(
+                    `/var/lib/machines/${name}/root/.vnc/config`,
+                    { superuser: 'require' }
+                ).replace(`session=${deCfg.session}\ngeometry=1920x1080\ndepth=24\nalwaysshared\n`);
+
+                await cockpit.file(
+                    `/var/lib/machines/${name}/etc/tigervnc/vncserver.users`,
+                    { superuser: 'require' }
+                ).replace(':1=root\n');
+
+                // Enable and start VNC service inside the container
+                await cockpit.spawn(
+                    ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                     'systemctl', 'enable', '--now', 'vncserver@:1'],
+                    { superuser: 'require', err: 'out' }
+                ).stream(append);
+
+                append(`\nSkrivbordsmiljö installerad. VNC-server kör på port 5901.\n`);
+            }
+
             append(`\n=== Klar! Container ${name} skapad ===\n`);
             onRefresh();
             onAddNotification({ type: 'success', title: format(_("Container $0 created"), name) });
@@ -555,6 +659,45 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 </>
                             )}
 
+                            <FormGroup role="group" isInline fieldId="boot-desktop" label={_("Desktop environment")}>
+                                <Radio
+                                    id="de-none" name="boot-desktop" label={_("None (server only)")}
+                                    isChecked={desktop === 'none'} onChange={() => setDesktop('none')}
+                                    isDisabled={running}
+                                />
+                                <Radio
+                                    id="de-xfce" name="boot-desktop" label="XFCE"
+                                    isChecked={desktop === 'xfce'} onChange={() => setDesktop('xfce')}
+                                    isDisabled={running}
+                                />
+                                <Radio
+                                    id="de-kde" name="boot-desktop" label="KDE Plasma"
+                                    isChecked={desktop === 'kde'} onChange={() => setDesktop('kde')}
+                                    isDisabled={running}
+                                />
+                                <Radio
+                                    id="de-gnome" name="boot-desktop" label="GNOME"
+                                    isChecked={desktop === 'gnome'} onChange={() => setDesktop('gnome')}
+                                    isDisabled={running}
+                                />
+                            </FormGroup>
+
+                            {desktop !== 'none' && DESKTOP_CONFIG[desktop].almalinuxWarning && distro === 'almalinux' && (
+                                <Alert isInline variant="warning"
+                                    title={_("KDE Plasma availability on AlmaLinux")}
+                                >
+                                    {_("KDE Plasma is not officially supported on AlmaLinux. Installation requires EPEL and may result in an older Plasma version.")}
+                                </Alert>
+                            )}
+
+                            {desktop !== 'none' && (
+                                <Alert isInline variant="info"
+                                    title={_("Desktop environment installed after bootstrap")}
+                                >
+                                    {_("The desktop environment is installed inside the running container after bootstrap. The container will be started automatically.")}
+                                </Alert>
+                            )}
+
                             <Checkbox
                                 id="auto-enable"
                                 label={_("Enable automatic start at boot")}
@@ -565,9 +708,9 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                             <Checkbox
                                 id="auto-start"
                                 label={_("Start container immediately after creation")}
-                                isChecked={autoStart}
+                                isChecked={autoStart || desktop !== 'none'}
                                 onChange={(_e, checked) => setAutoStart(checked)}
-                                isDisabled={running}
+                                isDisabled={running || desktop !== 'none'}
                             />
                         </>
                     )}

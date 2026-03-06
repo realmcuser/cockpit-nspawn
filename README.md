@@ -40,11 +40,11 @@ Desktop environments are bootstrapped via DNF and use **xrdp** (X11-based DEs) o
 
 | Distribution | XFCE | KDE Plasma | GNOME | Weston (Wayland) |
 |---|---|---|---|---|
-| AlmaLinux 9 | ✅ | ✅ | ✅ | ❌ not offered |
+| AlmaLinux 9 | ✅ tested | ✅ tested | ✅ tested | ❌ not offered |
 | AlmaLinux 10 | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not offered |
-| Fedora 43 | ❌ xrdp requires X11 | ❌ Plasma 6 is Wayland-only | ❌ xrdp requires X11 | ✅ |
+| Fedora 43 | ✅ tested | ❌ Plasma 6 is Wayland-only | ❌ GNOME 47+ is Wayland-only | ✅ tested |
 
-KDE Plasma 6 (Fedora 40+) dropped X11 support, making it incompatible with xrdp's X11 backend. Weston is the viable path for graphical containers on Fedora 40+: it is a standalone Wayland compositor with a built-in FreeRDP/RDP server, no GPU required, and works headlessly in containers. Users get a terminal (weston-terminal) on the desktop and can launch any Wayland-native application from it.
+KDE Plasma 6 and GNOME 47+ (Fedora 40+) dropped X11 support and are incompatible with xrdp's X11 backend. XFCE remains X11-based and works with xrdp on Fedora 43. Weston is the alternative for a Wayland-native desktop: a standalone compositor with a built-in FreeRDP/RDP server, no GPU required, works headlessly in containers.
 
 ## Tested On
 

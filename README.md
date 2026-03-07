@@ -46,7 +46,7 @@ Desktop environments are bootstrapped via DNF and use **xrdp** (X11-based DEs) o
 
 KDE Plasma 6 and GNOME 47+ (Fedora 40+) dropped X11 support and are incompatible with xrdp's X11 backend. XFCE remains X11-based and works with xrdp on Fedora 43. Weston is the alternative for a Wayland-native desktop: a standalone compositor with a built-in FreeRDP/RDP server, no GPU required, works headlessly in containers.
 
-## Tested On
+## cockpit-nspawn is tested on
 
 | Distribution | Status |
 |---|---|

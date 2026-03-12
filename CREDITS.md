@@ -88,4 +88,15 @@ dark theme integration, and build conventions.
 
 ---
 
+## Claude Code
+**https://claude.ai/claude-code**
+Anthropic — proprietary, free for personal use
+
+The AI coding assistant used to design and implement cockpit-nspawn from the ground up.
+The entire codebase — React components, build system, bootstrap logic, translations, RPM
+packaging, and documentation — was developed in close collaboration with Claude Code.
+This project would not exist without it, and we see no reason not to say so openly.
+
+---
+
 *If you believe your project should be listed here and is not, please open an issue.*

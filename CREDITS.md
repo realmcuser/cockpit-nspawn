@@ -89,7 +89,7 @@ dark theme integration, and build conventions.
 ---
 
 ## Claude Code
-**https://claude.ai/claude-code**
+**https://claude.ai**
 Anthropic — proprietary, free for personal use
 
 The AI coding assistant used to design and implement cockpit-nspawn from the ground up.

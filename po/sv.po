@@ -316,8 +316,8 @@ msgid "Download complete"
 msgstr "Nedladdning klar"
 
 #: src/ExportMachineDialog.jsx:224
-msgid "$0 saved to your downloads folder."
-msgstr "$0 sparad i din nedladdningsmapp."
+msgid "Saved to your downloads folder:"
+msgstr "Sparad i din nedladdningsmapp:"
 
 #: src/ExportMachineDialog.jsx:147
 msgid "Export failed"

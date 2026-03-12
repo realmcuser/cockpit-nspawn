@@ -309,8 +309,8 @@ msgid "Download complete"
 msgstr "Descarga completa"
 
 #: src/ExportMachineDialog.jsx:224
-msgid "$0 saved to your downloads folder."
-msgstr "$0 guardado en la carpeta de descargas."
+msgid "Saved to your downloads folder:"
+msgstr "Guardado en la carpeta de descargas:"
 
 #: src/ExportMachineDialog.jsx:147
 msgid "Export failed"

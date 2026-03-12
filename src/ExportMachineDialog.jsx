@@ -221,8 +221,9 @@ export function ExportMachineDialog({ machineName, onClose }) {
 
                 {phase === 'done' && (
                     <Alert variant="success" isInline title={_("Download complete")}>
-                        {format(_("$0 saved to your downloads folder."), <strong>{fileName}</strong>)}
-                        {' '}{writtenBytes > 0 && <>({humanBytes(writtenBytes)})</>}
+                        {_("Saved to your downloads folder:")}{' '}
+                        <strong>{fileName}</strong>
+                        {writtenBytes > 0 && <>{' '}({humanBytes(writtenBytes)})</>}
                     </Alert>
                 )}
 

@@ -105,6 +105,11 @@ That said, if you find it useful and want to build on it, fork it and make it yo
 - Perfect for testing RPM packages, services, and system configurations in isolation
 - Works beautifully with AlmaLinux, Fedora, and other RPM-based systems
 
+## Credits
+
+cockpit-nspawn is built on top of several excellent open source projects.
+See [CREDITS.md](CREDITS.md) for a full list with acknowledgements.
+
 ## License
 
 LGPL-2.1

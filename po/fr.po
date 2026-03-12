@@ -292,25 +292,41 @@ msgstr "Cliquez sur le bouton pour lancer le téléchargement."
 msgid "The file streams directly from the server. The temporary file is removed automatically after the download starts."
 msgstr "Le fichier est diffusé directement depuis le serveur. Le fichier temporaire est supprimé automatiquement après le début du téléchargement."
 
-#: src/ExportMachineDialog.jsx:152
-msgid "Download started — check your browser's download bar for $0."
-msgstr "Téléchargement démarré — vérifiez la barre de téléchargement du navigateur pour $0."
+#: src/ExportMachineDialog.jsx:217
+msgid "Downloading…"
+msgstr "Téléchargement en cours…"
 
-#: src/ExportMachineDialog.jsx:161
+#: src/ExportMachineDialog.jsx:218
+msgid "transferred"
+msgstr "transféré"
+
+#: src/ExportMachineDialog.jsx:172
+msgid "Download failed"
+msgstr "Échec du téléchargement"
+
+#: src/ExportMachineDialog.jsx:223
+msgid "Download complete"
+msgstr "Téléchargement terminé"
+
+#: src/ExportMachineDialog.jsx:224
+msgid "$0 saved to your downloads folder."
+msgstr "$0 enregistré dans le dossier Téléchargements."
+
+#: src/ExportMachineDialog.jsx:147
 msgid "Export failed"
 msgstr "Échec de l'export"
 
-#: src/ExportMachineDialog.jsx:170
+#: src/ExportMachineDialog.jsx:240
 msgid "Start export"
 msgstr "Démarrer l'export"
 
-#: src/ExportMachineDialog.jsx:176
+#: src/ExportMachineDialog.jsx:246
 msgid "Download $0"
 msgstr "Télécharger $0"
 
-#: src/ExportMachineDialog.jsx:182
-msgid "Close and clean up"
-msgstr "Fermer et nettoyer"
+#: src/ExportMachineDialog.jsx:252
+msgid "Cancel export"
+msgstr "Annuler l'export"
 
 #: src/CreateMachineDialog.jsx:350
 msgid "Method"

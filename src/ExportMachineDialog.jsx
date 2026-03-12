@@ -23,23 +23,68 @@ function humanBytes(bytes) {
 }
 
 /*
- * Trigger a browser download via Cockpit's HTTP channel endpoint.
- * This streams the file directly over HTTP — no base64, no browser RAM usage.
- * Works for arbitrarily large files.
+ * Download a server-side file to the browser.
+ *
+ * Uses cockpit.spawn('cat') to stream binary data over the existing WebSocket
+ * rather than Cockpit's HTTP channel endpoint. The HTTP channel shares the
+ * bridge process with the UI WebSocket and starves it on large transfers,
+ * causing Cockpit to show "Oops" / drop the session.
+ *
+ * If the File System Access API (showSaveFilePicker) is available the data
+ * streams directly to disk — no browser memory limit.
+ * Otherwise chunks are accumulated as a Blob (works for files up to ~1–2 GB
+ * depending on browser/system RAM).
  */
-function triggerCockpitDownload(serverPath, downloadFilename) {
-    const url = new URL(cockpit.transport.uri("channel/" + cockpit.transport.csrf_token));
-    url.searchParams.set("payload", "fsread1");
-    url.searchParams.set("path", serverPath);
-    url.searchParams.set("binary", "raw");
-    url.searchParams.set("superuser", "require");
-
-    const a = document.createElement("a");
-    a.href = url.toString();
-    a.download = downloadFilename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+async function streamDownload(serverPath, downloadFilename, onProgress) {
+    if (window.showSaveFilePicker) {
+        // True streaming — browser writes directly to disk, no memory limit.
+        // showSaveFilePicker must be called inside the user-gesture handler (this function
+        // is called directly from a button onClick so the gesture is still active).
+        let handle;
+        try {
+            handle = await window.showSaveFilePicker({ suggestedName: downloadFilename });
+        } catch (err) {
+            if (err.name === 'AbortError') return; // user cancelled picker
+            throw err;
+        }
+        const writable = await handle.createWritable();
+        try {
+            await new Promise((resolve, reject) => {
+                const proc = cockpit.spawn(['cat', serverPath],
+                    { superuser: 'require', binary: true, err: 'message' });
+                proc.stream(chunk => {
+                    writable.write(chunk instanceof Uint8Array ? chunk : new TextEncoder().encode(chunk));
+                    if (onProgress) onProgress(chunk.length || chunk.byteLength || 0);
+                });
+                proc.then(resolve).catch(reject);
+            });
+            await writable.close();
+        } catch (err) {
+            await writable.abort(err);
+            throw err;
+        }
+    } else {
+        // Blob fallback — accumulates entire file in browser memory.
+        const chunks = [];
+        await new Promise((resolve, reject) => {
+            const proc = cockpit.spawn(['cat', serverPath],
+                { superuser: 'require', binary: true, err: 'message' });
+            proc.stream(chunk => {
+                chunks.push(chunk instanceof Uint8Array ? chunk : new TextEncoder().encode(chunk));
+                if (onProgress) onProgress(chunk.length || chunk.byteLength || 0);
+            });
+            proc.then(resolve).catch(reject);
+        });
+        const blob = new Blob(chunks, { type: 'application/gzip' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = downloadFilename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
 }
 
 export function ExportMachineDialog({ machineName, onClose }) {
@@ -47,6 +92,7 @@ export function ExportMachineDialog({ machineName, onClose }) {
     const [writtenBytes, setWrittenBytes] = useState(0);
     const [error, setError] = useState(null);
     const pollRef = useRef(null);
+    const exportProcRef = useRef(null);
 
     const tmpPath = `/tmp/cockpit-nspawn-export-${machineName}.tar.gz`;
     const fileName = `${machineName}.tar.gz`;
@@ -72,10 +118,13 @@ export function ExportMachineDialog({ machineName, onClose }) {
         }, 1000);
 
         try {
-            await cockpit.spawn(
+            const proc = cockpit.spawn(
                 ['machinectl', 'export-tar', machineName, tmpPath],
                 { superuser: 'require', err: 'message' }
             );
+            exportProcRef.current = proc;
+            await proc;
+            exportProcRef.current = null;
 
             clearInterval(pollRef.current);
 
@@ -87,8 +136,13 @@ export function ExportMachineDialog({ machineName, onClose }) {
                 setWrittenBytes(parseInt(out.trim(), 10) || 0);
             } catch (_) { /* ignore */ }
 
+            // Make the file world-readable so the HTTP channel download can
+            // stream it without superuser=require (which buffers via bridge and OOMs).
+            await cockpit.spawn(['chmod', '644', tmpPath], { superuser: 'require' }).catch(() => {});
+
             setPhase('ready');
         } catch (ex) {
+            exportProcRef.current = null;
             clearInterval(pollRef.current);
             setError(ex.message || _("Export failed"));
             setPhase('error');
@@ -96,12 +150,30 @@ export function ExportMachineDialog({ machineName, onClose }) {
         }
     };
 
-    const handleDownload = () => {
-        triggerCockpitDownload(tmpPath, fileName);
-        setTimeout(() => {
-            cockpit.spawn(['rm', '-f', tmpPath], { superuser: 'require' }).catch(() => {});
-        }, 10000);
+    const handleCancelExport = () => {
+        clearInterval(pollRef.current);
+        if (exportProcRef.current) {
+            exportProcRef.current.close('terminated');
+            exportProcRef.current = null;
+        }
+        cockpit.spawn(['rm', '-f', tmpPath], { superuser: 'require' }).catch(() => {});
+        onClose();
+    };
+
+    const handleDownload = async () => {
         setPhase('downloading');
+        setWrittenBytes(0);
+        try {
+            await streamDownload(tmpPath, fileName, (bytes) => {
+                setWrittenBytes(prev => prev + bytes);
+            });
+            setPhase('done');
+        } catch (err) {
+            setError(err.message || _("Download failed"));
+            setPhase('error');
+        } finally {
+            cockpit.spawn(['rm', '-f', tmpPath], { superuser: 'require' }).catch(() => {});
+        }
     };
 
     const handleCleanup = () => {
@@ -110,7 +182,7 @@ export function ExportMachineDialog({ machineName, onClose }) {
     };
 
     return (
-        <Modal isOpen onClose={phase === 'exporting' ? undefined : onClose} variant="small">
+        <Modal isOpen onClose={phase === 'exporting' ? handleCancelExport : onClose} variant="small">
             <ModalHeader title={format(_("Export $0"), machineName)} />
             <ModalBody>
                 {phase === 'idle' && (
@@ -140,7 +212,18 @@ export function ExportMachineDialog({ machineName, onClose }) {
                 )}
 
                 {phase === 'downloading' && (
-                    <p>{format(_("Download started — check your browser's download bar for $0."), <strong>{fileName}</strong>)}</p>
+                    <p>
+                        <Spinner size="sm" style={{ marginRight: '0.5rem' }} />
+                        {_("Downloading…")}{' '}
+                        {writtenBytes > 0 && <strong>{humanBytes(writtenBytes)} {_("transferred")}</strong>}
+                    </p>
+                )}
+
+                {phase === 'done' && (
+                    <Alert variant="success" isInline title={_("Download complete")}>
+                        {format(_("$0 saved to your downloads folder."), <strong>{fileName}</strong>)}
+                        {' '}{writtenBytes > 0 && <>({humanBytes(writtenBytes)})</>}
+                    </Alert>
                 )}
 
                 {phase === 'error' && (
@@ -164,15 +247,21 @@ export function ExportMachineDialog({ machineName, onClose }) {
                     </Button>
                 )}
 
-                {phase === 'downloading' && (
-                    <Button variant="secondary" onClick={handleCleanup}>
-                        {_("Close and clean up")}
+                {phase === 'exporting' && (
+                    <Button variant="danger" onClick={handleCancelExport}>
+                        {_("Cancel export")}
                     </Button>
                 )}
 
-                {phase !== 'exporting' && (
+                {phase === 'done' && (
+                    <Button variant="primary" onClick={onClose}>
+                        {_("Close")}
+                    </Button>
+                )}
+
+                {phase !== 'exporting' && phase !== 'done' && (
                     <Button variant="link" onClick={onClose}>
-                        {phase === 'downloading' ? _("Close") : _("Cancel")}
+                        {_("Cancel")}
                     </Button>
                 )}
             </ModalFooter>

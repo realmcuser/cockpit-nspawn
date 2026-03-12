@@ -299,25 +299,41 @@ msgstr "Klicka på knappen för att starta nedladdningen."
 msgid "The file streams directly from the server. The temporary file is removed automatically after the download starts."
 msgstr "Filen strömmas direkt från servern. Den tillfälliga filen tas bort automatiskt efter att nedladdningen startat."
 
-#: src/ExportMachineDialog.jsx:152
-msgid "Download started — check your browser's download bar for $0."
-msgstr "Nedladdning startad — kolla webbläsarens nedladdningsfält efter $0."
+#: src/ExportMachineDialog.jsx:217
+msgid "Downloading…"
+msgstr "Laddar ner…"
 
-#: src/ExportMachineDialog.jsx:161
+#: src/ExportMachineDialog.jsx:218
+msgid "transferred"
+msgstr "överfört"
+
+#: src/ExportMachineDialog.jsx:172
+msgid "Download failed"
+msgstr "Nedladdning misslyckades"
+
+#: src/ExportMachineDialog.jsx:223
+msgid "Download complete"
+msgstr "Nedladdning klar"
+
+#: src/ExportMachineDialog.jsx:224
+msgid "$0 saved to your downloads folder."
+msgstr "$0 sparad i din nedladdningsmapp."
+
+#: src/ExportMachineDialog.jsx:147
 msgid "Export failed"
 msgstr "Export misslyckades"
 
-#: src/ExportMachineDialog.jsx:170
+#: src/ExportMachineDialog.jsx:240
 msgid "Start export"
 msgstr "Starta export"
 
-#: src/ExportMachineDialog.jsx:176
+#: src/ExportMachineDialog.jsx:246
 msgid "Download $0"
 msgstr "Ladda ner $0"
 
-#: src/ExportMachineDialog.jsx:182
-msgid "Close and clean up"
-msgstr "Stäng och rensa"
+#: src/ExportMachineDialog.jsx:252
+msgid "Cancel export"
+msgstr "Avbryt export"
 
 # CreateMachineDialog.jsx
 #: src/CreateMachineDialog.jsx:350

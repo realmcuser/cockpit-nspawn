@@ -178,6 +178,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
     const [rootPassword, setRootPassword] = useState('');
     const [network, setNetwork] = useState('private');
     const [bridgeName, setBridgeName] = useState('bridge0');
+    const [betaRelease, setBetaRelease] = useState(false);
     const [desktop, setDesktop] = useState('none');
     const [memoryMax, setMemoryMax] = useState('');
     const [cpuQuota, setCpuQuota] = useState('');
@@ -239,7 +240,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
         const name = bootName.trim();
         const machineRoot = `/var/lib/machines/${name}`;
         const template = DISTRO_TEMPLATES[distro];
-        const osLabel = `${template.label} ${version}`;
+        const osLabel = `${template.label} ${version}${betaRelease ? ' Beta' : ''}`;
+        const repoArgs = (distro === 'fedora' && betaRelease)
+            ? [
+                '--disablerepo=*',
+                `--repofrompath=bs-fedora,https://dl.fedoraproject.org/pub/fedora/linux/development/${version}/Everything/x86_64/os/`,
+                '--enablerepo=bs-fedora',
+            ]
+            : template.repoArgs(version);
 
         try {
             // Step 1: create directory
@@ -260,7 +268,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     '--setopt=install_weak_deps=False',
                     '--nogpgcheck',
                     '--assumeyes',
-                    ...template.repoArgs(version),
+                    ...repoArgs,
                     'filesystem',
                 ],
                 { superuser: 'require', err: 'out' }
@@ -279,7 +287,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     '--setopt=install_weak_deps=False',
                     '--nogpgcheck',
                     '--assumeyes',
-                    ...template.repoArgs(version),
+                    ...repoArgs,
                     ...(template.extraArgs || []),
                     ...template.packages(version),
                 ],
@@ -703,11 +711,25 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                         <HelperTextItem>
                                             {format(_("Repo: $0"), distro === 'almalinux'
                                                 ? `repo.almalinux.org/almalinux/${version || '?'}/`
-                                                : `dl.fedoraproject.org/pub/fedora/linux/releases/${version || '?'}/`)}
+                                                : betaRelease
+                                                    ? `dl.fedoraproject.org/pub/fedora/linux/development/${version || '?'}/`
+                                                    : `dl.fedoraproject.org/pub/fedora/linux/releases/${version || '?'}/`)}
                                         </HelperTextItem>
                                     </HelperText>
                                 </FormHelperText>
                             </FormGroup>
+
+                            {distro === 'fedora' && (
+                                <FormGroup fieldId="boot-beta">
+                                    <Checkbox
+                                        id="boot-beta"
+                                        label={_("Beta / Development release")}
+                                        isChecked={betaRelease}
+                                        onChange={(_e, v) => setBetaRelease(v)}
+                                        isDisabled={running}
+                                    />
+                                </FormGroup>
+                            )}
 
                             <FormGroup label={_("Root password")} fieldId="boot-password">
                                 <TextInput

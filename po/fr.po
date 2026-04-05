@@ -684,3 +684,15 @@ msgstr "Weston : bureau Wayland minimal"
 #: src/CreateMachineDialog.jsx
 msgid "Weston provides a minimal Wayland compositor accessible via RDP (port 3389). A terminal (weston-terminal) is available on the desktop. XFCE, KDE, and GNOME require X11 and are not available on Fedora 40+."
 msgstr "Weston fournit un compositeur Wayland minimal accessible via RDP (port 3389). Un terminal (weston-terminal) est disponible sur le bureau. XFCE, KDE et GNOME nécessitent X11 et ne sont pas disponibles sur Fedora 40+."
+
+#: src/CreateMachineDialog.jsx:995
+msgid "KDE Plasma (Wayland VNC)"
+msgstr "KDE Plasma (Wayland VNC)"
+
+#: src/CreateMachineDialog.jsx:1012
+msgid "KDE Plasma: headless Wayland desktop via VNC"
+msgstr "KDE Plasma : bureau Wayland sans affichage via VNC"
+
+#: src/CreateMachineDialog.jsx:1014
+msgid "KDE Plasma runs headlessly using labwc (Wayland compositor) and wayvnc. Connect with any VNC client (e.g. Remmina) to port 5900 — no password required. Resolution: 1920×1080. The session runs as user kdeuser."
+msgstr "KDE Plasma fonctionne sans affichage avec labwc (compositeur Wayland) et wayvnc. Connectez-vous avec un client VNC (ex. Remmina) sur le port 5900 — aucun mot de passe requis. Résolution : 1920×1080. La session s'exécute en tant qu'utilisateur kdeuser."

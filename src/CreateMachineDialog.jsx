@@ -149,6 +149,15 @@ const DESKTOP_CONFIG = {
         isAvailable: (distro, version) => distro === 'fedora' && Number(version) >= 40,
         packages: ['weston', 'openssl'],
     },
+    kde_vnc: {
+        kdeVncMode: true,
+        epelFirst: { almalinux: false, fedora: false },
+        crbFirst: { almalinux: false, fedora: false },
+        // KDE Plasma 6 (Fedora 40+) is Wayland-only. Uses labwc (wlroots compositor)
+        // + wayvnc for headless VNC access without a GPU or physical display.
+        isAvailable: (distro, version) => distro === 'fedora' && Number(version) >= 40,
+        packages: ['@kde-desktop', 'labwc', 'wayvnc', 'wlr-randr'],
+    },
 };
 
 function detectFormat(url) {
@@ -584,6 +593,145 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     ).stream(append);
 
                     append(`\nWeston RDP-server kör på port 3389.\n`);
+                } else if (deCfg.kdeVncMode) {
+                    // ---- KDE Plasma headless VNC via labwc + wayvnc ----
+                    // Architecture: labwc (wlroots headless compositor) + plasmashell
+                    // + wayvnc (VNC server using wlr-screencopy). No GPU needed.
+                    // kdeuser (uid 1000) owns the session. Port 5900.
+
+                    // Create kdeuser
+                    append('Skapar kdeuser...\n');
+                    try {
+                        await cockpit.spawn(
+                            ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                             'useradd', '-m', '-s', '/bin/bash', 'kdeuser'],
+                            { superuser: 'require', err: 'out' }
+                        ).stream(append);
+                    } catch (userErr) {
+                        append(`Varning: useradd (${userErr.message}) — kdeuser kanske redan finns.\n`);
+                    }
+
+                    // Set kdeuser password (reuse root password if given, otherwise default)
+                    const kdeUserPassword = rootPassword || 'kdeuser123';
+                    const kdeTmpFile = '/tmp/.cockpit-nspawn-kdepw';
+                    try {
+                        await cockpit.file(kdeTmpFile, { superuser: 'require' }).replace(kdeUserPassword);
+                        await cockpit.spawn(['chmod', '600', kdeTmpFile], { superuser: 'require' });
+                        const kdeHash = await cockpit.spawn(
+                            ['/bin/bash', '-c', 'openssl passwd -6 -stdin < "$1"', '--', kdeTmpFile],
+                            { superuser: 'require', err: 'out' }
+                        );
+                        await cockpit.spawn(
+                            ['sed', '-i', `s|^kdeuser:[^:]*:|kdeuser:${kdeHash.trim()}:|`,
+                             `/var/lib/machines/${name}/etc/shadow`],
+                            { superuser: 'require', err: 'out' }
+                        );
+                        if (!rootPassword)
+                            append('Varning: inget root-lösenord angivet — kdeuser fick lösenord "kdeuser123".\n');
+                    } catch (pwErr) {
+                        append(`Varning: kunde inte sätta kdeuser-lösenord (${pwErr.message}).\n`);
+                    } finally {
+                        await cockpit.spawn(['rm', '-f', kdeTmpFile], { superuser: 'require' }).catch(() => {});
+                    }
+
+                    // Enable linger so systemd creates /run/user/1000 at boot
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'loginctl', 'enable-linger', 'kdeuser'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+
+                    // Disable KWallet (would block krfb and other tools with password prompts)
+                    await cockpit.spawn(
+                        ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config`],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/.config/kwalletrc`,
+                        { superuser: 'require' }
+                    ).replace('[Wallet]\nEnabled=false\nFirst Use=false\n');
+
+                    // labwc autostart: sets resolution, starts KDE services + wayvnc
+                    await cockpit.spawn(
+                        ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config/labwc`],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    const labwcAutostart = [
+                        'wlr-randr --output HEADLESS-1 --custom-mode 1920x1080@60 &',
+                        'sleep 1',
+                        'dbus-update-activation-environment --all &',
+                        'kactivitymanagerd &',
+                        'sleep 2',
+                        'plasmashell &',
+                        'sleep 4',
+                        'wayvnc 0.0.0.0 5900 &',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/.config/labwc/autostart`,
+                        { superuser: 'require' }
+                    ).replace(labwcAutostart);
+
+                    // Fix ownership of kdeuser's home config
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'chown', '-R', 'kdeuser:kdeuser', '/home/kdeuser/.config'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+
+                    // Write systemd service for labwc headless session
+                    const kdeService = [
+                        '[Unit]',
+                        'Description=KDE Plasma headless (labwc + wayvnc)',
+                        'After=network.target systemd-logind.service',
+                        '',
+                        '[Service]',
+                        'Type=simple',
+                        'User=kdeuser',
+                        'Environment=WLR_BACKENDS=headless',
+                        'Environment=WLR_LIBINPUT_NO_DEVICES=1',
+                        'Environment=WLR_RENDERER=pixman',
+                        'Environment=XDG_RUNTIME_DIR=/run/user/1000',
+                        'Environment=HOME=/home/kdeuser',
+                        'Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus',
+                        'ExecStartPre=/bin/bash -c \'dbus-daemon --session --address=unix:path=/run/user/1000/bus --nofork --print-pid > /run/user/1000/dbus.pid 2>/dev/null & sleep 1\'',
+                        'ExecStart=/usr/bin/labwc',
+                        'Restart=on-failure',
+                        'RestartSec=5',
+                        '',
+                        '[Install]',
+                        'WantedBy=multi-user.target',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/etc/systemd/system/kde-headless.service`,
+                        { superuser: 'require' }
+                    ).replace(kdeService);
+
+                    // Enable service and open firewall port 5900
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                         'systemctl', 'enable', '--now', 'kde-headless'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+
+                    try {
+                        await cockpit.spawn(
+                            ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                             'firewall-cmd', '--permanent', '--add-port=5900/tcp'],
+                            { superuser: 'require', err: 'out' }
+                        ).stream(append);
+                        await cockpit.spawn(
+                            ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                             'firewall-cmd', '--reload'],
+                            { superuser: 'require', err: 'out' }
+                        ).stream(append);
+                    } catch (fwErr) {
+                        append(`Varning: brandvägg (${fwErr.message}) — öppna port 5900 manuellt vid behov.\n`);
+                    }
+
+                    append(`\nKDE Plasma VNC-server kör på port 5900.\n`);
+                    append(`Anslut med VNC-klient (t.ex. Remmina) till port 5900 — inget lösenord.\n`);
                 } else {
                     // Configure xrdp: write startwm.sh with the DE start command.
                     // xrdp's default startwm-bash.sh sources /usr/libexec/xrdp/startwm.sh
@@ -842,6 +990,13 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     onChange={() => setDesktop('weston')}
                                     isDisabled={running || DESKTOP_CONFIG.weston.isAvailable?.(distro, version) === false}
                                 />
+                                <Radio
+                                    id="de-kde-vnc" name="boot-desktop"
+                                    label={DESKTOP_CONFIG.kde_vnc.isAvailable?.(distro, version) === false ? "KDE Plasma VNC (" + _("not available for this version") + ")" : _("KDE Plasma (Wayland VNC)")}
+                                    isChecked={desktop === 'kde_vnc'}
+                                    onChange={() => setDesktop('kde_vnc')}
+                                    isDisabled={running || DESKTOP_CONFIG.kde_vnc.isAvailable?.(distro, version) === false}
+                                />
                             </FormGroup>
 
                             {desktop !== 'none' && DESKTOP_CONFIG[desktop].almalinuxWarning && distro === 'almalinux' && (
@@ -849,6 +1004,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     title={_("KDE Plasma availability on AlmaLinux")}
                                 >
                                     {_("KDE Plasma is not officially supported on AlmaLinux. Installation requires EPEL and may result in an older Plasma version.")}
+                                </Alert>
+                            )}
+
+                            {desktop === 'kde_vnc' && (
+                                <Alert isInline variant="info"
+                                    title={_("KDE Plasma: headless Wayland desktop via VNC")}
+                                >
+                                    {_("KDE Plasma runs headlessly using labwc (Wayland compositor) and wayvnc. Connect with any VNC client (e.g. Remmina) to port 5900 — no password required. Resolution: 1920×1080. The session runs as user kdeuser.")}
                                 </Alert>
                             )}
 

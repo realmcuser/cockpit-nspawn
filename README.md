@@ -23,7 +23,7 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 - Open a shell inside a running container
 - Stream live logs from the container via journald
 - Create containers via DNF bootstrap (AlmaLinux, Fedora), URL pull, or clone
-  - Optional desktop environment at bootstrap: XFCE, KDE Plasma, or GNOME — installed inside the running container automatically, with xrdp configured and started via systemd
+  - Optional desktop environment at bootstrap: XFCE, KDE Plasma, or GNOME (X11 + xrdp), Weston (Wayland RDP), or KDE Plasma headless (Wayland VNC)
   - Network mode: Bridge (own LAN IP) or NAT (shared NetworkManager bridge, 10.99.0.1/24)
   - Autostart at boot, root password, optional autostart
 - Change network mode (NAT ↔ Bridge) on stopped containers
@@ -36,21 +36,41 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 
 > **⚠️ Experimental** — Desktop environment bootstrap is under active development and should be considered experimental. Functionality varies by distribution and may not work in all configurations.
 
-Desktop environments are bootstrapped via DNF and use **xrdp** (X11-based DEs) or **Weston** (Wayland) for remote access on port 3389. RDP is encrypted by default and works with all major RDP clients including the Windows built-in client (mstsc.exe), Remmina, and xfreerdp.
+Desktop environments are bootstrapped via DNF and use **xrdp** (X11-based DEs), **Weston** (Wayland RDP), or **labwc + wayvnc** (Wayland VNC) for remote access. No GPU or physical display is required.
 
-| Distribution | XFCE | KDE Plasma | GNOME | Weston (Wayland) |
-|---|---|---|---|---|
-| AlmaLinux 9 | ✅ tested | ✅ tested | ✅ tested | ❌ not offered |
-| AlmaLinux 10 | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not offered |
-| Fedora 43 | ✅ tested | ❌ Plasma 6 is Wayland-only | ❌ GNOME 47+ is Wayland-only | ✅ tested |
+| Distribution | XFCE | KDE Plasma | GNOME | Weston (Wayland RDP) | KDE Plasma (Wayland VNC) |
+|---|---|---|---|---|---|
+| AlmaLinux 9 | ✅ tested | ✅ tested | ✅ tested | ❌ not offered | ❌ not offered |
+| AlmaLinux 10 | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not offered | ❌ not offered |
+| Fedora 43 | ✅ tested | ❌ Plasma 6 is Wayland-only | ❌ GNOME 47+ is Wayland-only | ✅ tested | ❌ not offered |
+| Fedora 44 (Beta) | ❌ | ❌ | ❌ | 🔲 untested | ✅ tested |
 
-KDE Plasma 6 and GNOME 47+ (Fedora 40+) dropped X11 support and are incompatible with xrdp's X11 backend. XFCE remains X11-based and works with xrdp on Fedora 43. Weston is the alternative for a Wayland-native desktop: a standalone compositor with a built-in FreeRDP/RDP server, no GPU required, works headlessly in containers.
+KDE Plasma 6 and GNOME 47+ (Fedora 40+) dropped X11 support and are incompatible with xrdp's X11 backend. XFCE remains X11-based and works with xrdp on Fedora 43. For Fedora 40+ there are two Wayland-native options:
+
+- **Weston (port 3389, RDP)** — minimal compositor, terminal only, RDP encrypted by default
+- **KDE Plasma (port 5900, VNC)** — full KDE Plasma 6 desktop, headless via labwc + wayvnc
+
+### KDE Plasma Headless VNC — How It Works
+
+Getting a full KDE Plasma desktop to run headlessly in a container — no GPU, no physical display, no display manager — turned out to be a more interesting problem than expected.
+
+The approach that works is:
+
+1. **[labwc](https://github.com/labwc/labwc)** — a lightweight wlroots-based Wayland compositor. Unlike sway (which also uses wlroots), labwc draws proper Openbox-style window decorations with close/minimize/maximize buttons. Runs headlessly with `WLR_BACKENDS=headless`.
+2. **[wayvnc](https://github.com/any1/wayvnc)** — a VNC server for wlroots-based compositors, using the `wlr-screencopy` protocol. Listens on port 5900.
+3. **plasmashell + kactivitymanagerd** — the KDE Plasma shell and desktop, started via labwc autostart. No kwin_wayland needed — labwc handles compositing and window management.
+4. **wlr-randr** — sets the virtual output to 1920×1080 at startup.
+
+SDDM and plasmalogin (KDE's newer display manager) both require `/dev/tty1` which does not exist in nspawn containers. kwin_wayland works for the compositor but does not support the `zwlr_virtual_pointer_v1` protocol that wayvnc needs for input. labwc handles both constraints cleanly.
+
+The initial lead that pointed toward this architecture came from a [community gist on headless KDE Plasma under Wayland](https://gist.github.com/GithubUser5462/9cad267d7a87d1f178c89271c2c00e46), which in turn traced back to a [discussion on the KDE forums](https://discuss.kde.org/t/headless-remote-access-under-wayland/19055). The gist described a different approach (SDDM + sway for the greeter, then RDP for the session), but the core insight — that a wlroots compositor can bridge the headless VNC gap — was the right thread to pull. Credit where credit is due.
 
 ## cockpit-nspawn is tested on
 
 | Distribution | Status |
 |---|---|
 | Fedora 43 | ✅ Tested |
+| Fedora 44 (Beta) | ✅ Tested (KDE Plasma VNC bootstrap) |
 | Fedora 41 / 42 | 🔲 Should work, untested |
 | AlmaLinux 9 | ✅ Tested (host + containers) |
 | AlmaLinux 10 | ✅ Tested (bootstrapping) |

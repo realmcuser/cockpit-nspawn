@@ -52,18 +52,32 @@ KDE Plasma 6 and GNOME 47+ (Fedora 40+) dropped X11 support and are incompatible
 
 ### KDE Plasma Headless VNC — How It Works
 
-Getting a full KDE Plasma desktop to run headlessly in a container — no GPU, no physical display, no display manager — turned out to be a more interesting problem than expected.
+Getting a full KDE Plasma desktop to run headlessly in a container — no GPU, no physical display, no display manager — turned out to be a more interesting problem than expected. The final architecture took several iterations to get right.
 
-The approach that works is:
+```
+labwc  (wlroots headless compositor, wayland-0)
+├── wayvnc  (VNC server, port 5900 — captures labwc output)
+└── kwin_wayland  (nested fullscreen window, wayland-1)
+    ├── kactivitymanagerd
+    └── plasmashell  (panel docked correctly at screen edge)
+```
 
-1. **[labwc](https://github.com/labwc/labwc)** — a lightweight wlroots-based Wayland compositor. Unlike sway (which also uses wlroots), labwc draws proper Openbox-style window decorations with close/minimize/maximize buttons. Runs headlessly with `WLR_BACKENDS=headless`.
-2. **[wayvnc](https://github.com/any1/wayvnc)** — a VNC server for wlroots-based compositors, using the `wlr-screencopy` protocol. Listens on port 5900.
-3. **plasmashell + kactivitymanagerd** — the KDE Plasma shell and desktop, started via labwc autostart. No kwin_wayland needed — labwc handles compositing and window management.
-4. **wlr-randr** — sets the virtual output to 1920×1080 at startup.
+**Why two compositors?** This is the key insight. KDE Plasma's panel uses `plasma_surface` — a KDE-specific Wayland protocol extension — to tell the compositor "anchor me to the bottom edge of the screen". Only kwin_wayland implements this protocol. Without it, the panel has no way to dock, and floats in the center of the screen as a regular window.
 
-SDDM and plasmalogin (KDE's newer display manager) both require `/dev/tty1` which does not exist in nspawn containers. kwin_wayland works for the compositor but does not support the `zwlr_virtual_pointer_v1` protocol that wayvnc needs for input. labwc handles both constraints cleanly.
+The naive approach — labwc + plasmashell directly — fails for exactly this reason. labwc is a clean wlroots compositor, but it does not implement KDE's protocol extensions.
 
-The initial lead that pointed toward this architecture came from a [community gist on headless KDE Plasma under Wayland](https://gist.github.com/GithubUser5462/9cad267d7a87d1f178c89271c2c00e46), which in turn traced back to a [discussion on the KDE forums](https://discuss.kde.org/t/headless-remote-access-under-wayland/19055). The gist described a different approach (SDDM + sway for the greeter, then RDP for the session), but the core insight — that a wlroots compositor can bridge the headless VNC gap — was the right thread to pull. Credit where credit is due.
+The solution is to run kwin_wayland as a **nested compositor** inside labwc, as a fullscreen window. kwin provides all KDE Wayland protocols (including `plasma_surface` and `PlasmaWindowManagement`), so plasmashell positions its panel correctly. wayvnc, which requires the wlroots `wlr-screencopy` protocol that kwin does not implement, attaches to labwc — the outer compositor — and captures the entire screen, including the kwin session running fullscreen inside it.
+
+The four components:
+
+1. **[labwc](https://github.com/labwc/labwc)** — lightweight wlroots-based Wayland compositor. Runs headlessly with `WLR_BACKENDS=headless`. Provides the `wlr-screencopy` protocol that wayvnc needs.
+2. **[wayvnc](https://github.com/any1/wayvnc)** — VNC server for wlroots compositors. Listens on port 5900, captures labwc's framebuffer.
+3. **kwin_wayland** — KDE's own Wayland compositor, started as a nested client inside labwc (`--width 1920 --height 1080 --fullscreen`). Implements all KDE-specific protocols. Creates its own Wayland socket (`wayland-1`) for the KDE session.
+4. **plasmashell + kactivitymanagerd** — connect to kwin's socket and get a properly functioning desktop with a docked panel, working task manager, and correct window management.
+
+SDDM and plasmalogin both require `/dev/tty1` which does not exist in nspawn containers, so the session is managed directly via systemd. krdp (KDE's RDP server) was explored but requires H.264 Graphics Pipeline support in the RDP client — not reliably available in Remmina or KRDC without extra configuration.
+
+The initial lead that pointed toward the wlroots-compositor approach came from a [community gist on headless KDE Plasma under Wayland](https://gist.github.com/GithubUser5462/9cad267d7a87d1f178c89271c2c00e46), which in turn traced back to a [discussion on the KDE forums](https://discuss.kde.org/t/headless-remote-access-under-wayland/19055). The nested kwin architecture was worked out through direct experimentation in a Fedora 44 container.
 
 ## cockpit-nspawn is tested on
 

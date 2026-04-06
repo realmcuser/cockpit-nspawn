@@ -156,7 +156,7 @@ const DESKTOP_CONFIG = {
         // KDE Plasma 6 (Fedora 40+) is Wayland-only. Uses labwc (wlroots compositor)
         // + wayvnc for headless VNC access without a GPU or physical display.
         isAvailable: (distro, version) => distro === 'fedora' && Number(version) >= 40,
-        packages: ['@kde-desktop', 'labwc', 'wayvnc', 'wlr-randr'],
+        packages: ['@kde-desktop', 'labwc', 'wayvnc', 'wlr-randr', 'pipewire', 'wireplumber'],
     },
 };
 
@@ -660,11 +660,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         'wlr-randr --output HEADLESS-1 --custom-mode 1920x1080@60 &',
                         'sleep 1',
                         'dbus-update-activation-environment --all &',
-                        'kactivitymanagerd &',
+                        '/usr/bin/pipewire &',
+                        '/usr/bin/wireplumber &',
+                        'sleep 1',
+                        '/usr/libexec/kactivitymanagerd &',
                         'sleep 2',
-                        'plasmashell &',
+                        '/usr/bin/plasmashell &',
                         'sleep 4',
-                        'wayvnc 0.0.0.0 5900 &',
+                        '/usr/bin/wayvnc 0.0.0.0 5900 &',
                         '',
                     ].join('\n');
                     await cockpit.file(

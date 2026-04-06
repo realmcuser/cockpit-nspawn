@@ -77,6 +77,8 @@ The four components:
 
 SDDM and plasmalogin both require `/dev/tty1` which does not exist in nspawn containers, so the session is managed directly via systemd. krdp (KDE's RDP server) was explored but requires H.264 Graphics Pipeline support in the RDP client — not reliably available in Remmina or KRDC without extra configuration.
 
+**Performance note:** This setup is surprisingly responsive — noticeably so even over WLAN. The reasons: wayvnc is a modern Wayland-native VNC server that uses zstd compression (far faster than the zlib used by legacy VNC servers); the pixman software renderer produces consistent frame timing without GPU synchronization overhead; and with no display manager or session manager in the chain, the stack is lean. For ordinary desktop use, the latency is low enough that it does not feel like a remote session.
+
 The initial lead that pointed toward the wlroots-compositor approach came from a [community gist on headless KDE Plasma under Wayland](https://gist.github.com/GithubUser5462/9cad267d7a87d1f178c89271c2c00e46), which in turn traced back to a [discussion on the KDE forums](https://discuss.kde.org/t/headless-remote-access-under-wayland/19055). The nested kwin architecture was worked out through direct experimentation in a Fedora 44 container.
 
 ## cockpit-nspawn is tested on

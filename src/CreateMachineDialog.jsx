@@ -718,19 +718,35 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         { superuser: 'require', err: 'out' }
                     ).stream(append);
 
+                    // Write firewalld zone XML directly to the container filesystem so
+                    // port 5900 persists across reboots even if firewalld was not running
+                    // during bootstrap (firewall-cmd --permanent requires a live firewalld).
+                    const fwZoneDir = `/var/lib/machines/${name}/etc/firewalld/zones`;
+                    await cockpit.spawn(
+                        ['mkdir', '-p', fwZoneDir],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    const fwZoneXml = [
+                        '<?xml version="1.0" encoding="utf-8"?>',
+                        '<zone>',
+                        '  <short>Public</short>',
+                        '  <service name="dhcpv6-client"/>',
+                        '  <service name="mdns"/>',
+                        '  <service name="ssh"/>',
+                        '  <port port="5900" protocol="tcp"/>',
+                        '</zone>',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(`${fwZoneDir}/public.xml`, { superuser: 'require' }).replace(fwZoneXml);
+                    // Also reload firewalld in the running container to apply immediately
                     try {
-                        await cockpit.spawn(
-                            ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                             'firewall-cmd', '--permanent', '--add-port=5900/tcp'],
-                            { superuser: 'require', err: 'out' }
-                        ).stream(append);
                         await cockpit.spawn(
                             ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
                              'firewall-cmd', '--reload'],
                             { superuser: 'require', err: 'out' }
                         ).stream(append);
                     } catch (fwErr) {
-                        append(`Varning: brandvägg (${fwErr.message}) — öppna port 5900 manuellt vid behov.\n`);
+                        append(`Notera: brandvägg laddas om vid nästa omstart (${fwErr.message}).\n`);
                     }
 
                     append(`\nKDE Plasma VNC-server kör på port 5900.\n`);

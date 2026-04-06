@@ -651,11 +651,27 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         { superuser: 'require' }
                     ).replace('[Wallet]\nEnabled=false\nFirst Use=false\n');
 
+                    // GTK apps (Firefox etc.) use client-side decorations and default to
+                    // omitting the maximize button. Force close+minimize+maximize for both GTK3 and GTK4.
+                    const gtkSettings = '[Settings]\ngtk-decoration-layout = close,minimize,maximize:menu\n';
+                    for (const gtkDir of ['gtk-3.0', 'gtk-4.0']) {
+                        await cockpit.spawn(
+                            ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config/${gtkDir}`],
+                            { superuser: 'require', err: 'out' }
+                        );
+                        await cockpit.file(
+                            `/var/lib/machines/${name}/home/kdeuser/.config/${gtkDir}/settings.ini`,
+                            { superuser: 'require' }
+                        ).replace(gtkSettings);
+                    }
+
                     // Architecture: labwc (wlroots headless, wayvnc) → kwin_wayland nested
                     // fullscreen → plasmashell. kwin provides all KDE Wayland protocols
                     // (plasma_surface, PlasmaWindowManagement) so the panel docks correctly.
 
                     // plasma-startup.sh runs inside kwin's Wayland session (WAYLAND_DISPLAY=wayland-1)
+                    // polkit-kde-authentication-agent-1 enables Discover and other apps that
+                    // need privilege escalation (e.g. package install) to show a password dialog.
                     const plasmaStartup = [
                         '#!/bin/bash',
                         'dbus-update-activation-environment --all',
@@ -663,6 +679,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         '/usr/libexec/kactivitymanagerd &',
                         'sleep 1',
                         '/usr/bin/plasmashell &',
+                        '/usr/libexec/kf6/polkit-kde-authentication-agent-1 &',
                         '',
                     ].join('\n');
                     await cockpit.file(

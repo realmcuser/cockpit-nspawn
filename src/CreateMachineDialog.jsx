@@ -651,29 +651,44 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         { superuser: 'require' }
                     ).replace('[Wallet]\nEnabled=false\nFirst Use=false\n');
 
-                    // Plasma 6 defaults to floating=1 (centered dock-style panel).
-                    // Set floating=0 for a traditional full-width bottom panel.
-                    await cockpit.file(
-                        `/var/lib/machines/${name}/home/kdeuser/.config/plasmashellrc`,
-                        { superuser: 'require' }
-                    ).replace('[PlasmaViews][Panel 2]\nfloating=0\n');
+                    // Architecture: labwc (wlroots headless, wayvnc) → kwin_wayland nested
+                    // fullscreen → plasmashell. kwin provides all KDE Wayland protocols
+                    // (plasma_surface, PlasmaWindowManagement) so the panel docks correctly.
 
-                    // labwc autostart: sets resolution, starts KDE services + wayvnc
+                    // plasma-startup.sh runs inside kwin's Wayland session (WAYLAND_DISPLAY=wayland-1)
+                    const plasmaStartup = [
+                        '#!/bin/bash',
+                        'dbus-update-activation-environment --all',
+                        'sleep 1',
+                        '/usr/libexec/kactivitymanagerd &',
+                        'sleep 1',
+                        '/usr/bin/plasmashell &',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/plasma-startup.sh`,
+                        { superuser: 'require' }
+                    ).replace(plasmaStartup);
+                    await cockpit.spawn(
+                        ['chmod', '+x', `/var/lib/machines/${name}/home/kdeuser/plasma-startup.sh`],
+                        { superuser: 'require', err: 'out' }
+                    );
+
+                    // labwc autostart: sets resolution, starts pipewire, then kwin nested
+                    // fullscreen (creates wayland-1), wayvnc captures labwc (wayland-0)
                     await cockpit.spawn(
                         ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config/labwc`],
                         { superuser: 'require', err: 'out' }
                     );
                     const labwcAutostart = [
-                        'wlr-randr --output HEADLESS-1 --custom-mode 1920x1080@60 &',
+                        'wlr-randr --output HEADLESS-1 --custom-mode 1920x1080@60',
                         'sleep 1',
                         'dbus-update-activation-environment --all &',
                         '/usr/bin/pipewire &',
                         '/usr/bin/wireplumber &',
                         'sleep 1',
-                        '/usr/libexec/kactivitymanagerd &',
-                        'sleep 2',
-                        '/usr/bin/plasmashell &',
-                        'sleep 4',
+                        '/usr/bin/kwin_wayland --no-kactivities --no-lockscreen --width 1920 --height 1080 --fullscreen true /home/kdeuser/plasma-startup.sh &',
+                        'sleep 8',
                         '/usr/bin/wayvnc 0.0.0.0 5900 &',
                         '',
                     ].join('\n');
@@ -682,17 +697,17 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         { superuser: 'require' }
                     ).replace(labwcAutostart);
 
-                    // Fix ownership of kdeuser's home config
+                    // Fix ownership of kdeuser's home
                     await cockpit.spawn(
                         ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
-                         'chown', '-R', 'kdeuser:kdeuser', '/home/kdeuser/.config'],
+                         'chown', '-R', 'kdeuser:kdeuser', '/home/kdeuser'],
                         { superuser: 'require', err: 'out' }
                     ).stream(append);
 
-                    // Write systemd service for labwc headless session
+                    // Write systemd service: labwc (outer headless compositor)
                     const kdeService = [
                         '[Unit]',
-                        'Description=KDE Plasma headless (labwc + wayvnc)',
+                        'Description=KDE Plasma headless (labwc + kwin nested + wayvnc)',
                         'After=network.target systemd-logind.service',
                         '',
                         '[Service]',

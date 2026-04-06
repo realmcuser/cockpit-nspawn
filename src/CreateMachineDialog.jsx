@@ -651,6 +651,13 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         { superuser: 'require' }
                     ).replace('[Wallet]\nEnabled=false\nFirst Use=false\n');
 
+                    // Plasma 6 defaults to floating=1 (centered dock-style panel).
+                    // Set floating=0 for a traditional full-width bottom panel.
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/.config/plasmashellrc`,
+                        { superuser: 'require' }
+                    ).replace('[PlasmaViews][Panel 2]\nfloating=0\n');
+
                     // labwc autostart: sets resolution, starts KDE services + wayvnc
                     await cockpit.spawn(
                         ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config/labwc`],

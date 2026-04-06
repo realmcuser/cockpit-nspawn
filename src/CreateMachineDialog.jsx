@@ -651,27 +651,47 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         { superuser: 'require' }
                     ).replace('[Wallet]\nEnabled=false\nFirst Use=false\n');
 
-                    // GTK apps (Firefox etc.) use client-side decorations and default to
-                    // omitting the maximize button. Force close+minimize+maximize for both GTK3 and GTK4.
-                    const gtkSettings = '[Settings]\ngtk-decoration-layout = close,minimize,maximize:menu\n';
-                    for (const gtkDir of ['gtk-3.0', 'gtk-4.0']) {
-                        await cockpit.spawn(
-                            ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config/${gtkDir}`],
-                            { superuser: 'require', err: 'out' }
-                        );
-                        await cockpit.file(
-                            `/var/lib/machines/${name}/home/kdeuser/.config/${gtkDir}/settings.ini`,
-                            { superuser: 'require' }
-                        ).replace(gtkSettings);
-                    }
+                    // KDE Plasma 6 default decoration has only the close button (appmenu:close).
+                    // Override via system-wide dconf to add minimize + maximize for all GTK apps
+                    // (Firefox, Thunar, etc.) that use client-side decorations.
+                    // A system-wide dconf override under /etc/dconf/db/local.d/ survives container
+                    // reboots without needing a user dconf session to be running.
+                    // kwinrc also sets the SSD button layout for apps that use server-side decorations.
+                    await cockpit.spawn(
+                        ['mkdir', '-p', `/var/lib/machines/${name}/etc/dconf/db/local.d`],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/etc/dconf/db/local.d/00-kde-decorations`,
+                        { superuser: 'require' }
+                    ).replace('[org/gnome/desktop/wm/preferences]\nbutton-layout=\':minimize,maximize,close\'\n');
+
+                    await cockpit.spawn(
+                        ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config`],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    // kwinrc: set SSD button layout (I=minimize, A=maximize, X=close on right)
+                    // This affects kwin's own decorations and is read by xdg-desktop-portal-kde.
+                    const kwinrcContent = [
+                        '[org.kde.kdecoration2]',
+                        'ButtonsOnLeft=',
+                        'ButtonsOnRight=IAX',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/.config/kwinrc`,
+                        { superuser: 'require' }
+                    ).replace(kwinrcContent);
 
                     // Architecture: labwc (wlroots headless, wayvnc) → kwin_wayland nested
                     // fullscreen → plasmashell. kwin provides all KDE Wayland protocols
                     // (plasma_surface, PlasmaWindowManagement) so the panel docks correctly.
 
-                    // plasma-startup.sh runs inside kwin's Wayland session (WAYLAND_DISPLAY=wayland-1)
-                    // polkit-kde-authentication-agent-1 enables Discover and other apps that
-                    // need privilege escalation (e.g. package install) to show a password dialog.
+                    // plasma-startup.sh runs inside kwin's Wayland session (WAYLAND_DISPLAY=wayland-1).
+                    // Note: polkit-kde-authentication-agent-1 is intentionally omitted — it requires
+                    // a real logind session (PAM session with pam_systemd) which nspawn containers
+                    // do not create for lingering systemd services. Discover/PackageKit authentication
+                    // is handled instead by a polkit rule that grants kdeuser direct package rights.
                     const plasmaStartup = [
                         '#!/bin/bash',
                         'dbus-update-activation-environment --all',
@@ -679,7 +699,6 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         '/usr/libexec/kactivitymanagerd &',
                         'sleep 1',
                         '/usr/bin/plasmashell &',
-                        '/usr/libexec/kf6/polkit-kde-authentication-agent-1 &',
                         '',
                     ].join('\n');
                     await cockpit.file(
@@ -786,6 +805,43 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         ).stream(append);
                     } catch (fwErr) {
                         append(`Notera: brandvägg laddas om vid nästa omstart (${fwErr.message}).\n`);
+                    }
+
+                    // polkit rule: allow kdeuser to manage packages via Discover/PackageKit
+                    // without a password prompt. polkit-kde-authentication-agent-1 cannot
+                    // register in nspawn containers (requires a real logind session), so the
+                    // authentication agent approach does not work here. This rule grants
+                    // kdeuser direct package management rights via polkit.
+                    await cockpit.spawn(
+                        ['mkdir', '-p', `/var/lib/machines/${name}/etc/polkit-1/rules.d`],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    const polkitRule = [
+                        'polkit.addRule(function(action, subject) {',
+                        '    if (subject.user == "kdeuser" &&',
+                        '        (action.id.indexOf("org.freedesktop.packagekit") === 0 ||',
+                        '         action.id.indexOf("org.freedesktop.fwupd") === 0 ||',
+                        '         action.id.indexOf("org.gnome.packagekit") === 0)) {',
+                        '        return polkit.Result.YES;',
+                        '    }',
+                        '});',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/etc/polkit-1/rules.d/90-kdeuser-packages.rules`,
+                        { superuser: 'require' }
+                    ).replace(polkitRule);
+
+                    // Compile dconf system override (button-layout) inside the container.
+                    // The dconf binary database must be compiled after the text override is written.
+                    try {
+                        await cockpit.spawn(
+                            ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                             'dconf', 'update'],
+                            { superuser: 'require', err: 'out' }
+                        ).stream(append);
+                    } catch (dconfErr) {
+                        append(`Varning: dconf update misslyckades (${dconfErr.message}).\n`);
                     }
 
                     append(`\nKDE Plasma VNC-server kör på port 5900.\n`);

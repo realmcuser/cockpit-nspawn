@@ -189,6 +189,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
     const [bridgeName, setBridgeName] = useState('bridge0');
     const [betaRelease, setBetaRelease] = useState(false);
     const [desktop, setDesktop] = useState('none');
+    const [kbdLayout, setKbdLayout] = useState('se');
     const [memoryMax, setMemoryMax] = useState('');
     const [cpuQuota, setCpuQuota] = useState('');
     const [autoStart, setAutoStart] = useState(true);
@@ -683,6 +684,12 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         { superuser: 'require' }
                     ).replace(kwinrcContent);
 
+                    // kxkbrc: keyboard layout for KDE/kwin session (WAYLAND_DISPLAY=wayland-1)
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/.config/kxkbrc`,
+                        { superuser: 'require' }
+                    ).replace(`[Layout]\nLayoutList=${kbdLayout}\nUse=true\n`);
+
                     // Architecture: labwc (wlroots headless, wayvnc) → kwin_wayland nested
                     // fullscreen → plasmashell. kwin provides all KDE Wayland protocols
                     // (plasma_surface, PlasmaWindowManagement) so the panel docks correctly.
@@ -732,6 +739,25 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         `/var/lib/machines/${name}/home/kdeuser/.config/labwc/autostart`,
                         { superuser: 'require' }
                     ).replace(labwcAutostart);
+
+                    // labwc/rc.xml: keyboard layout for the outer Wayland session
+                    // (labwc is where wayvnc receives raw VNC key input, so the XKB
+                    // layout here determines how VNC keysyms map to actual characters)
+                    const labwcRc = [
+                        '<?xml version="1.0" encoding="UTF-8"?>',
+                        '<openbox_config>',
+                        '  <keyboard>',
+                        '    <xkb>',
+                        `      <layout>${kbdLayout}</layout>`,
+                        '    </xkb>',
+                        '  </keyboard>',
+                        '</openbox_config>',
+                        '',
+                    ].join('\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/.config/labwc/rc.xml`,
+                        { superuser: 'require' }
+                    ).replace(labwcRc);
 
                     // Fix ownership of kdeuser's home
                     await cockpit.spawn(
@@ -1127,6 +1153,23 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 >
                                     {_("KDE Plasma runs headlessly using labwc (Wayland compositor) and wayvnc. Connect with any VNC client (e.g. Remmina) to port 5900 — no password required. Resolution: 1920×1080. The session runs as user kdeuser.")}
                                 </Alert>
+                            )}
+
+                            {desktop === 'kde_vnc' && (
+                                <FormGroup label={_("Keyboard layout")} fieldId="kbd-layout">
+                                    <FormSelect
+                                        id="kbd-layout"
+                                        value={kbdLayout}
+                                        onChange={(_e, v) => setKbdLayout(v)}
+                                        isDisabled={running}
+                                        style={{ maxWidth: '220px' }}
+                                    >
+                                        <FormSelectOption value="se" label={_("Swedish (se)")} />
+                                        <FormSelectOption value="us" label={_("English / US (us)")} />
+                                        <FormSelectOption value="es" label={_("Spanish (es)")} />
+                                        <FormSelectOption value="de" label={_("German (de)")} />
+                                    </FormSelect>
+                                </FormGroup>
                             )}
 
                             {desktop === 'weston' && (

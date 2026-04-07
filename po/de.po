@@ -698,3 +698,23 @@ KDE Plasma: escritorio Wayland sin cabeza por VNC"
 msgid "KDE Plasma runs headlessly using labwc (Wayland compositor) and wayvnc. Connect with any VNC client (e.g. Remmina) to port 5900 — no password required. Resolution: 1920×1080. The session runs as user kdeuser."
 msgstr "KDE Plasma läuft kopflos mit labwc (Wayland-Compositor) und wayvnc. Mit einem VNC-Client (z. B. Remmina) zu Port 5900 verbinden – kein Passwort erforderlich. Auflösung: 1920×1080. Die Sitzung läuft als Benutzer kdeuser.
 KDE Plasma se ejecuta sin cabeza usando labwc (compositor Wayland) y wayvnc. Conéctese con cualquier cliente VNC (p. ej. Remmina) al puerto 5900 — no se requiere contraseña. Resolución: 1920×1080. La sesión se ejecuta como usuario kdeuser."
+
+#: src/CreateMachineDialog.jsx
+msgid "Keyboard layout"
+msgstr "Tastaturbelegung"
+
+#: src/CreateMachineDialog.jsx
+msgid "Swedish (se)"
+msgstr "Schwedisch (se)"
+
+#: src/CreateMachineDialog.jsx
+msgid "English / US (us)"
+msgstr "Englisch / US (us)"
+
+#: src/CreateMachineDialog.jsx
+msgid "Spanish (es)"
+msgstr "Spanisch (es)"
+
+#: src/CreateMachineDialog.jsx
+msgid "German (de)"
+msgstr "Deutsch (de)"

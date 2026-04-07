@@ -79,6 +79,10 @@ SDDM and plasmalogin both require `/dev/tty1` which does not exist in nspawn con
 
 **Performance note:** This setup is surprisingly responsive — noticeably so even over WLAN. The reasons: wayvnc is a modern Wayland-native VNC server that uses zstd compression (far faster than the zlib used by legacy VNC servers); the pixman software renderer produces consistent frame timing without GPU synchronization overhead; and with no display manager or session manager in the chain, the stack is lean. For ordinary desktop use, the latency is low enough that it does not feel like a remote session.
 
+**Recommended VNC client: TigerVNC.** Remmina works but has limited keyboard handling in VNC mode. TigerVNC (`dnf install tigervnc` / `apt install tigervnc-viewer`) gives better key symbol handling and is the recommended client for this setup: `vncviewer <container-ip>:5900`.
+
+**Keyboard layout** is selected at bootstrap time (Swedish, English/US, Spanish, or German). The layout is applied to both labwc (outer compositor, where wayvnc receives raw VNC key input) and kwin (inner KDE session). KDE Plasma 6's default decoration shows only a close button — the bootstrap overrides this via a system-wide dconf rule so that minimize, maximize, and close all appear.
+
 The initial lead that pointed toward the wlroots-compositor approach came from a [community gist on headless KDE Plasma under Wayland](https://gist.github.com/GithubUser5462/9cad267d7a87d1f178c89271c2c00e46), which in turn traced back to a [discussion on the KDE forums](https://discuss.kde.org/t/headless-remote-access-under-wayland/19055). The nested kwin architecture was worked out through direct experimentation in a Fedora 44 container.
 
 ## cockpit-nspawn is tested on

@@ -160,6 +160,36 @@ const DESKTOP_CONFIG = {
     },
 };
 
+// XKB keyboard layouts offered in the KDE VNC bootstrap dialog.
+// Labels are intentionally not translated — keyboard layout names are
+// internationally understood proper nouns (Swedish, German, French, …).
+const KEYBOARD_LAYOUTS = [
+    { value: 'bg', label: 'Bulgarian (bg)' },
+    { value: 'hr', label: 'Croatian (hr)' },
+    { value: 'cz', label: 'Czech (cz)' },
+    { value: 'dk', label: 'Danish (dk)' },
+    { value: 'nl', label: 'Dutch (nl)' },
+    { value: 'gb', label: 'English / UK (gb)' },
+    { value: 'us', label: 'English / US (us)' },
+    { value: 'ee', label: 'Estonian (ee)' },
+    { value: 'fi', label: 'Finnish (fi)' },
+    { value: 'fr', label: 'French (fr)' },
+    { value: 'de', label: 'German (de)' },
+    { value: 'gr', label: 'Greek (gr)' },
+    { value: 'hu', label: 'Hungarian (hu)' },
+    { value: 'it', label: 'Italian (it)' },
+    { value: 'lv', label: 'Latvian (lv)' },
+    { value: 'lt', label: 'Lithuanian (lt)' },
+    { value: 'no', label: 'Norwegian (no)' },
+    { value: 'pl', label: 'Polish (pl)' },
+    { value: 'pt', label: 'Portuguese (pt)' },
+    { value: 'ro', label: 'Romanian (ro)' },
+    { value: 'sk', label: 'Slovak (sk)' },
+    { value: 'si', label: 'Slovenian (si)' },
+    { value: 'es', label: 'Spanish (es)' },
+    { value: 'se', label: 'Swedish (se)' },
+];
+
 function detectFormat(url) {
     const u = url.toLowerCase();
     if (u.match(/\.(raw|img)(\.gz|\.xz|\.bz2)?(\?.*)?$/)) return 'raw';
@@ -1162,12 +1192,10 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                         value={kbdLayout}
                                         onChange={(_e, v) => setKbdLayout(v)}
                                         isDisabled={running}
-                                        style={{ maxWidth: '220px' }}
                                     >
-                                        <FormSelectOption value="se" label={_("Swedish (se)")} />
-                                        <FormSelectOption value="us" label={_("English / US (us)")} />
-                                        <FormSelectOption value="es" label={_("Spanish (es)")} />
-                                        <FormSelectOption value="de" label={_("German (de)")} />
+                                        {KEYBOARD_LAYOUTS.map(({ value, label }) => (
+                                            <FormSelectOption key={value} value={value} label={label} />
+                                        ))}
                                     </FormSelect>
                                 </FormGroup>
                             )}

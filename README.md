@@ -83,6 +83,8 @@ SDDM and plasmalogin both require `/dev/tty1` which does not exist in nspawn con
 
 **Keyboard layout** is selected at bootstrap time (Swedish, English/US, Spanish, or German). The layout is applied to both labwc (outer compositor, where wayvnc receives raw VNC key input) and kwin (inner KDE session). KDE Plasma 6's default decoration shows only a close button — the bootstrap overrides this via a system-wide dconf rule so that minimize, maximize, and close all appear.
 
+**Known limitation — task manager:** The taskbar shows open windows but does not track minimized windows. This is a Wayland protocol limitation: KDE's task manager (`libtaskmanager`) requires `org_kde_plasma_window_management`, a KDE-specific protocol that kwin_wayland does not expose to clients when running as a nested compositor inside labwc. There is no fallback in KDE 6.6 — neither `zwlr_foreign_toplevel_manager_v1` nor `ext_foreign_toplevel_list_v1` is used by the task manager. In practice: **use Alt+Tab** to switch between windows and restore minimized ones. Alt+Tab is handled entirely inside kwin and works correctly.
+
 The initial lead that pointed toward the wlroots-compositor approach came from a [community gist on headless KDE Plasma under Wayland](https://gist.github.com/GithubUser5462/9cad267d7a87d1f178c89271c2c00e46), which in turn traced back to a [discussion on the KDE forums](https://discuss.kde.org/t/headless-remote-access-under-wayland/19055). The nested kwin architecture was worked out through direct experimentation in a Fedora 44 container.
 
 ## cockpit-nspawn is tested on

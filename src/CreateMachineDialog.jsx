@@ -703,10 +703,16 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     );
                     // kwinrc: set SSD button layout (I=minimize, A=maximize, X=close on right)
                     // This affects kwin's own decorations and is read by xdg-desktop-portal-kde.
+                    // Desktops.Number=1: enforce a single virtual desktop so the task manager
+                    // never loses minimized windows to a different virtual desktop.
                     const kwinrcContent = [
                         '[org.kde.kdecoration2]',
                         'ButtonsOnLeft=',
                         'ButtonsOnRight=IAX',
+                        '',
+                        '[Desktops]',
+                        'Number=1',
+                        'Rows=1',
                         '',
                     ].join('\n');
                     await cockpit.file(
@@ -898,6 +904,32 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         ).stream(append);
                     } catch (dconfErr) {
                         append(`Varning: dconf update misslyckades (${dconfErr.message}).\n`);
+                    }
+
+                    // Disable kdeconnect autostart: kdeconnectd tries to use Bluetooth and
+                    // broadcasts network discovery, which generates harmless but noisy errors
+                    // in the journal inside a container (no Bluetooth hardware available).
+                    await cockpit.spawn(
+                        ['mkdir', '-p', `/var/lib/machines/${name}/home/kdeuser/.config/autostart`],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/home/kdeuser/.config/autostart/org.kde.kdeconnect.daemon.desktop`,
+                        { superuser: 'require' }
+                    ).replace('[Desktop Entry]\nHidden=true\n');
+
+                    // Mask fwupd: firmware update daemon cannot function in a container
+                    // (no hardware devices, no kernel firmware interfaces). Without masking,
+                    // fwupd.service fails to start and KDE Discover shows "unit failed" in
+                    // its Updates section when it tries to poll the fwupd D-Bus backend.
+                    try {
+                        await cockpit.spawn(
+                            ['systemd-run', `--machine=${name}`, '--wait', '--pipe', '--',
+                             'systemctl', 'mask', 'fwupd', 'fwupd-refresh.timer'],
+                            { superuser: 'require', err: 'out' }
+                        ).stream(append);
+                    } catch (fwupdErr) {
+                        append(`Notera: fwupd-mask misslyckades (${fwupdErr.message}).\n`);
                     }
 
                     append(`\nKDE Plasma VNC-server kör på port 5900.\n`);

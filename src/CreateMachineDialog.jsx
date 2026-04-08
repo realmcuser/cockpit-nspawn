@@ -707,6 +707,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     // never loses minimized windows to a different virtual desktop.
                     const kwinrcContent = [
                         '[org.kde.kdecoration2]',
+                        'library=org.kde.breeze',
                         'ButtonsOnLeft=',
                         'ButtonsOnRight=IAX',
                         '',
@@ -917,6 +918,23 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         `/var/lib/machines/${name}/home/kdeuser/.config/autostart/org.kde.kdeconnect.daemon.desktop`,
                         { superuser: 'require' }
                     ).replace('[Desktop Entry]\nHidden=true\n');
+
+                    // Firefox autoconfig: force browser.tabs.inTitlebar=0 so Firefox requests
+                    // server-side decorations (SSD) from kwin instead of drawing its own minimal
+                    // CSD that only shows a close button. With inTitlebar=0, kwin provides the
+                    // Breeze titlebar with the full button set (ButtonsOnRight=IAX).
+                    await cockpit.spawn(
+                        ['mkdir', '-p', `/var/lib/machines/${name}/usr/lib64/firefox/defaults/pref`],
+                        { superuser: 'require', err: 'out' }
+                    );
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/usr/lib64/firefox/defaults/pref/autoconfig.js`,
+                        { superuser: 'require' }
+                    ).replace('pref("general.config.filename", "firefox.cfg");\npref("general.config.obscure_value", 0);\n');
+                    await cockpit.file(
+                        `/var/lib/machines/${name}/usr/lib64/firefox/firefox.cfg`,
+                        { superuser: 'require' }
+                    ).replace('// Firefox system autoconfig\npref("browser.tabs.inTitlebar", 0);\n');
 
                     // Mask fwupd: firmware update daemon cannot function in a container
                     // (no hardware devices, no kernel firmware interfaces). Without masking,

@@ -42,9 +42,12 @@ function removeMachine(name) {
         .catch(() => {
             // Fallback: machinectl remove fails on some distros (e.g. AlmaLinux 10).
             return cockpit.spawn(
-                ['sh', '-c', `rm -rf /var/lib/machines/${name}; rm -f /etc/systemd/nspawn/${name}.nspawn`],
+                ['rm', '-rf', `/var/lib/machines/${name}`],
                 { superuser: 'require', err: 'message' }
-            );
+            ).then(() => cockpit.spawn(
+                ['rm', '-f', `/etc/systemd/nspawn/${name}.nspawn`],
+                { superuser: 'require', err: 'message' }
+            ));
         });
 }
 

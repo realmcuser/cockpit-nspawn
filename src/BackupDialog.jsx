@@ -8,7 +8,6 @@ import {
     HelperText,
     HelperTextItem,
     Modal,
-    Spinner,
     ModalBody,
     ModalHeader,
     ModalFooter,
@@ -349,10 +348,9 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 </Form>
 
                 {backingUp && (
-                    <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <Spinner size="md" />
-                        <span>{_("Backup in progress — this may take several minutes for large containers…")}</span>
-                    </div>
+                    <Alert variant="info" isInline title={_("Backup in progress…")} style={{ marginTop: '1rem' }}>
+                        {_("This may take several minutes for large containers.")}
+                    </Alert>
                 )}
 
                 {testResult && (

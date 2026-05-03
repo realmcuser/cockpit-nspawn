@@ -29,6 +29,7 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 - Change network mode (NAT ↔ Bridge) on stopped containers
 - Open display — shows RDP connection info and downloads a `.rdp` file that opens directly in Windows Remote Desktop (mstsc.exe), Remmina, or xfreerdp. RDP is encrypted by default.
 - Export containers as tarballs with direct browser download streaming
+- Schedule automatic backups to a remote host over SSH, with configurable retention and status badge
 - Enable/disable autostart at boot per container
 - Interface available in English, Swedish, German, French, and Spanish
 
@@ -43,7 +44,7 @@ Desktop environments are bootstrapped via DNF and use **xrdp** (X11-based DEs), 
 | AlmaLinux 9 | ✅ tested | ✅ tested | ✅ tested | ❌ not offered | ❌ not offered |
 | AlmaLinux 10 | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not in EPEL 10 yet | ❌ not offered | ❌ not offered |
 | Fedora 43 | ✅ tested | ❌ Plasma 6 is Wayland-only | ❌ GNOME 47+ is Wayland-only | ✅ tested | ❌ not offered |
-| Fedora 44 (Beta) | ❌ | ❌ | ❌ | 🔲 untested | ✅ tested |
+| Fedora 44 | ❌ | ❌ | ❌ | 🔲 untested | ✅ tested |
 
 KDE Plasma 6 and GNOME 47+ (Fedora 40+) dropped X11 support and are incompatible with xrdp's X11 backend. XFCE remains X11-based and works with xrdp on Fedora 43. For Fedora 40+ there are two Wayland-native options:
 
@@ -87,12 +88,43 @@ SDDM and plasmalogin both require `/dev/tty1` which does not exist in nspawn con
 
 The initial lead that pointed toward the wlroots-compositor approach came from a [community gist on headless KDE Plasma under Wayland](https://gist.github.com/GithubUser5462/9cad267d7a87d1f178c89271c2c00e46), which in turn traced back to a [discussion on the KDE forums](https://discuss.kde.org/t/headless-remote-access-under-wayland/19055). The nested kwin architecture was worked out through direct experimentation in a Fedora 44 container.
 
+## Backup
+
+Containers can be backed up automatically to a remote host over SSH. The backup is configured per container via the **Backup…** menu item.
+
+**What it does:**
+
+1. Creates a `.tar.gz` archive of the container directory (`/var/lib/machines/<name>`)
+2. Transfers it to the remote host via `scp`
+3. Enforces a configurable retention policy (number of copies to keep)
+4. Writes a status record that is shown as a badge in the container table
+
+**Configuration:**
+
+| Field | Description |
+|---|---|
+| SSH host | Hostname or IP of the backup destination |
+| SSH user | Remote user (default: root) |
+| Remote path | Directory on the remote host where backups are stored |
+| SSH private key | Path to a pre-authorized private key (see `ssh-copy-id`) |
+| Daily schedule | Time to run the backup, in HH:MM format |
+| Retention | Number of backup copies to keep; older ones are deleted automatically |
+| Stop during backup | Stops the container before archiving and restarts it after — recommended for containers running databases |
+
+The schedule is implemented as a systemd timer (`cockpit-nspawn-backup-<name>.timer`). After saving, a **Backup now** button is available to trigger an immediate run. The timer is persistent — if the system is powered off at the scheduled time, the backup runs on the next boot.
+
+The **status badge** on each container row updates every five seconds:
+- **backup OK** (green) — last backup completed successfully
+- **backup failed** (red) — last backup failed; open the Backup dialog to see the error message
+
+**Prerequisites:** `ssh` and `scp` must be available on the host, and the SSH key must be pre-authorized on the remote host before the first backup runs.
+
 ## cockpit-nspawn is tested on
 
 | Distribution | Status |
 |---|---|
 | Fedora 43 | ✅ Tested |
-| Fedora 44 (Beta) | ✅ Tested (KDE Plasma VNC bootstrap) |
+| Fedora 44 | ✅ Tested (KDE Plasma VNC bootstrap) |
 | Fedora 41 / 42 | 🔲 Should work, untested |
 | AlmaLinux 9 | ✅ Tested (host + containers) |
 | AlmaLinux 10 | ✅ Tested (bootstrapping) |

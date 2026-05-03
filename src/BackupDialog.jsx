@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Alert,
     Button,
@@ -8,6 +8,7 @@ import {
     HelperText,
     HelperTextItem,
     Modal,
+    Spinner,
     ModalBody,
     ModalHeader,
     ModalFooter,
@@ -120,6 +121,11 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     const [backingUp, setBackingUp] = useState(false);
     const [error, setError] = useState(null);
     const [testResult, setTestResult] = useState(null);
+    const pollRef = useRef(null);
+
+    useEffect(() => {
+        return () => { if (pollRef.current) clearInterval(pollRef.current); };
+    }, []);
 
     useEffect(() => {
         cockpit.file(`${CONFIG_DIR}/${machineName}.json`, { superuser: 'try' })
@@ -218,16 +224,37 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     async function doBackupNow() {
         setBackingUp(true);
         setError(null);
+        const serviceName = `cockpit-nspawn-backup-${machineName}.service`;
         try {
             await cockpit.spawn(
-                ['systemctl', 'start', '--no-block', `cockpit-nspawn-backup-${machineName}.service`],
+                ['systemctl', 'start', '--no-block', serviceName],
                 { superuser: 'require' }
             );
-            onAddNotification({ type: 'info', title: format(_("Backup started for $0"), machineName) });
-            onClose();
+            pollRef.current = setInterval(() => {
+                cockpit.spawn(
+                    ['systemctl', 'show', '--property=ActiveState', serviceName],
+                    { superuser: 'try', err: 'ignore' }
+                ).then(output => {
+                    const state = output.trim().replace('ActiveState=', '');
+                    if (state === 'inactive' || state === 'failed') {
+                        clearInterval(pollRef.current);
+                        pollRef.current = null;
+                        setBackingUp(false);
+                        cockpit.file(`${STATUS_DIR}/${machineName}.json`, { superuser: 'try' }).read()
+                            .then(content => {
+                                if (!content) return;
+                                try { setStatus(JSON.parse(content)); } catch (_e) {}
+                            })
+                            .catch(() => {});
+                    }
+                }).catch(() => {
+                    clearInterval(pollRef.current);
+                    pollRef.current = null;
+                    setBackingUp(false);
+                });
+            }, 2000);
         } catch (ex) {
             setError(ex.message || _("Failed to start backup"));
-        } finally {
             setBackingUp(false);
         }
     }
@@ -320,6 +347,13 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                         </HelperText>
                     </FormGroup>
                 </Form>
+
+                {backingUp && (
+                    <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <Spinner size="md" />
+                        <span>{_("Backup in progress — this may take several minutes for large containers…")}</span>
+                    </div>
+                )}
 
                 {testResult && (
                     <Alert

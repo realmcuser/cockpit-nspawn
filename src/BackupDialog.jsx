@@ -112,7 +112,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     const [keyPath, setKeyPath] = useState('/root/.ssh/id_rsa');
     const [schedule, setSchedule] = useState('02:00');
     const [retention, setRetention] = useState(3);
-    const [stopDuring, setStopDuring] = useState(false);
+    const [stopDuring, setStopDuring] = useState(true);
     const [status, setStatus] = useState(null);
     const [hasConfig, setHasConfig] = useState(false);
     const [saving, setSaving] = useState(false);

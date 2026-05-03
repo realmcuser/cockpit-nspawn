@@ -20,6 +20,7 @@ import { ExportMachineDialog } from "./ExportMachineDialog.jsx";
 import { MachineRdpInfo } from "./MachineRdpInfo.jsx";
 import { EditNetworkDialog } from "./EditNetworkDialog.jsx";
 import { EditResourcesDialog } from "./EditResourcesDialog.jsx";
+import { BackupDialog } from "./BackupDialog.jsx";
 
 const { gettext: _, format } = cockpit;
 
@@ -32,6 +33,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showRdp, setShowRdp] = useState(false);
     const [showEditNetwork, setShowEditNetwork] = useState(false);
     const [showEditResources, setShowEditResources] = useState(false);
+    const [showBackup, setShowBackup] = useState(false);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -111,6 +113,12 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                         {_("Export…")}
                     </DropdownItem>
                     <DropdownItem
+                        key="backup"
+                        onClick={() => { setOpen(false); setShowBackup(true); }}
+                    >
+                        {_("Backup…")}
+                    </DropdownItem>
+                    <DropdownItem
                         key="details"
                         onClick={() => { setOpen(false); onExpand(); }}
                     >
@@ -188,6 +196,14 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 <ExportMachineDialog
                     machineName={name}
                     onClose={() => setShowExport(false)}
+                />
+            )}
+
+            {showBackup && (
+                <BackupDialog
+                    machineName={name}
+                    onClose={() => setShowBackup(false)}
+                    onAddNotification={onAddNotification}
                 />
             )}
 

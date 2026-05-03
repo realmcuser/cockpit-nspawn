@@ -57,7 +57,7 @@ function StatusBadge({ state }) {
     return <Badge style={{ backgroundColor: color === "green" ? "#3e8635" : "#6a6e73", color: "white" }}>{state}</Badge>;
 }
 
-export function Machines({ machines, images, enabledMachines, onAction, onAddNotification, onRefresh }) {
+export function Machines({ machines, images, enabledMachines, backupStatuses, onAction, onAddNotification, onRefresh }) {
     const [filter, setFilter] = useState("");
     const [expandedRows, setExpandedRows] = useState(new Set());
     const [showCreate, setShowCreate] = useState(false);
@@ -152,6 +152,17 @@ export function Machines({ machines, images, enabledMachines, onAction, onAddNot
                                                 </Badge>
                                             </FlexItem>
                                         )}
+                                        {backupStatuses && backupStatuses.has(m.machine) && (() => {
+                                            const bs = backupStatuses.get(m.machine);
+                                            const ok = bs.result === 'success';
+                                            return (
+                                                <FlexItem>
+                                                    <Badge style={{ backgroundColor: ok ? '#3e8635' : '#c9190b', color: 'white', fontSize: '0.7em' }}>
+                                                        {ok ? _("backup OK") : _("backup failed")}
+                                                    </Badge>
+                                                </FlexItem>
+                                            );
+                                        })()}
                                     </Flex>
                                 </Td>
                                 <Td dataLabel={_("OS")}>

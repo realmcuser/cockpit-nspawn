@@ -35,6 +35,31 @@ function fetchEnabledMachines() {
     }).catch(() => new Set());
 }
 
+function fetchBackupStatuses() {
+    return cockpit.spawn(
+        ['find', '/etc/cockpit-nspawn/backup-status', '-maxdepth', '1', '-name', '*.json'],
+        { superuser: 'try', err: 'ignore' }
+    ).then(output => {
+        const files = output.trim().split('\n').filter(Boolean);
+        if (files.length === 0) return new Map();
+        return Promise.all(
+            files.map(f => {
+                const name = f.replace(/^.*\//, '').replace(/\.json$/, '');
+                return cockpit.file(f, { superuser: 'try' }).read()
+                    .then(content => {
+                        if (!content) return null;
+                        try { return [name, JSON.parse(content)]; } catch { return null; }
+                    })
+                    .catch(() => null);
+            })
+        ).then(results => {
+            const map = new Map();
+            results.filter(Boolean).forEach(([n, s]) => map.set(n, s));
+            return map;
+        });
+    }).catch(() => new Map());
+}
+
 function removeMachine(name) {
     // Disable autostart first (ignore errors if not enabled)
     return spawnMachinectl(['disable', name]).catch(() => null)
@@ -55,6 +80,7 @@ export function Application() {
     const [machines, setMachines] = useState([]);
     const [images, setImages] = useState([]);
     const [enabledMachines, setEnabledMachines] = useState(new Set());
+    const [backupStatuses, setBackupStatuses] = useState(new Map());
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState([]);
 
@@ -85,11 +111,12 @@ export function Application() {
                 return [];
             });
 
-        Promise.all([listPromise, imagesPromise, fetchEnabledMachines()])
-            .then(([machineList, imageList, enabled]) => {
+        Promise.all([listPromise, imagesPromise, fetchEnabledMachines(), fetchBackupStatuses()])
+            .then(([machineList, imageList, enabled, backupStats]) => {
                 setMachines(machineList);
                 setImages(imageList);
                 setEnabledMachines(enabled);
+                setBackupStatuses(backupStats);
                 setLoading(false);
             });
     }, []);
@@ -182,6 +209,7 @@ export function Application() {
                     machines={machines}
                     images={images}
                     enabledMachines={enabledMachines}
+                    backupStatuses={backupStatuses}
                     onAction={handleAction}
                     onAddNotification={addNotification}
                     onRefresh={fetchData}

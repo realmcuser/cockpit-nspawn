@@ -720,3 +720,137 @@ msgstr "Spanska (es)"
 #: src/CreateMachineDialog.jsx
 msgid "German (de)"
 msgstr "Tyska (de)"
+
+# BackupDialog.jsx + backup badges
+
+#: src/BackupDialog.jsx
+msgid "Backup: $0"
+msgstr "Säkerhetskopia: $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup configured for $0"
+msgstr "Säkerhetskopiering konfigurerad för $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup disabled for $0"
+msgstr "Säkerhetskopiering inaktiverad för $0"
+
+#: src/BackupDialog.jsx
+msgid "backup failed"
+msgstr "backup misslyckades"
+
+#: src/BackupDialog.jsx
+msgid "Backup in progress…"
+msgstr "Säkerhetskopiering pågår…"
+
+#: src/BackupDialog.jsx
+msgid "Backup now"
+msgstr "Säkerhetskopiera nu"
+
+#: src/BackupDialog.jsx
+msgid "backup OK"
+msgstr "backup OK"
+
+#: src/BackupDialog.jsx
+msgid "Backups are stored as NAME-YYYYMMDD-HHMMSS.tar.gz in this directory"
+msgstr "Säkerhetskopior lagras som NAME-YYYYMMDD-HHMMSS.tar.gz i den här katalogen"
+
+#: src/BackupDialog.jsx
+msgid "Connection failed"
+msgstr "Anslutning misslyckades"
+
+#: src/BackupDialog.jsx
+msgid "Connection successful"
+msgstr "Anslutning lyckades"
+
+#: src/BackupDialog.jsx
+msgid "Daily schedule"
+msgstr "Dagligt schema"
+
+#: src/BackupDialog.jsx
+msgid "Disable backup"
+msgstr "Inaktivera säkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Failed to configure backup"
+msgstr "Det gick inte att konfigurera säkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable backup"
+msgstr "Det gick inte att inaktivera säkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Failed to start backup"
+msgstr "Det gick inte att starta säkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Host is required"
+msgstr "Värd krävs"
+
+#: src/BackupDialog.jsx
+msgid "Key must be pre-authorized on the remote host (ssh-copy-id)"
+msgstr "Nyckeln måste vara förauktoriserad på fjärrvärden (ssh-copy-id)"
+
+#: src/BackupDialog.jsx
+msgid "Last backup: $0$1"
+msgstr "Senaste säkerhetskopia: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "Last backup failed: $0"
+msgstr "Senaste säkerhetskopia misslyckades: $0"
+
+#: src/BackupDialog.jsx
+msgid "Number of backup copies to keep on remote"
+msgstr "Antal säkerhetskopior att behålla på fjärrvärden"
+
+#: src/BackupDialog.jsx
+msgid "Options"
+msgstr "Alternativ"
+
+#: src/BackupDialog.jsx
+msgid "Recommended for containers running databases"
+msgstr "Rekommenderas för containers som kör databaser"
+
+#: src/BackupDialog.jsx
+msgid "Remote path"
+msgstr "Fjärrsökväg"
+
+#: src/BackupDialog.jsx
+msgid "Retention"
+msgstr "Antal kopior"
+
+#: src/BackupDialog.jsx
+msgid "Save and enable"
+msgstr "Spara och aktivera"
+
+#: src/BackupDialog.jsx
+msgid "Schedule must be in HH:MM format (e.g. 02:00)"
+msgstr "Schema måste anges i formatet TT:MM (t.ex. 02:00)"
+
+#: src/BackupDialog.jsx
+msgid "SSH host"
+msgstr "SSH-värd"
+
+#: src/BackupDialog.jsx
+msgid "SSH private key"
+msgstr "Privat SSH-nyckel"
+
+#: src/BackupDialog.jsx
+msgid "SSH user"
+msgstr "SSH-användare"
+
+#: src/BackupDialog.jsx
+msgid "Stop container during backup"
+msgstr "Stoppa container under säkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Test connection"
+msgstr "Testa anslutning"
+
+#: src/BackupDialog.jsx
+msgid "This may take several minutes for large containers."
+msgstr "Det kan ta flera minuter för stora containers."
+
+#: src/BackupDialog.jsx
+msgid "Time in 24-hour format (HH:MM)"
+msgstr "Tid i 24-timmarsformat (TT:MM)"

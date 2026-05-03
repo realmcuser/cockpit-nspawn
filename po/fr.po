@@ -716,3 +716,137 @@ msgstr "Espagnol (es)"
 #: src/CreateMachineDialog.jsx
 msgid "German (de)"
 msgstr "Allemand (de)"
+
+# BackupDialog.jsx + backup badges
+
+#: src/BackupDialog.jsx
+msgid "Backup: $0"
+msgstr "Sauvegarde : $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup configured for $0"
+msgstr "Sauvegarde configurée pour $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup disabled for $0"
+msgstr "Sauvegarde désactivée pour $0"
+
+#: src/BackupDialog.jsx
+msgid "backup failed"
+msgstr "sauvegarde échouée"
+
+#: src/BackupDialog.jsx
+msgid "Backup in progress…"
+msgstr "Sauvegarde en cours…"
+
+#: src/BackupDialog.jsx
+msgid "Backup now"
+msgstr "Sauvegarder maintenant"
+
+#: src/BackupDialog.jsx
+msgid "backup OK"
+msgstr "sauvegarde OK"
+
+#: src/BackupDialog.jsx
+msgid "Backups are stored as NAME-YYYYMMDD-HHMMSS.tar.gz in this directory"
+msgstr "Les sauvegardes sont stockées sous NAME-YYYYMMDD-HHMMSS.tar.gz dans ce répertoire"
+
+#: src/BackupDialog.jsx
+msgid "Connection failed"
+msgstr "Connexion échouée"
+
+#: src/BackupDialog.jsx
+msgid "Connection successful"
+msgstr "Connexion réussie"
+
+#: src/BackupDialog.jsx
+msgid "Daily schedule"
+msgstr "Planification quotidienne"
+
+#: src/BackupDialog.jsx
+msgid "Disable backup"
+msgstr "Désactiver la sauvegarde"
+
+#: src/BackupDialog.jsx
+msgid "Failed to configure backup"
+msgstr "Échec de la configuration de la sauvegarde"
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable backup"
+msgstr "Échec de la désactivation de la sauvegarde"
+
+#: src/BackupDialog.jsx
+msgid "Failed to start backup"
+msgstr "Échec du démarrage de la sauvegarde"
+
+#: src/BackupDialog.jsx
+msgid "Host is required"
+msgstr "L'hôte est requis"
+
+#: src/BackupDialog.jsx
+msgid "Key must be pre-authorized on the remote host (ssh-copy-id)"
+msgstr "La clé doit être pré-autorisée sur l'hôte distant (ssh-copy-id)"
+
+#: src/BackupDialog.jsx
+msgid "Last backup: $0$1"
+msgstr "Dernière sauvegarde : $0$1"
+
+#: src/BackupDialog.jsx
+msgid "Last backup failed: $0"
+msgstr "Dernière sauvegarde échouée : $0"
+
+#: src/BackupDialog.jsx
+msgid "Number of backup copies to keep on remote"
+msgstr "Nombre de copies à conserver sur l'hôte distant"
+
+#: src/BackupDialog.jsx
+msgid "Options"
+msgstr "Options"
+
+#: src/BackupDialog.jsx
+msgid "Recommended for containers running databases"
+msgstr "Recommandé pour les conteneurs avec des bases de données"
+
+#: src/BackupDialog.jsx
+msgid "Remote path"
+msgstr "Chemin distant"
+
+#: src/BackupDialog.jsx
+msgid "Retention"
+msgstr "Rétention"
+
+#: src/BackupDialog.jsx
+msgid "Save and enable"
+msgstr "Enregistrer et activer"
+
+#: src/BackupDialog.jsx
+msgid "Schedule must be in HH:MM format (e.g. 02:00)"
+msgstr "La planification doit être au format HH:MM (ex. 02:00)"
+
+#: src/BackupDialog.jsx
+msgid "SSH host"
+msgstr "Hôte SSH"
+
+#: src/BackupDialog.jsx
+msgid "SSH private key"
+msgstr "Clé privée SSH"
+
+#: src/BackupDialog.jsx
+msgid "SSH user"
+msgstr "Utilisateur SSH"
+
+#: src/BackupDialog.jsx
+msgid "Stop container during backup"
+msgstr "Arrêter le conteneur pendant la sauvegarde"
+
+#: src/BackupDialog.jsx
+msgid "Test connection"
+msgstr "Tester la connexion"
+
+#: src/BackupDialog.jsx
+msgid "This may take several minutes for large containers."
+msgstr "Cela peut prendre plusieurs minutes pour les conteneurs volumineux."
+
+#: src/BackupDialog.jsx
+msgid "Time in 24-hour format (HH:MM)"
+msgstr "Heure au format 24h (HH:MM)"

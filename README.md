@@ -1,22 +1,14 @@
-# cockpit-nspawn
+# cockpit-nspawn: Systemd-nspawn Container Management for Cockpit
 
-A Cockpit module for managing systemd-nspawn containers through a clean web UI — because apparently nobody else made one.
+> A web UI for managing systemd-nspawn containers — because apparently nobody else made one.
+
+Create, start, stop, back up, and manage lightweight system containers directly from your Cockpit web console. No Docker required — full systemd support inside every container.
 
 ![screenshot](screenshot.png)
 
-## The Story Behind This
-
-If you have ever tried to find a Cockpit module for managing systemd-nspawn containers, you already know what happens: you find nothing. A few old forum threads, some "wouldn't that be nice" comments, and then silence.
-
-Honestly, I find this strange. systemd-nspawn is a fantastic, lightweight container solution that ships with every modern systemd-based Linux system. No daemon, full systemd support inside the container, perfect for testing and isolation. And yet — no Cockpit UI. Not even a basic one.
-
-So I built one.
-
-I should be transparent: I am not a developer. I am a Linux sysadmin, an IT consultant, and what some might generously call a "datanisse" — a Scandinavian term for someone who lives and breathes computers but is not necessarily paid to write code. What I *am* paid to do is make Linux systems work, and I work far too much of the time already.
-
-This module was built using **Claude Code**, which turned out to be a remarkable tool for exactly this kind of project — someone who knows what they want technically but needs help getting from idea to working software. If you are a sysadmin who has ever thought "I could specify this perfectly but couldn't code it from scratch", Claude Code is worth exploring.
-
 ## What It Does
+
+cockpit-nspawn provides a web-based interface for managing systemd-nspawn containers — system-level containers with full systemd support inside. Ideal for testing, service isolation, and lightweight virtualization without the overhead of Docker or a hypervisor.
 
 - Lists all nspawn containers and machine images
 - Start, stop, and force-terminate containers
@@ -32,6 +24,18 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 - Schedule automatic backups to a remote host over SSH, with configurable retention and status badge
 - Enable/disable autostart at boot per container
 - Interface available in English, Swedish, German, French, Spanish, Norwegian Bokmål, Danish, and Finnish
+
+## The Story Behind This
+
+If you have ever tried to find a Cockpit module for managing systemd-nspawn containers, you already know what happens: you find nothing. A few old forum threads, some "wouldn't that be nice" comments, and then silence.
+
+Honestly, I find this strange. systemd-nspawn is a fantastic, lightweight container solution that ships with every modern systemd-based Linux system. No daemon, full systemd support inside the container, perfect for testing and isolation. And yet — no Cockpit UI. Not even a basic one.
+
+So I built one.
+
+I should be transparent: I am not a developer. I am a Linux sysadmin, an IT consultant, and what some might generously call a "datanisse" — a Scandinavian term for someone who lives and breathes computers but is not necessarily paid to write code. What I *am* paid to do is make Linux systems work, and I work far too much of the time already.
+
+This module was built using **Claude Code**, which turned out to be a remarkable tool for exactly this kind of project — someone who knows what they want technically but needs help getting from idea to working software. If you are a sysadmin who has ever thought "I could specify this perfectly but couldn't code it from scratch", Claude Code is worth exploring.
 
 ## Translations
 

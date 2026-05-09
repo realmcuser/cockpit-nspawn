@@ -1,0 +1,848 @@
+# Finnish translations for cockpit-nspawn
+# SPDX-License-Identifier: LGPL-2.1-or-later
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-09 00:00+0000\n"
+"PO-Revision-Date: 2026-05-09 00:00+0000\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# app.jsx
+#: src/app.jsx:93
+msgid "Loading containers..."
+msgstr "Ladataan kontteja..."
+
+#: src/app.jsx:100
+msgid "Containers (nspawn)"
+msgstr "Kontit (nspawn)"
+
+#: src/app.jsx:75
+msgid "$0 started"
+msgstr "$0 käynnistetty"
+
+#: src/app.jsx:76
+msgid "$0 stopped"
+msgstr "$0 pysäytetty"
+
+#: src/app.jsx:77
+msgid "$0 terminated"
+msgstr "$0 lopetettu"
+
+#: src/app.jsx:78
+msgid "$0 removed"
+msgstr "$0 poistettu"
+
+#: src/app.jsx:80
+msgid "Failed to start $0"
+msgstr "$0 käynnistys epäonnistui"
+
+#: src/app.jsx:81
+msgid "Failed to stop $0"
+msgstr "$0 pysäytys epäonnistui"
+
+#: src/app.jsx:82
+msgid "Failed to terminate $0"
+msgstr "$0 lopetus epäonnistui"
+
+#: src/app.jsx:83
+msgid "Failed to remove $0"
+msgstr "$0 poisto epäonnistui"
+
+# machines.jsx
+#: src/machines.jsx:93
+msgid "Filter containers..."
+msgstr "Suodata kontteja..."
+
+#: src/machines.jsx:100
+msgid "Create container"
+msgstr "Luo kontti"
+
+#: src/machines.jsx:105
+msgid "Refresh"
+msgstr "Päivitä"
+
+#: src/machines.jsx:115
+msgid "Expand"
+msgstr "Laajenna"
+
+#: src/machines.jsx:116
+msgid "Name"
+msgstr "Nimi"
+
+#: src/machines.jsx:117
+msgid "Status"
+msgstr "Tila"
+
+#: src/machines.jsx:118
+msgid "OS"
+msgstr "Käyttöjärjestelmä"
+
+#: src/machines.jsx:119
+msgid "IP address"
+msgstr "IP-osoite"
+
+#: src/machines.jsx:120
+msgid "Type"
+msgstr "Tyyppi"
+
+#: src/machines.jsx:121
+msgid "Actions"
+msgstr "Toiminnot"
+
+#: src/machines.jsx:125
+msgid "No containers found"
+msgstr "Kontteja ei löydy"
+
+# MachineActions.jsx
+#: src/MachineActions.jsx:45
+msgid "Actions for $0"
+msgstr "Toiminnot: $0"
+
+#: src/MachineActions.jsx:54
+msgid "Start"
+msgstr "Käynnistä"
+
+#: src/MachineActions.jsx:60
+msgid "Stop"
+msgstr "Pysäytä"
+
+#: src/MachineActions.jsx:65
+msgid "Force stop"
+msgstr "Pakota pysäytys"
+
+#: src/MachineActions.jsx:72
+msgid "Open terminal"
+msgstr "Avaa pääte"
+
+#: src/MachineActions.jsx:82
+msgid "Show logs"
+msgstr "Näytä lokit"
+
+#: src/MachineActions.jsx:88
+msgid "Export…"
+msgstr "Vie…"
+
+#: src/MachineActions.jsx:94
+msgid "Hide details"
+msgstr "Piilota tiedot"
+
+#: src/MachineActions.jsx:94
+msgid "Show details"
+msgstr "Näytä tiedot"
+
+#: src/MachineActions.jsx:101
+msgid "Remove"
+msgstr "Poista"
+
+#: src/MachineActions.jsx:141
+msgid "Remove container"
+msgstr "Poista kontti"
+
+#: src/MachineActions.jsx:143
+msgid "Are you sure you want to remove $0? This action cannot be undone."
+msgstr "Haluatko varmasti poistaa $0? Tätä toimintoa ei voi peruuttaa."
+
+#: src/MachineActions.jsx:151
+msgid "Cancel"
+msgstr "Peruuta"
+
+# MachineDetails.jsx
+#: src/MachineDetails.jsx:73
+msgid "Path"
+msgstr "Polku"
+
+#: src/MachineDetails.jsx:80
+msgid "Operating system"
+msgstr "Käyttöjärjestelmä"
+
+#: src/MachineDetails.jsx:87
+msgid "IP addresses"
+msgstr "IP-osoitteet"
+
+#: src/MachineDetails.jsx:107
+msgid "Leader PID"
+msgstr "Pää-PID"
+
+#: src/MachineDetails.jsx:114
+msgid "Started"
+msgstr "Käynnistetty"
+
+#: src/MachineDetails.jsx:120
+msgid "Shortcuts"
+msgstr "Pikakuvakkeet"
+
+#: src/MachineDetails.jsx:124
+msgid "System logs"
+msgstr "Järjestelmälokit"
+
+#: src/MachineDetails.jsx:129
+msgid "Files"
+msgstr "Tiedostot"
+
+# MachineLogs.jsx
+#: src/MachineLogs.jsx:20
+msgid "All levels"
+msgstr "Kaikki tasot"
+
+#: src/MachineLogs.jsx:21
+msgid "Emergency (0)"
+msgstr "Hätätilanne (0)"
+
+#: src/MachineLogs.jsx:22
+msgid "Alert (1)"
+msgstr "Hälytys (1)"
+
+#: src/MachineLogs.jsx:23
+msgid "Critical (2)"
+msgstr "Kriittinen (2)"
+
+#: src/MachineLogs.jsx:24
+msgid "Error (3)"
+msgstr "Virhe (3)"
+
+#: src/MachineLogs.jsx:25
+msgid "Warning (4)"
+msgstr "Varoitus (4)"
+
+#: src/MachineLogs.jsx:26
+msgid "Info (6)"
+msgstr "Tiedote (6)"
+
+#: src/MachineLogs.jsx:27
+msgid "Debug (7)"
+msgstr "Vianselvitys (7)"
+
+#: src/MachineLogs.jsx:100
+msgid "Log error for $0"
+msgstr "Lokivirhe: $0"
+
+#: src/MachineLogs.jsx:133
+msgid "Logs for $0"
+msgstr "Lokit: $0"
+
+#: src/MachineLogs.jsx:135
+msgid "Logs — $0"
+msgstr "Lokit — $0"
+
+#: src/MachineLogs.jsx:163
+msgid "Following real time"
+msgstr "Seuraa reaaliaikaa"
+
+#: src/MachineLogs.jsx:163
+msgid "Follow real time"
+msgstr "Seuraa reaaliaikaa"
+
+#: src/MachineLogs.jsx:168
+msgid "Clear"
+msgstr "Tyhjennä"
+
+#: src/MachineLogs.jsx:191
+msgid "Waiting for logs..."
+msgstr "Odotetaan lokeja..."
+
+#: src/MachineLogs.jsx:212
+msgid "Close"
+msgstr "Sulje"
+
+# MachineTerminal.jsx
+#: src/MachineTerminal.jsx:97
+msgid "Terminal for $0"
+msgstr "Pääte: $0"
+
+#: src/MachineTerminal.jsx:100
+msgid "Terminal — $0"
+msgstr "Pääte — $0"
+
+# ExportMachineDialog.jsx
+#: src/ExportMachineDialog.jsx:117
+msgid "Export $0"
+msgstr "Vie $0"
+
+#: src/ExportMachineDialog.jsx:121
+msgid "Creates the archive on the server and starts a browser download. Streams directly via HTTP, works for large files."
+msgstr "Luo arkiston palvelimella ja käynnistää selainlatauksen. Suoratoisto HTTP:n kautta, toimii suurille tiedostoille."
+
+#: src/ExportMachineDialog.jsx:125
+msgid "Temporary file:"
+msgstr "Väliaikainen tiedosto:"
+
+#: src/ExportMachineDialog.jsx:125
+msgid "(removed automatically)"
+msgstr "(poistetaan automaattisesti)"
+
+#: src/ExportMachineDialog.jsx:132
+msgid "Creating archive on server…"
+msgstr "Luodaan arkistoa palvelimella…"
+
+#: src/ExportMachineDialog.jsx:134
+msgid "written"
+msgstr "kirjoitettu"
+
+#: src/ExportMachineDialog.jsx:141
+msgid "Export complete — $0."
+msgstr "Vienti valmis — $0."
+
+#: src/ExportMachineDialog.jsx:143
+msgid "Click the button to start the download."
+msgstr "Käynnistä lataus painamalla nappia."
+
+#: src/ExportMachineDialog.jsx:145
+msgid "The file streams directly from the server. The temporary file is removed automatically after the download starts."
+msgstr "Tiedosto suoratoistetaan palvelimelta. Väliaikainen tiedosto poistetaan automaattisesti latauksen alettua."
+
+#: src/ExportMachineDialog.jsx:217
+msgid "Downloading…"
+msgstr "Ladataan…"
+
+#: src/ExportMachineDialog.jsx:218
+msgid "transferred"
+msgstr "siirretty"
+
+#: src/ExportMachineDialog.jsx:172
+msgid "Download failed"
+msgstr "Lataus epäonnistui"
+
+#: src/ExportMachineDialog.jsx:223
+msgid "Download complete"
+msgstr "Lataus valmis"
+
+#: src/ExportMachineDialog.jsx:224
+msgid "Saved to your downloads folder:"
+msgstr "Tallennettu latauksiin:"
+
+#: src/ExportMachineDialog.jsx:147
+msgid "Export failed"
+msgstr "Vienti epäonnistui"
+
+#: src/ExportMachineDialog.jsx:240
+msgid "Start export"
+msgstr "Käynnistä vienti"
+
+#: src/ExportMachineDialog.jsx:246
+msgid "Download $0"
+msgstr "Lataa $0"
+
+#: src/ExportMachineDialog.jsx:252
+msgid "Cancel export"
+msgstr "Peruuta vienti"
+
+# CreateMachineDialog.jsx
+#: src/CreateMachineDialog.jsx:350
+msgid "Method"
+msgstr "Menetelmä"
+
+#: src/CreateMachineDialog.jsx:357
+msgid "Bootstrap (DNF)"
+msgstr "Bootstrap (DNF)"
+
+#: src/CreateMachineDialog.jsx:362
+msgid "Pull from URL"
+msgstr "Hae URL:sta"
+
+#: src/CreateMachineDialog.jsx:367
+msgid "Clone existing"
+msgstr "Kloonaa olemassa oleva"
+
+#: src/CreateMachineDialog.jsx:376
+msgid "Container name"
+msgstr "Kontin nimi"
+
+#: src/CreateMachineDialog.jsx:378
+msgid "my-container"
+msgstr "my-container"
+
+#: src/CreateMachineDialog.jsx:386
+msgid "Distribution"
+msgstr "Jakelu"
+
+#: src/CreateMachineDialog.jsx:402
+msgid "Version"
+msgstr "Versio"
+
+#: src/CreateMachineDialog.jsx:414
+msgid "Repo: $0"
+msgstr "Repo: $0"
+
+#: src/CreateMachineDialog.jsx:422
+msgid "Root password"
+msgstr "Root-salasana"
+
+#: src/CreateMachineDialog.jsx:428
+msgid "Leave empty to set via terminal later"
+msgstr "Jätä tyhjäksi ja aseta myöhemmin päätteen kautta"
+
+#: src/CreateMachineDialog.jsx:432
+msgid "Can always be set afterwards via the terminal in this module"
+msgstr "Voidaan aina asettaa myöhemmin tämän moduulin päätteen kautta"
+
+#: src/CreateMachineDialog.jsx:437
+msgid "Network"
+msgstr "Verkko"
+
+#: src/CreateMachineDialog.jsx:440
+msgid "Private (NAT)"
+msgstr "Yksityinen (NAT)"
+
+#: src/CreateMachineDialog.jsx:446
+msgid "Bridge (own LAN IP)"
+msgstr "Silta (oma LAN-IP)"
+
+#: src/CreateMachineDialog.jsx:452
+msgid "Bridge name"
+msgstr "Sillan nimi"
+
+#: src/CreateMachineDialog.jsx:458
+msgid "The network bridge must exist on the host"
+msgstr "Verkkosillan on oltava olemassa isäntäkoneella"
+
+#: src/CreateMachineDialog.jsx:461
+msgid "The bridge $0 must be configured before the container starts."
+msgstr "Silta $0 on määritettävä ennen kontin käynnistystä."
+
+#: src/CreateMachineDialog.jsx:463
+msgid "Create it under"
+msgstr "Luo se kohdassa"
+
+#: src/CreateMachineDialog.jsx:468
+msgid "Cockpit → Network → Add bridge"
+msgstr "Cockpit → Verkko → Lisää silta"
+
+#: src/CreateMachineDialog.jsx:470
+msgid "Note: does not work with WiFi adapter — requires wired network."
+msgstr "Huom: ei toimi WiFi-sovittimen kanssa — vaatii langallisen verkon."
+
+#: src/CreateMachineDialog.jsx:476
+msgid "Start container immediately after creation"
+msgstr "Käynnistä kontti heti luomisen jälkeen"
+
+#: src/CreateMachineDialog.jsx:498
+msgid "Automatic"
+msgstr "Automaattinen"
+
+#: src/CreateMachineDialog.jsx:506
+msgid "Name (optional)"
+msgstr "Nimi (valinnainen)"
+
+#: src/CreateMachineDialog.jsx:509
+msgid "Leave empty for automatic name from URL"
+msgstr "Jätä tyhjäksi automaattista nimeä varten URL:sta"
+
+#: src/CreateMachineDialog.jsx:527
+msgid "Source"
+msgstr "Lähde"
+
+#: src/CreateMachineDialog.jsx:537
+msgid "New name"
+msgstr "Uusi nimi"
+
+#: src/CreateMachineDialog.jsx:541
+msgid "my-new-container"
+msgstr "my-new-container"
+
+#: src/CreateMachineDialog.jsx:551
+msgid "Output"
+msgstr "Tulostus"
+
+#: src/CreateMachineDialog.jsx:575
+msgid "Container created!"
+msgstr "Kontti luotu!"
+
+#: src/CreateMachineDialog.jsx:577
+msgid "$0 is ready to use."
+msgstr "$0 on valmis käytettäväksi."
+
+#: src/CreateMachineDialog.jsx:579
+msgid "$0 has been cloned."
+msgstr "$0 on kloonattu."
+
+#: src/CreateMachineDialog.jsx:581
+msgid "Container pulled and ready."
+msgstr "Kontti haettu ja valmis."
+
+#: src/CreateMachineDialog.jsx:586
+msgid "Error occurred"
+msgstr "Tapahtui virhe"
+
+#: src/CreateMachineDialog.jsx:600
+msgid "Bootstrapping..."
+msgstr "Käynnistetään..."
+
+#: src/CreateMachineDialog.jsx:601
+msgid "Creating..."
+msgstr "Luodaan..."
+
+#: src/CreateMachineDialog.jsx:149
+msgid "Container created"
+msgstr "Kontti luotu"
+
+#: src/CreateMachineDialog.jsx:155
+msgid "Container cloned"
+msgstr "Kontti kloonattu"
+
+#: src/CreateMachineDialog.jsx:323
+msgid "Container $0 created"
+msgstr "Kontti $0 luotu"
+
+#: src/CreateMachineDialog.jsx:535
+msgid "NAT networking via NetworkManager"
+msgstr "NAT-verkko NetworkManagerin kautta"
+
+#: src/CreateMachineDialog.jsx:537
+msgid "Bootstrap will create a shared NAT bridge (br-nspawn, 10.99.0.1/24) on the host using NetworkManager. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge."
+msgstr "Bootstrap luo jaetun NAT-sillan (br-nspawn, 10.99.0.1/24) isäntäkoneelle NetworkManagerin avulla. IP-välitys otetaan käyttöön. Tämä suoritetaan vain kerran — kaikki myöhemmät NAT-kontit käyttävät samaa siltaa."
+
+#: src/MachineActions.jsx:86
+msgid "Open display…"
+msgstr "Avaa näyttö…"
+
+#: src/MachineRdpInfo.jsx
+msgid "Remote Desktop: $0"
+msgstr "Etätyöpöytä: $0"
+
+#: src/MachineRdpInfo.jsx
+msgid "No IP address available"
+msgstr "IP-osoitetta ei saatavilla"
+
+#: src/MachineRdpInfo.jsx
+msgid "The container does not have an IP address. Start it and wait a moment, then try again."
+msgstr "Kontilla ei ole IP-osoitetta. Käynnistä se ja odota hetki, sitten yritä uudelleen."
+
+#: src/MachineRdpInfo.jsx
+msgid "Connection address"
+msgstr "Yhteysosoite"
+
+#: src/MachineRdpInfo.jsx
+msgid "Copy"
+msgstr "Kopioi"
+
+#: src/MachineRdpInfo.jsx
+msgid "Copied"
+msgstr "Kopioitu"
+
+#: src/MachineRdpInfo.jsx
+msgid "Username"
+msgstr "Käyttäjänimi"
+
+#: src/MachineRdpInfo.jsx
+msgid "Password required"
+msgstr "Salasana vaaditaan"
+
+#: src/MachineRdpInfo.jsx
+msgid "RDP uses system authentication. Connect with the root password set during bootstrap. RDP encrypts the connection by default."
+msgstr "RDP käyttää järjestelmätunnistusta. Yhdistä bootstrapin aikana asetetulla root-salasanalla. RDP salaa yhteyden oletuksena."
+
+#: src/MachineRdpInfo.jsx
+msgid "Download $0.rdp"
+msgstr "Lataa $0.rdp"
+
+#: src/MachineRdpInfo.jsx
+msgid "Open the .rdp file with Windows Remote Desktop (mstsc.exe), Remmina, or xfreerdp."
+msgstr "Avaa .rdp-tiedosto Windows Remote Desktopilla (mstsc.exe), Remminalla tai xfreerdp:llä."
+
+#: src/MachineRdpInfo.jsx
+msgid "Manual RDP setup (if not using bootstrap)"
+msgstr "Manuaalinen RDP-asetukset (jos ei käytetä bootstrapia)"
+
+#: src/CreateMachineDialog.jsx:662
+msgid "Desktop environment"
+msgstr "Työpöytäympäristö"
+
+#: src/CreateMachineDialog.jsx:664
+msgid "None (server only)"
+msgstr "Ei mitään (vain palvelin)"
+
+#: src/CreateMachineDialog.jsx:687
+msgid "KDE Plasma availability on AlmaLinux"
+msgstr "KDE Plasman saatavuus AlmaLinuxilla"
+
+#: src/CreateMachineDialog.jsx:689
+msgid "KDE Plasma is not officially supported on AlmaLinux. Installation requires EPEL and may result in an older Plasma version."
+msgstr "KDE Plasmaa ei tueta virallisesti AlmaLinuxilla. Asennus vaatii EPELin ja saattaa johtaa vanhempaan Plasma-versioon."
+
+#: src/CreateMachineDialog.jsx:695
+msgid "Desktop environment installed after bootstrap"
+msgstr "Työpöytäympäristö asennetaan bootstrapin jälkeen"
+
+#: src/CreateMachineDialog.jsx:697
+msgid "The desktop environment is installed inside the running container after bootstrap. The container will be started automatically."
+msgstr "Työpöytäympäristö asennetaan käynnissä olevaan konttiin bootstrapin jälkeen. Kontti käynnistetään automaattisesti."
+
+#: src/CreateMachineDialog.jsx:703
+msgid "Enable automatic start at boot"
+msgstr "Ota automaattinen käynnistys käyttöön"
+
+#: src/EditNetworkDialog.jsx:115
+msgid "Change network: $0"
+msgstr "Vaihda verkko: $0"
+
+#: src/EditNetworkDialog.jsx:122
+msgid "Error"
+msgstr "Virhe"
+
+#: src/EditNetworkDialog.jsx:147
+msgid "A shared NAT bridge (br-nspawn, 10.99.0.1/24) will be created on the host if it does not already exist."
+msgstr "Jaettu NAT-silta (br-nspawn, 10.99.0.1/24) luodaan isäntäkoneelle, jos sitä ei vielä ole."
+
+#: src/MachineActions.jsx:90
+msgid "Change network…"
+msgstr "Vaihda verkko…"
+
+#: src/MachineActions.jsx:97
+msgid "Resource limits…"
+msgstr "Resurssirajoitukset…"
+
+#: src/CreateMachineDialog.jsx:710
+msgid "Memory limit"
+msgstr "Muistiraja"
+
+#: src/CreateMachineDialog.jsx:711
+msgid "e.g. 2G, 512M — leave empty for unlimited"
+msgstr "esim. 2G, 512M — jätä tyhjäksi rajoittamaton"
+
+#: src/CreateMachineDialog.jsx:718
+msgid "CPU quota"
+msgstr "CPU-kiintiö"
+
+#: src/CreateMachineDialog.jsx:719
+msgid "e.g. 100% = 1 core, 200% = 2 cores — leave empty for unlimited"
+msgstr "esim. 100% = 1 ydin, 200% = 2 ydintä — jätä tyhjäksi rajoittamaton"
+
+#: src/CreateMachineDialog.jsx:722
+#: src/EditResourcesDialog.jsx:84
+msgid "unlimited"
+msgstr "rajoittamaton"
+
+#: src/EditResourcesDialog.jsx:70
+msgid "Resource limits: $0"
+msgstr "Resurssirajoitukset: $0"
+
+#: src/CreateMachineDialog.jsx
+msgid "not available for this version"
+msgstr "ei saatavilla tälle versiolle"
+
+#: src/CreateMachineDialog.jsx
+msgid "Desktop environments not available for AlmaLinux 10"
+msgstr "Työpöytäympäristöt eivät ole saatavilla AlmaLinux 10:lle"
+
+#: src/CreateMachineDialog.jsx
+msgid "Desktop environment packages (XFCE, KDE, GNOME) and xrdp are not yet available in EPEL 10. Desktop environment bootstrap is not supported for AlmaLinux 10."
+msgstr "Työpöytäympäristöpaketit (XFCE, KDE, GNOME) ja xrdp eivät ole vielä saatavilla EPEL 10:ssä. Työpöytäympäristön bootstrap ei ole tuettu AlmaLinux 10:lle."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Maximum RAM the container may use. If the limit is exceeded, processes inside the container are killed by the OOM killer."
+msgstr "Enimmäis-RAM, jonka kontti voi käyttää. Jos raja ylittyy, OOM-tappaja tappaa kontissa olevat prosessit."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Examples:"
+msgstr "Esimerkkejä:"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Leave empty for no limit."
+msgstr "Jätä tyhjäksi rajoittamaton."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Maximum CPU time the container may use. 100% equals one full CPU core."
+msgstr "Enimmäis-CPU-aika, jonka kontti voi käyttää. 100% vastaa yhtä täyttä CPU-ydintä."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "half a core"
+msgstr "puoli ydintä"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "one core"
+msgstr "yksi ydin"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "two cores"
+msgstr "kaksi ydintä"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "four cores"
+msgstr "neljä ydintä"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "More info for Memory limit"
+msgstr "Lisätietoa muistirajasta"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "More info for CPU quota"
+msgstr "Lisätietoa CPU-kiintiöstä"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston (Wayland)"
+msgstr "Weston (Wayland)"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston: minimal Wayland desktop"
+msgstr "Weston: minimaalinen Wayland-työpöytä"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston provides a minimal Wayland compositor accessible via RDP (port 3389). A terminal (weston-terminal) is available on the desktop. XFCE, KDE, and GNOME require X11 and are not available on Fedora 40+."
+msgstr "Weston tarjoaa minimaalisen Wayland-kompositorin, joka on käytettävissä RDP:n kautta (portti 3389). Pääte (weston-terminal) on saatavilla työpöydällä. XFCE, KDE ja GNOME vaativat X11:n eivätkä ole saatavilla Fedora 40+:ssa."
+
+#: src/CreateMachineDialog.jsx:995
+msgid "KDE Plasma (Wayland VNC)"
+msgstr "KDE Plasma (Wayland VNC)"
+
+#: src/CreateMachineDialog.jsx:1012
+msgid "KDE Plasma: headless Wayland desktop via VNC"
+msgstr "KDE Plasma: näytötön Wayland-työpöytä VNC:n kautta"
+
+#: src/CreateMachineDialog.jsx:1014
+msgid "KDE Plasma runs headlessly using labwc (Wayland compositor) and wayvnc. Connect with any VNC client (e.g. Remmina) to port 5900 — no password required. Resolution: 1920×1080. The session runs as user kdeuser."
+msgstr "KDE Plasma toimii näyttöttömänä labwc:n (Wayland-kompositori) ja wayvnc:n avulla. Yhdistä VNC-asiakkaalla (esim. Remmina) porttiin 5900 — salasanaa ei tarvita. Tarkkuus: 1920×1080. Istunto toimii käyttäjänä kdeuser."
+
+#: src/CreateMachineDialog.jsx
+msgid "Keyboard layout"
+msgstr "Näppäimistöasettelu"
+
+#: src/CreateMachineDialog.jsx
+msgid "Swedish (se)"
+msgstr "Ruotsi (se)"
+
+#: src/CreateMachineDialog.jsx
+msgid "English / US (us)"
+msgstr "Englanti / US (us)"
+
+#: src/CreateMachineDialog.jsx
+msgid "Spanish (es)"
+msgstr "Espanja (es)"
+
+#: src/CreateMachineDialog.jsx
+msgid "German (de)"
+msgstr "Saksa (de)"
+
+#: src/BackupDialog.jsx
+msgid "Backup: $0"
+msgstr "Varmuuskopio: $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup configured for $0"
+msgstr "Varmuuskopiointi määritetty: $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup disabled for $0"
+msgstr "Varmuuskopiointi poistettu käytöstä: $0"
+
+#: src/BackupDialog.jsx
+msgid "backup failed"
+msgstr "varmuuskopio epäonnistui"
+
+#: src/BackupDialog.jsx
+msgid "Backup in progress…"
+msgstr "Varmuuskopiointi käynnissä…"
+
+#: src/BackupDialog.jsx
+msgid "Backup now"
+msgstr "Varmuuskopioi nyt"
+
+#: src/BackupDialog.jsx
+msgid "backup OK"
+msgstr "varmuuskopio OK"
+
+#: src/BackupDialog.jsx
+msgid "Backups are stored as NAME-YYYYMMDD-HHMMSS.tar.gz in this directory"
+msgstr "Varmuuskopiot tallennetaan muodossa NAME-YYYYMMDD-HHMMSS.tar.gz tähän hakemistoon"
+
+#: src/BackupDialog.jsx
+msgid "Connection failed"
+msgstr "Yhteys epäonnistui"
+
+#: src/BackupDialog.jsx
+msgid "Connection successful"
+msgstr "Yhteys onnistui"
+
+#: src/BackupDialog.jsx
+msgid "Daily schedule"
+msgstr "Päivittäinen aikataulu"
+
+#: src/BackupDialog.jsx
+msgid "Disable backup"
+msgstr "Poista varmuuskopiointi käytöstä"
+
+#: src/BackupDialog.jsx
+msgid "Failed to configure backup"
+msgstr "Varmuuskopioinnin määritys epäonnistui"
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable backup"
+msgstr "Varmuuskopioinnin poisto käytöstä epäonnistui"
+
+#: src/BackupDialog.jsx
+msgid "Failed to start backup"
+msgstr "Varmuuskopioinnin käynnistys epäonnistui"
+
+#: src/BackupDialog.jsx
+msgid "Host is required"
+msgstr "Isäntä vaaditaan"
+
+#: src/BackupDialog.jsx
+msgid "Key must be pre-authorized on the remote host (ssh-copy-id)"
+msgstr "Avain on oltava esiauktorisoitu etäisäntäkoneella (ssh-copy-id)"
+
+#: src/BackupDialog.jsx
+msgid "Last backup: $0$1"
+msgstr "Viimeisin varmuuskopio: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "Last backup failed: $0"
+msgstr "Viimeisin varmuuskopiointi epäonnistui: $0"
+
+#: src/BackupDialog.jsx
+msgid "Number of backup copies to keep on remote"
+msgstr "Etäisäntäkoneella säilytettävien varmuuskopioiden määrä"
+
+#: src/BackupDialog.jsx
+msgid "Options"
+msgstr "Asetukset"
+
+#: src/BackupDialog.jsx
+msgid "Recommended for containers running databases"
+msgstr "Suositellaan tietokantoja suorittaville konteille"
+
+#: src/BackupDialog.jsx
+msgid "Remote path"
+msgstr "Etäpolku"
+
+#: src/BackupDialog.jsx
+msgid "Retention"
+msgstr "Säilytys"
+
+#: src/BackupDialog.jsx
+msgid "Save and enable"
+msgstr "Tallenna ja ota käyttöön"
+
+#: src/BackupDialog.jsx
+msgid "Schedule must be in HH:MM format (e.g. 02:00)"
+msgstr "Aikataulu on oltava muodossa TT:MM (esim. 02:00)"
+
+#: src/BackupDialog.jsx
+msgid "SSH host"
+msgstr "SSH-isäntä"
+
+#: src/BackupDialog.jsx
+msgid "SSH private key"
+msgstr "Yksityinen SSH-avain"
+
+#: src/BackupDialog.jsx
+msgid "SSH user"
+msgstr "SSH-käyttäjä"
+
+#: src/BackupDialog.jsx
+msgid "Stop container during backup"
+msgstr "Pysäytä kontti varmuuskopioinnin aikana"
+
+#: src/BackupDialog.jsx
+msgid "Test connection"
+msgstr "Testaa yhteys"
+
+#: src/BackupDialog.jsx
+msgid "This may take several minutes for large containers."
+msgstr "Tämä voi kestää useita minuutteja suurille konteille."
+
+#: src/BackupDialog.jsx
+msgid "Time in 24-hour format (HH:MM)"
+msgstr "Aika 24 tunnin muodossa (TT:MM)"

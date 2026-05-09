@@ -31,7 +31,13 @@ This module was built using **Claude Code**, which turned out to be a remarkable
 - Export containers as tarballs with direct browser download streaming
 - Schedule automatic backups to a remote host over SSH, with configurable retention and status badge
 - Enable/disable autostart at boot per container
-- Interface available in English, Swedish, German, French, and Spanish
+- Interface available in English, Swedish, German, French, Spanish, Norwegian Bokmål, Danish, and Finnish
+
+## Translations
+
+The interface is translated into English, Swedish, German, French, Spanish, Norwegian Bokmål, Danish, and Finnish.
+
+> **Finnish translation note:** Suomenkielinen käännös on tehty parhaaksi katsotulla tavalla, mutta suomen kielen erityispiirteet tekevät teknisten termien kääntämisestä haastavaa. Jos löydät virheitä tai kömpelöitä ilmaisuja, olemme kiitollisia palautteesta — avaa GitHub-issue tai ota yhteyttä. *(The Finnish translation was done to the best of our ability, but Finnish is a uniquely challenging language for technical UI text. If you spot errors or awkward phrasing, feedback is very welcome.)*
 
 ## Desktop Environment Support
 

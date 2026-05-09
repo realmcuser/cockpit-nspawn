@@ -1,0 +1,848 @@
+# Norwegian Bokmål translations for cockpit-nspawn
+# SPDX-License-Identifier: LGPL-2.1-or-later
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-09 00:00+0000\n"
+"PO-Revision-Date: 2026-05-09 00:00+0000\n"
+"Language: nb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# app.jsx
+#: src/app.jsx:93
+msgid "Loading containers..."
+msgstr "Laster containere..."
+
+#: src/app.jsx:100
+msgid "Containers (nspawn)"
+msgstr "Containere (nspawn)"
+
+#: src/app.jsx:75
+msgid "$0 started"
+msgstr "$0 startet"
+
+#: src/app.jsx:76
+msgid "$0 stopped"
+msgstr "$0 stoppet"
+
+#: src/app.jsx:77
+msgid "$0 terminated"
+msgstr "$0 avsluttet"
+
+#: src/app.jsx:78
+msgid "$0 removed"
+msgstr "$0 fjernet"
+
+#: src/app.jsx:80
+msgid "Failed to start $0"
+msgstr "Kunne ikke starte $0"
+
+#: src/app.jsx:81
+msgid "Failed to stop $0"
+msgstr "Kunne ikke stoppe $0"
+
+#: src/app.jsx:82
+msgid "Failed to terminate $0"
+msgstr "Kunne ikke avslutte $0"
+
+#: src/app.jsx:83
+msgid "Failed to remove $0"
+msgstr "Kunne ikke fjerne $0"
+
+# machines.jsx
+#: src/machines.jsx:93
+msgid "Filter containers..."
+msgstr "Filtrer containere..."
+
+#: src/machines.jsx:100
+msgid "Create container"
+msgstr "Opprett container"
+
+#: src/machines.jsx:105
+msgid "Refresh"
+msgstr "Oppdater"
+
+#: src/machines.jsx:115
+msgid "Expand"
+msgstr "Utvid"
+
+#: src/machines.jsx:116
+msgid "Name"
+msgstr "Navn"
+
+#: src/machines.jsx:117
+msgid "Status"
+msgstr "Status"
+
+#: src/machines.jsx:118
+msgid "OS"
+msgstr "OS"
+
+#: src/machines.jsx:119
+msgid "IP address"
+msgstr "IP-adresse"
+
+#: src/machines.jsx:120
+msgid "Type"
+msgstr "Type"
+
+#: src/machines.jsx:121
+msgid "Actions"
+msgstr "Handlinger"
+
+#: src/machines.jsx:125
+msgid "No containers found"
+msgstr "Ingen containere funnet"
+
+# MachineActions.jsx
+#: src/MachineActions.jsx:45
+msgid "Actions for $0"
+msgstr "Handlinger for $0"
+
+#: src/MachineActions.jsx:54
+msgid "Start"
+msgstr "Start"
+
+#: src/MachineActions.jsx:60
+msgid "Stop"
+msgstr "Stopp"
+
+#: src/MachineActions.jsx:65
+msgid "Force stop"
+msgstr "Tvangsstopp"
+
+#: src/MachineActions.jsx:72
+msgid "Open terminal"
+msgstr "Åpne terminal"
+
+#: src/MachineActions.jsx:82
+msgid "Show logs"
+msgstr "Vis logger"
+
+#: src/MachineActions.jsx:88
+msgid "Export…"
+msgstr "Eksporter…"
+
+#: src/MachineActions.jsx:94
+msgid "Hide details"
+msgstr "Skjul detaljer"
+
+#: src/MachineActions.jsx:94
+msgid "Show details"
+msgstr "Vis detaljer"
+
+#: src/MachineActions.jsx:101
+msgid "Remove"
+msgstr "Fjern"
+
+#: src/MachineActions.jsx:141
+msgid "Remove container"
+msgstr "Fjern container"
+
+#: src/MachineActions.jsx:143
+msgid "Are you sure you want to remove $0? This action cannot be undone."
+msgstr "Er du sikker på at du vil fjerne $0? Denne handlingen kan ikke angres."
+
+#: src/MachineActions.jsx:151
+msgid "Cancel"
+msgstr "Avbryt"
+
+# MachineDetails.jsx
+#: src/MachineDetails.jsx:73
+msgid "Path"
+msgstr "Sti"
+
+#: src/MachineDetails.jsx:80
+msgid "Operating system"
+msgstr "Operativsystem"
+
+#: src/MachineDetails.jsx:87
+msgid "IP addresses"
+msgstr "IP-adresser"
+
+#: src/MachineDetails.jsx:107
+msgid "Leader PID"
+msgstr "Leder-PID"
+
+#: src/MachineDetails.jsx:114
+msgid "Started"
+msgstr "Startet"
+
+#: src/MachineDetails.jsx:120
+msgid "Shortcuts"
+msgstr "Snarveier"
+
+#: src/MachineDetails.jsx:124
+msgid "System logs"
+msgstr "Systemlogger"
+
+#: src/MachineDetails.jsx:129
+msgid "Files"
+msgstr "Filer"
+
+# MachineLogs.jsx
+#: src/MachineLogs.jsx:20
+msgid "All levels"
+msgstr "Alle nivåer"
+
+#: src/MachineLogs.jsx:21
+msgid "Emergency (0)"
+msgstr "Nødsituasjon (0)"
+
+#: src/MachineLogs.jsx:22
+msgid "Alert (1)"
+msgstr "Varsel (1)"
+
+#: src/MachineLogs.jsx:23
+msgid "Critical (2)"
+msgstr "Kritisk (2)"
+
+#: src/MachineLogs.jsx:24
+msgid "Error (3)"
+msgstr "Feil (3)"
+
+#: src/MachineLogs.jsx:25
+msgid "Warning (4)"
+msgstr "Advarsel (4)"
+
+#: src/MachineLogs.jsx:26
+msgid "Info (6)"
+msgstr "Info (6)"
+
+#: src/MachineLogs.jsx:27
+msgid "Debug (7)"
+msgstr "Feilsøking (7)"
+
+#: src/MachineLogs.jsx:100
+msgid "Log error for $0"
+msgstr "Loggfeil for $0"
+
+#: src/MachineLogs.jsx:133
+msgid "Logs for $0"
+msgstr "Logger for $0"
+
+#: src/MachineLogs.jsx:135
+msgid "Logs — $0"
+msgstr "Logger — $0"
+
+#: src/MachineLogs.jsx:163
+msgid "Following real time"
+msgstr "Følger sanntid"
+
+#: src/MachineLogs.jsx:163
+msgid "Follow real time"
+msgstr "Følg sanntid"
+
+#: src/MachineLogs.jsx:168
+msgid "Clear"
+msgstr "Tøm"
+
+#: src/MachineLogs.jsx:191
+msgid "Waiting for logs..."
+msgstr "Venter på logger..."
+
+#: src/MachineLogs.jsx:212
+msgid "Close"
+msgstr "Lukk"
+
+# MachineTerminal.jsx
+#: src/MachineTerminal.jsx:97
+msgid "Terminal for $0"
+msgstr "Terminal for $0"
+
+#: src/MachineTerminal.jsx:100
+msgid "Terminal — $0"
+msgstr "Terminal — $0"
+
+# ExportMachineDialog.jsx
+#: src/ExportMachineDialog.jsx:117
+msgid "Export $0"
+msgstr "Eksporter $0"
+
+#: src/ExportMachineDialog.jsx:121
+msgid "Creates the archive on the server and starts a browser download. Streams directly via HTTP, works for large files."
+msgstr "Oppretter arkivet på serveren og starter en nettlesernedlasting. Streamer direkte via HTTP, fungerer for store filer."
+
+#: src/ExportMachineDialog.jsx:125
+msgid "Temporary file:"
+msgstr "Midlertidig fil:"
+
+#: src/ExportMachineDialog.jsx:125
+msgid "(removed automatically)"
+msgstr "(fjernes automatisk)"
+
+#: src/ExportMachineDialog.jsx:132
+msgid "Creating archive on server…"
+msgstr "Oppretter arkiv på server…"
+
+#: src/ExportMachineDialog.jsx:134
+msgid "written"
+msgstr "skrevet"
+
+#: src/ExportMachineDialog.jsx:141
+msgid "Export complete — $0."
+msgstr "Eksport fullført — $0."
+
+#: src/ExportMachineDialog.jsx:143
+msgid "Click the button to start the download."
+msgstr "Klikk knappen for å starte nedlastingen."
+
+#: src/ExportMachineDialog.jsx:145
+msgid "The file streams directly from the server. The temporary file is removed automatically after the download starts."
+msgstr "Filen streames direkte fra serveren. Den midlertidige filen fjernes automatisk etter at nedlastingen starter."
+
+#: src/ExportMachineDialog.jsx:217
+msgid "Downloading…"
+msgstr "Laster ned…"
+
+#: src/ExportMachineDialog.jsx:218
+msgid "transferred"
+msgstr "overført"
+
+#: src/ExportMachineDialog.jsx:172
+msgid "Download failed"
+msgstr "Nedlasting mislyktes"
+
+#: src/ExportMachineDialog.jsx:223
+msgid "Download complete"
+msgstr "Nedlasting fullført"
+
+#: src/ExportMachineDialog.jsx:224
+msgid "Saved to your downloads folder:"
+msgstr "Lagret i nedlastingsmappen:"
+
+#: src/ExportMachineDialog.jsx:147
+msgid "Export failed"
+msgstr "Eksport mislyktes"
+
+#: src/ExportMachineDialog.jsx:240
+msgid "Start export"
+msgstr "Start eksport"
+
+#: src/ExportMachineDialog.jsx:246
+msgid "Download $0"
+msgstr "Last ned $0"
+
+#: src/ExportMachineDialog.jsx:252
+msgid "Cancel export"
+msgstr "Avbryt eksport"
+
+# CreateMachineDialog.jsx
+#: src/CreateMachineDialog.jsx:350
+msgid "Method"
+msgstr "Metode"
+
+#: src/CreateMachineDialog.jsx:357
+msgid "Bootstrap (DNF)"
+msgstr "Bootstrap (DNF)"
+
+#: src/CreateMachineDialog.jsx:362
+msgid "Pull from URL"
+msgstr "Hent fra URL"
+
+#: src/CreateMachineDialog.jsx:367
+msgid "Clone existing"
+msgstr "Klon eksisterende"
+
+#: src/CreateMachineDialog.jsx:376
+msgid "Container name"
+msgstr "Containernavn"
+
+#: src/CreateMachineDialog.jsx:378
+msgid "my-container"
+msgstr "my-container"
+
+#: src/CreateMachineDialog.jsx:386
+msgid "Distribution"
+msgstr "Distribusjon"
+
+#: src/CreateMachineDialog.jsx:402
+msgid "Version"
+msgstr "Versjon"
+
+#: src/CreateMachineDialog.jsx:414
+msgid "Repo: $0"
+msgstr "Repo: $0"
+
+#: src/CreateMachineDialog.jsx:422
+msgid "Root password"
+msgstr "Root-passord"
+
+#: src/CreateMachineDialog.jsx:428
+msgid "Leave empty to set via terminal later"
+msgstr "La stå tom for å angi via terminal senere"
+
+#: src/CreateMachineDialog.jsx:432
+msgid "Can always be set afterwards via the terminal in this module"
+msgstr "Kan alltid angis etterpå via terminalen i denne modulen"
+
+#: src/CreateMachineDialog.jsx:437
+msgid "Network"
+msgstr "Nettverk"
+
+#: src/CreateMachineDialog.jsx:440
+msgid "Private (NAT)"
+msgstr "Privat (NAT)"
+
+#: src/CreateMachineDialog.jsx:446
+msgid "Bridge (own LAN IP)"
+msgstr "Bro (eget LAN-IP)"
+
+#: src/CreateMachineDialog.jsx:452
+msgid "Bridge name"
+msgstr "Bronavn"
+
+#: src/CreateMachineDialog.jsx:458
+msgid "The network bridge must exist on the host"
+msgstr "Nettverksbroen må eksistere på verten"
+
+#: src/CreateMachineDialog.jsx:461
+msgid "The bridge $0 must be configured before the container starts."
+msgstr "Broen $0 må konfigureres før containeren starter."
+
+#: src/CreateMachineDialog.jsx:463
+msgid "Create it under"
+msgstr "Opprett den under"
+
+#: src/CreateMachineDialog.jsx:468
+msgid "Cockpit → Network → Add bridge"
+msgstr "Cockpit → Nettverk → Legg til bro"
+
+#: src/CreateMachineDialog.jsx:470
+msgid "Note: does not work with WiFi adapter — requires wired network."
+msgstr "Merk: fungerer ikke med WiFi-adapter — krever kablet nettverk."
+
+#: src/CreateMachineDialog.jsx:476
+msgid "Start container immediately after creation"
+msgstr "Start container umiddelbart etter opprettelse"
+
+#: src/CreateMachineDialog.jsx:498
+msgid "Automatic"
+msgstr "Automatisk"
+
+#: src/CreateMachineDialog.jsx:506
+msgid "Name (optional)"
+msgstr "Navn (valgfritt)"
+
+#: src/CreateMachineDialog.jsx:509
+msgid "Leave empty for automatic name from URL"
+msgstr "La stå tom for automatisk navn fra URL"
+
+#: src/CreateMachineDialog.jsx:527
+msgid "Source"
+msgstr "Kilde"
+
+#: src/CreateMachineDialog.jsx:537
+msgid "New name"
+msgstr "Nytt navn"
+
+#: src/CreateMachineDialog.jsx:541
+msgid "my-new-container"
+msgstr "my-new-container"
+
+#: src/CreateMachineDialog.jsx:551
+msgid "Output"
+msgstr "Utdata"
+
+#: src/CreateMachineDialog.jsx:575
+msgid "Container created!"
+msgstr "Container opprettet!"
+
+#: src/CreateMachineDialog.jsx:577
+msgid "$0 is ready to use."
+msgstr "$0 er klar til bruk."
+
+#: src/CreateMachineDialog.jsx:579
+msgid "$0 has been cloned."
+msgstr "$0 har blitt klonet."
+
+#: src/CreateMachineDialog.jsx:581
+msgid "Container pulled and ready."
+msgstr "Container hentet og klar."
+
+#: src/CreateMachineDialog.jsx:586
+msgid "Error occurred"
+msgstr "Det oppstod en feil"
+
+#: src/CreateMachineDialog.jsx:600
+msgid "Bootstrapping..."
+msgstr "Bootstrapper..."
+
+#: src/CreateMachineDialog.jsx:601
+msgid "Creating..."
+msgstr "Oppretter..."
+
+#: src/CreateMachineDialog.jsx:149
+msgid "Container created"
+msgstr "Container opprettet"
+
+#: src/CreateMachineDialog.jsx:155
+msgid "Container cloned"
+msgstr "Container klonet"
+
+#: src/CreateMachineDialog.jsx:323
+msgid "Container $0 created"
+msgstr "Container $0 opprettet"
+
+#: src/CreateMachineDialog.jsx:535
+msgid "NAT networking via NetworkManager"
+msgstr "NAT-nettverk via NetworkManager"
+
+#: src/CreateMachineDialog.jsx:537
+msgid "Bootstrap will create a shared NAT bridge (br-nspawn, 10.99.0.1/24) on the host using NetworkManager. IP forwarding will be enabled. This only runs once — all subsequent NAT containers reuse the same bridge."
+msgstr "Bootstrap vil opprette en delt NAT-bro (br-nspawn, 10.99.0.1/24) på verten ved hjelp av NetworkManager. IP-videresending aktiveres. Dette kjøres bare én gang — alle påfølgende NAT-containere gjenbruker samme bro."
+
+#: src/MachineActions.jsx:86
+msgid "Open display…"
+msgstr "Åpne skjerm…"
+
+#: src/MachineRdpInfo.jsx
+msgid "Remote Desktop: $0"
+msgstr "Eksternt skrivebord: $0"
+
+#: src/MachineRdpInfo.jsx
+msgid "No IP address available"
+msgstr "Ingen IP-adresse tilgjengelig"
+
+#: src/MachineRdpInfo.jsx
+msgid "The container does not have an IP address. Start it and wait a moment, then try again."
+msgstr "Containeren har ingen IP-adresse. Start den og vent litt, og prøv igjen."
+
+#: src/MachineRdpInfo.jsx
+msgid "Connection address"
+msgstr "Tilkoblingsadresse"
+
+#: src/MachineRdpInfo.jsx
+msgid "Copy"
+msgstr "Kopier"
+
+#: src/MachineRdpInfo.jsx
+msgid "Copied"
+msgstr "Kopiert"
+
+#: src/MachineRdpInfo.jsx
+msgid "Username"
+msgstr "Brukernavn"
+
+#: src/MachineRdpInfo.jsx
+msgid "Password required"
+msgstr "Passord kreves"
+
+#: src/MachineRdpInfo.jsx
+msgid "RDP uses system authentication. Connect with the root password set during bootstrap. RDP encrypts the connection by default."
+msgstr "RDP bruker systemautentisering. Koble til med root-passordet angitt under bootstrap. RDP krypterer tilkoblingen som standard."
+
+#: src/MachineRdpInfo.jsx
+msgid "Download $0.rdp"
+msgstr "Last ned $0.rdp"
+
+#: src/MachineRdpInfo.jsx
+msgid "Open the .rdp file with Windows Remote Desktop (mstsc.exe), Remmina, or xfreerdp."
+msgstr "Åpne .rdp-filen med Windows Remote Desktop (mstsc.exe), Remmina eller xfreerdp."
+
+#: src/MachineRdpInfo.jsx
+msgid "Manual RDP setup (if not using bootstrap)"
+msgstr "Manuell RDP-oppsett (hvis ikke bootstrap brukes)"
+
+#: src/CreateMachineDialog.jsx:662
+msgid "Desktop environment"
+msgstr "Skrivebordsmiljø"
+
+#: src/CreateMachineDialog.jsx:664
+msgid "None (server only)"
+msgstr "Ingen (kun server)"
+
+#: src/CreateMachineDialog.jsx:687
+msgid "KDE Plasma availability on AlmaLinux"
+msgstr "KDE Plasma tilgjengelighet på AlmaLinux"
+
+#: src/CreateMachineDialog.jsx:689
+msgid "KDE Plasma is not officially supported on AlmaLinux. Installation requires EPEL and may result in an older Plasma version."
+msgstr "KDE Plasma støttes ikke offisielt på AlmaLinux. Installasjon krever EPEL og kan resultere i en eldre Plasma-versjon."
+
+#: src/CreateMachineDialog.jsx:695
+msgid "Desktop environment installed after bootstrap"
+msgstr "Skrivebordsmiljø installert etter bootstrap"
+
+#: src/CreateMachineDialog.jsx:697
+msgid "The desktop environment is installed inside the running container after bootstrap. The container will be started automatically."
+msgstr "Skrivebordsmiljøet installeres inne i den kjørende containeren etter bootstrap. Containeren vil starte automatisk."
+
+#: src/CreateMachineDialog.jsx:703
+msgid "Enable automatic start at boot"
+msgstr "Aktiver automatisk oppstart ved boot"
+
+#: src/EditNetworkDialog.jsx:115
+msgid "Change network: $0"
+msgstr "Endre nettverk: $0"
+
+#: src/EditNetworkDialog.jsx:122
+msgid "Error"
+msgstr "Feil"
+
+#: src/EditNetworkDialog.jsx:147
+msgid "A shared NAT bridge (br-nspawn, 10.99.0.1/24) will be created on the host if it does not already exist."
+msgstr "En delt NAT-bro (br-nspawn, 10.99.0.1/24) vil bli opprettet på verten hvis den ikke allerede eksisterer."
+
+#: src/MachineActions.jsx:90
+msgid "Change network…"
+msgstr "Endre nettverk…"
+
+#: src/MachineActions.jsx:97
+msgid "Resource limits…"
+msgstr "Ressursgrenser…"
+
+#: src/CreateMachineDialog.jsx:710
+msgid "Memory limit"
+msgstr "Minnegrense"
+
+#: src/CreateMachineDialog.jsx:711
+msgid "e.g. 2G, 512M — leave empty for unlimited"
+msgstr "f.eks. 2G, 512M — la stå tom for ubegrenset"
+
+#: src/CreateMachineDialog.jsx:718
+msgid "CPU quota"
+msgstr "CPU-kvote"
+
+#: src/CreateMachineDialog.jsx:719
+msgid "e.g. 100% = 1 core, 200% = 2 cores — leave empty for unlimited"
+msgstr "f.eks. 100% = 1 kjerne, 200% = 2 kjerner — la stå tom for ubegrenset"
+
+#: src/CreateMachineDialog.jsx:722
+#: src/EditResourcesDialog.jsx:84
+msgid "unlimited"
+msgstr "ubegrenset"
+
+#: src/EditResourcesDialog.jsx:70
+msgid "Resource limits: $0"
+msgstr "Ressursgrenser: $0"
+
+#: src/CreateMachineDialog.jsx
+msgid "not available for this version"
+msgstr "ikke tilgjengelig for denne versjonen"
+
+#: src/CreateMachineDialog.jsx
+msgid "Desktop environments not available for AlmaLinux 10"
+msgstr "Skrivebordsmiljøer ikke tilgjengelig for AlmaLinux 10"
+
+#: src/CreateMachineDialog.jsx
+msgid "Desktop environment packages (XFCE, KDE, GNOME) and xrdp are not yet available in EPEL 10. Desktop environment bootstrap is not supported for AlmaLinux 10."
+msgstr "Skrivebordsmiljøpakker (XFCE, KDE, GNOME) og xrdp er ikke tilgjengelige i EPEL 10 ennå. Bootstrap av skrivebordsmiljø støttes ikke for AlmaLinux 10."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Maximum RAM the container may use. If the limit is exceeded, processes inside the container are killed by the OOM killer."
+msgstr "Maksimalt RAM containeren kan bruke. Hvis grensen overskrides, drepes prosesser inne i containeren av OOM-killeren."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Examples:"
+msgstr "Eksempler:"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Leave empty for no limit."
+msgstr "La stå tom for ingen grense."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "Maximum CPU time the container may use. 100% equals one full CPU core."
+msgstr "Maksimal CPU-tid containeren kan bruke. 100% tilsvarer én full CPU-kjerne."
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "half a core"
+msgstr "halv kjerne"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "one core"
+msgstr "én kjerne"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "two cores"
+msgstr "to kjerner"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "four cores"
+msgstr "fire kjerner"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "More info for Memory limit"
+msgstr "Mer info om minnegrense"
+
+#: src/CreateMachineDialog.jsx src/EditResourcesDialog.jsx
+msgid "More info for CPU quota"
+msgstr "Mer info om CPU-kvote"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston (Wayland)"
+msgstr "Weston (Wayland)"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston: minimal Wayland desktop"
+msgstr "Weston: minimalt Wayland-skrivebord"
+
+#: src/CreateMachineDialog.jsx
+msgid "Weston provides a minimal Wayland compositor accessible via RDP (port 3389). A terminal (weston-terminal) is available on the desktop. XFCE, KDE, and GNOME require X11 and are not available on Fedora 40+."
+msgstr "Weston tilbyr en minimal Wayland-kompositor tilgjengelig via RDP (port 3389). En terminal (weston-terminal) er tilgjengelig på skrivebordet. XFCE, KDE og GNOME krever X11 og er ikke tilgjengelig på Fedora 40+."
+
+#: src/CreateMachineDialog.jsx:995
+msgid "KDE Plasma (Wayland VNC)"
+msgstr "KDE Plasma (Wayland VNC)"
+
+#: src/CreateMachineDialog.jsx:1012
+msgid "KDE Plasma: headless Wayland desktop via VNC"
+msgstr "KDE Plasma: hodeløst Wayland-skrivebord via VNC"
+
+#: src/CreateMachineDialog.jsx:1014
+msgid "KDE Plasma runs headlessly using labwc (Wayland compositor) and wayvnc. Connect with any VNC client (e.g. Remmina) to port 5900 — no password required. Resolution: 1920×1080. The session runs as user kdeuser."
+msgstr "KDE Plasma kjører hodeløst ved hjelp av labwc (Wayland-kompositor) og wayvnc. Koble til med en VNC-klient (f.eks. Remmina) til port 5900 — ingen passord kreves. Oppløsning: 1920×1080. Sesjonen kjører som bruker kdeuser."
+
+#: src/CreateMachineDialog.jsx
+msgid "Keyboard layout"
+msgstr "Tastaturlayout"
+
+#: src/CreateMachineDialog.jsx
+msgid "Swedish (se)"
+msgstr "Svensk (se)"
+
+#: src/CreateMachineDialog.jsx
+msgid "English / US (us)"
+msgstr "Engelsk / US (us)"
+
+#: src/CreateMachineDialog.jsx
+msgid "Spanish (es)"
+msgstr "Spansk (es)"
+
+#: src/CreateMachineDialog.jsx
+msgid "German (de)"
+msgstr "Tysk (de)"
+
+#: src/BackupDialog.jsx
+msgid "Backup: $0"
+msgstr "Sikkerhetskopi: $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup configured for $0"
+msgstr "Sikkerhetskopiering konfigurert for $0"
+
+#: src/BackupDialog.jsx
+msgid "Backup disabled for $0"
+msgstr "Sikkerhetskopiering deaktivert for $0"
+
+#: src/BackupDialog.jsx
+msgid "backup failed"
+msgstr "backup feilet"
+
+#: src/BackupDialog.jsx
+msgid "Backup in progress…"
+msgstr "Sikkerhetskopiering pågår…"
+
+#: src/BackupDialog.jsx
+msgid "Backup now"
+msgstr "Sikkerhetskopier nå"
+
+#: src/BackupDialog.jsx
+msgid "backup OK"
+msgstr "backup OK"
+
+#: src/BackupDialog.jsx
+msgid "Backups are stored as NAME-YYYYMMDD-HHMMSS.tar.gz in this directory"
+msgstr "Sikkerhetskopier lagres som NAME-YYYYMMDD-HHMMSS.tar.gz i denne katalogen"
+
+#: src/BackupDialog.jsx
+msgid "Connection failed"
+msgstr "Tilkobling mislyktes"
+
+#: src/BackupDialog.jsx
+msgid "Connection successful"
+msgstr "Tilkobling vellykket"
+
+#: src/BackupDialog.jsx
+msgid "Daily schedule"
+msgstr "Daglig tidsplan"
+
+#: src/BackupDialog.jsx
+msgid "Disable backup"
+msgstr "Deaktiver sikkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Failed to configure backup"
+msgstr "Kunne ikke konfigurere sikkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable backup"
+msgstr "Kunne ikke deaktivere sikkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Failed to start backup"
+msgstr "Kunne ikke starte sikkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Host is required"
+msgstr "Vert er påkrevd"
+
+#: src/BackupDialog.jsx
+msgid "Key must be pre-authorized on the remote host (ssh-copy-id)"
+msgstr "Nøkkelen må være forhåndsgodkjent på fjernverten (ssh-copy-id)"
+
+#: src/BackupDialog.jsx
+msgid "Last backup: $0$1"
+msgstr "Siste sikkerhetskopiering: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "Last backup failed: $0"
+msgstr "Siste sikkerhetskopiering mislyktes: $0"
+
+#: src/BackupDialog.jsx
+msgid "Number of backup copies to keep on remote"
+msgstr "Antall sikkerhetskopier å beholde på fjernvert"
+
+#: src/BackupDialog.jsx
+msgid "Options"
+msgstr "Alternativer"
+
+#: src/BackupDialog.jsx
+msgid "Recommended for containers running databases"
+msgstr "Anbefales for containere som kjører databaser"
+
+#: src/BackupDialog.jsx
+msgid "Remote path"
+msgstr "Fjernsti"
+
+#: src/BackupDialog.jsx
+msgid "Retention"
+msgstr "Oppbevaring"
+
+#: src/BackupDialog.jsx
+msgid "Save and enable"
+msgstr "Lagre og aktiver"
+
+#: src/BackupDialog.jsx
+msgid "Schedule must be in HH:MM format (e.g. 02:00)"
+msgstr "Tidsplan må være i formatet TT:MM (f.eks. 02:00)"
+
+#: src/BackupDialog.jsx
+msgid "SSH host"
+msgstr "SSH-vert"
+
+#: src/BackupDialog.jsx
+msgid "SSH private key"
+msgstr "Privat SSH-nøkkel"
+
+#: src/BackupDialog.jsx
+msgid "SSH user"
+msgstr "SSH-bruker"
+
+#: src/BackupDialog.jsx
+msgid "Stop container during backup"
+msgstr "Stopp container under sikkerhetskopiering"
+
+#: src/BackupDialog.jsx
+msgid "Test connection"
+msgstr "Test tilkobling"
+
+#: src/BackupDialog.jsx
+msgid "This may take several minutes for large containers."
+msgstr "Dette kan ta flere minutter for store containere."
+
+#: src/BackupDialog.jsx
+msgid "Time in 24-hour format (HH:MM)"
+msgstr "Tid i 24-timersformat (TT:MM)"

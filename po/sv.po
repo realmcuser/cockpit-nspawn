@@ -900,3 +900,41 @@ msgstr "Återställning misslyckades"
 msgid "Resources"
 msgstr "Resurser"
 
+
+# NspawnConfigDialog + Failed units
+#: src/NspawnConfigDialog.jsx
+msgid "nspawn config: $0"
+msgstr "nspawn-konfiguration: $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Changes take effect after restart"
+msgstr "Ändringar träder i kraft efter omstart"
+
+#: src/NspawnConfigDialog.jsx
+msgid "systemd-nspawn configuration. See man systemd.nspawn for all options."
+msgstr "systemd-nspawn-konfiguration. Se man systemd.nspawn för alla alternativ."
+
+#: src/NspawnConfigDialog.jsx
+msgid "Config saved for $0"
+msgstr "Konfiguration sparad för $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Failed to save config"
+msgstr "Kunde inte spara konfigurationen"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Saving…"
+msgstr "Sparar…"
+
+#: src/MachineActions.jsx
+msgid "Edit config…"
+msgstr "Redigera konfiguration…"
+
+#: src/MachineDetails.jsx
+msgid "Failed units"
+msgstr "Misslyckade enheter"
+
+#: src/MachineDetails.jsx
+msgid "No failed units"
+msgstr "Inga misslyckade enheter"
+

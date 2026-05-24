@@ -22,6 +22,7 @@ import { EditNetworkDialog } from "./EditNetworkDialog.jsx";
 import { EditResourcesDialog } from "./EditResourcesDialog.jsx";
 import { BackupDialog } from "./BackupDialog.jsx";
 import { RestoreDialog } from "./RestoreDialog.jsx";
+import { NspawnConfigDialog } from "./NspawnConfigDialog.jsx";
 
 const { gettext: _, format } = cockpit;
 
@@ -36,6 +37,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showEditResources, setShowEditResources] = useState(false);
     const [showBackup, setShowBackup] = useState(false);
     const [showRestore, setShowRestore] = useState(false);
+    const [showNspawnConfig, setShowNspawnConfig] = useState(false);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -125,6 +127,12 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                         onClick={() => { setOpen(false); setShowRestore(true); }}
                     >
                         {_("Restore…")}
+                    </DropdownItem>
+                    <DropdownItem
+                        key="nspawn-config"
+                        onClick={() => { setOpen(false); setShowNspawnConfig(true); }}
+                    >
+                        {_("Edit config…")}
                     </DropdownItem>
                     <DropdownItem
                         key="details"
@@ -222,6 +230,15 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                     onClose={() => setShowRestore(false)}
                     onAddNotification={onAddNotification}
                     onRefresh={onRefresh}
+                />
+            )}
+
+            {showNspawnConfig && (
+                <NspawnConfigDialog
+                    machineName={name}
+                    machineState={machine.state}
+                    onClose={() => setShowNspawnConfig(false)}
+                    onAddNotification={onAddNotification}
                 />
             )}
 

@@ -892,3 +892,41 @@ msgstr "Palautus epäonnistui"
 msgid "Resources"
 msgstr "Resurssit"
 
+
+# NspawnConfigDialog + Failed units
+#: src/NspawnConfigDialog.jsx
+msgid "nspawn config: $0"
+msgstr "nspawn-asetukset: $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Changes take effect after restart"
+msgstr "Muutokset tulevat voimaan uudelleenkäynnistyksen jälkeen"
+
+#: src/NspawnConfigDialog.jsx
+msgid "systemd-nspawn configuration. See man systemd.nspawn for all options."
+msgstr "systemd-nspawn-asetukset. Katso man systemd.nspawn kaikki vaihtoehdot."
+
+#: src/NspawnConfigDialog.jsx
+msgid "Config saved for $0"
+msgstr "Asetukset tallennettu kohteelle $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Failed to save config"
+msgstr "Asetusten tallentaminen epäonnistui"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Saving…"
+msgstr "Tallennetaan…"
+
+#: src/MachineActions.jsx
+msgid "Edit config…"
+msgstr "Muokkaa asetuksia…"
+
+#: src/MachineDetails.jsx
+msgid "Failed units"
+msgstr "Epäonnistuneet yksiköt"
+
+#: src/MachineDetails.jsx
+msgid "No failed units"
+msgstr "Ei epäonnistuneita yksiköitä"
+

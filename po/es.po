@@ -896,3 +896,41 @@ msgstr "Restauración fallida"
 msgid "Resources"
 msgstr "Recursos"
 
+
+# NspawnConfigDialog + Failed units
+#: src/NspawnConfigDialog.jsx
+msgid "nspawn config: $0"
+msgstr "Configuración nspawn: $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Changes take effect after restart"
+msgstr "Los cambios surten efecto tras el reinicio"
+
+#: src/NspawnConfigDialog.jsx
+msgid "systemd-nspawn configuration. See man systemd.nspawn for all options."
+msgstr "Configuración de systemd-nspawn. Consulte man systemd.nspawn para todas las opciones."
+
+#: src/NspawnConfigDialog.jsx
+msgid "Config saved for $0"
+msgstr "Configuración guardada para $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Failed to save config"
+msgstr "No se pudo guardar la configuración"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Saving…"
+msgstr "Guardando…"
+
+#: src/MachineActions.jsx
+msgid "Edit config…"
+msgstr "Editar configuración…"
+
+#: src/MachineDetails.jsx
+msgid "Failed units"
+msgstr "Unidades fallidas"
+
+#: src/MachineDetails.jsx
+msgid "No failed units"
+msgstr "Sin unidades fallidas"
+

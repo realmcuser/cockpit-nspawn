@@ -892,3 +892,41 @@ msgstr "Gjenoppretting mislyktes"
 msgid "Resources"
 msgstr "Ressurser"
 
+
+# NspawnConfigDialog + Failed units
+#: src/NspawnConfigDialog.jsx
+msgid "nspawn config: $0"
+msgstr "nspawn-konfigurasjon: $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Changes take effect after restart"
+msgstr "Endringer trer i kraft etter omstart"
+
+#: src/NspawnConfigDialog.jsx
+msgid "systemd-nspawn configuration. See man systemd.nspawn for all options."
+msgstr "systemd-nspawn-konfigurasjon. Se man systemd.nspawn for alle alternativer."
+
+#: src/NspawnConfigDialog.jsx
+msgid "Config saved for $0"
+msgstr "Konfigurasjon lagret for $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Failed to save config"
+msgstr "Kunne ikke lagre konfigurasjonen"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Saving…"
+msgstr "Lagrer…"
+
+#: src/MachineActions.jsx
+msgid "Edit config…"
+msgstr "Rediger konfigurasjon…"
+
+#: src/MachineDetails.jsx
+msgid "Failed units"
+msgstr "Mislykkede enheter"
+
+#: src/MachineDetails.jsx
+msgid "No failed units"
+msgstr "Ingen mislykkede enheter"
+

@@ -7,6 +7,7 @@ import {
     Button,
     Flex,
     FlexItem,
+    Label,
     Spinner,
 } from "@patternfly/react-core";
 
@@ -31,6 +32,7 @@ function parseStatusOutput(output) {
 export function MachineDetails({ machine, onAddNotification }) {
     const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [failedUnits, setFailedUnits] = useState(null);
     const name = machine.machine;
 
     useEffect(() => {
@@ -48,6 +50,18 @@ export function MachineDetails({ machine, onAddNotification }) {
                 console.warn("machinectl status error:", ex.message);
                 setLoading(false);
             });
+
+        cockpit.spawn(
+            ['systemctl', '--machine', name,
+                'list-units', '--state=failed', '--no-pager', '--no-legend'],
+            { superuser: 'try', err: 'ignore' }
+        ).then(output => {
+            const units = output.trim().split('\n')
+                .filter(Boolean)
+                .map(line => line.trim().split(/\s+/)[0])
+                .filter(u => u && u !== '●');
+            setFailedUnits(units);
+        }).catch(() => setFailedUnits([]));
     }, [name, machine.state]);
 
     const machinePath = `/var/lib/machines/${name}`;
@@ -115,6 +129,30 @@ export function MachineDetails({ machine, onAddNotification }) {
                 <DescriptionListGroup>
                     <DescriptionListTerm>{_("Started")}</DescriptionListTerm>
                     <DescriptionListDescription>{status.since}</DescriptionListDescription>
+                </DescriptionListGroup>
+            )}
+
+            {machine.state === "running" && (
+                <DescriptionListGroup>
+                    <DescriptionListTerm>{_("Failed units")}</DescriptionListTerm>
+                    <DescriptionListDescription>
+                        {failedUnits === null
+                            ? <Spinner size="sm" />
+                            : failedUnits.length === 0
+                                ? <Label color="green" isCompact>{_("No failed units")}</Label>
+                                : (
+                                    <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsXs' }}>
+                                        {failedUnits.map(u => (
+                                            <FlexItem key={u}>
+                                                <Label color="red" isCompact>
+                                                    <code style={{ fontSize: '0.85em' }}>{u}</code>
+                                                </Label>
+                                            </FlexItem>
+                                        ))}
+                                    </Flex>
+                                )
+                        }
+                    </DescriptionListDescription>
                 </DescriptionListGroup>
             )}
 

@@ -892,3 +892,41 @@ msgstr "Gendannelse mislykkedes"
 msgid "Resources"
 msgstr "Ressourcer"
 
+
+# NspawnConfigDialog + Failed units
+#: src/NspawnConfigDialog.jsx
+msgid "nspawn config: $0"
+msgstr "nspawn-konfiguration: $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Changes take effect after restart"
+msgstr "Ændringer træder i kraft efter genstart"
+
+#: src/NspawnConfigDialog.jsx
+msgid "systemd-nspawn configuration. See man systemd.nspawn for all options."
+msgstr "systemd-nspawn-konfiguration. Se man systemd.nspawn for alle indstillinger."
+
+#: src/NspawnConfigDialog.jsx
+msgid "Config saved for $0"
+msgstr "Konfiguration gemt for $0"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Failed to save config"
+msgstr "Kunne ikke gemme konfigurationen"
+
+#: src/NspawnConfigDialog.jsx
+msgid "Saving…"
+msgstr "Gemmer…"
+
+#: src/MachineActions.jsx
+msgid "Edit config…"
+msgstr "Rediger konfiguration…"
+
+#: src/MachineDetails.jsx
+msgid "Failed units"
+msgstr "Fejlede enheder"
+
+#: src/MachineDetails.jsx
+msgid "No failed units"
+msgstr "Ingen fejlede enheder"
+

@@ -78,6 +78,14 @@ The **status badge** on each container row updates every five seconds:
 
 **Prerequisites:** `ssh` and `scp` must be available on the host, and the SSH key must be pre-authorized on the remote host before the first backup runs.
 
+## Restore
+
+Containers can be restored from a remote backup via the **Restore…** menu item. The restore dialog connects to the backup host over SSH, lists available backup archives for that container, and lets you select which one to restore.
+
+Restoring will stop the container if it is running, replace its filesystem with the selected backup, and restart it automatically. The SSH connection details are pre-filled from the existing backup configuration if one has been set up.
+
+**Warning:** Restore replaces the container's current filesystem entirely. This cannot be undone.
+
 ## Desktop Environment Support
 
 > **⚠️ Experimental** — Desktop environment bootstrap is under active development and should be considered experimental. Functionality varies by distribution and may not work in all configurations.

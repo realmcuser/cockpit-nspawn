@@ -14,14 +14,18 @@ cockpit-nspawn provides a web-based interface for managing systemd-nspawn contai
 - Start, stop, and force-terminate containers
 - Open a shell inside a running container
 - Stream live logs from the container via journald
+- Live resource monitoring — memory and CPU usage per running container, updated every 5 seconds
+- View failed systemd units inside each running container at a glance
 - Create containers via DNF bootstrap (AlmaLinux, Fedora), URL pull, or clone
   - Optional desktop environment at bootstrap: XFCE, KDE Plasma, or GNOME (X11 + xrdp), Weston (Wayland RDP), or KDE Plasma headless (Wayland VNC)
   - Network mode: Bridge (own LAN IP) or NAT (shared NetworkManager bridge, 10.99.0.1/24)
   - Autostart at boot, root password, optional autostart
 - Change network mode (NAT ↔ Bridge) on stopped containers
+- Edit the container's nspawn configuration file (`/etc/systemd/nspawn/NAME.nspawn`) directly in the UI
 - Open display — shows RDP connection info and downloads a `.rdp` file that opens directly in Windows Remote Desktop (mstsc.exe), Remmina, or xfreerdp. RDP is encrypted by default.
 - Export containers as tarballs with direct browser download streaming
 - Schedule automatic backups to a remote host over SSH, with configurable retention and status badge
+- Restore a container from a remote backup — browse available backups and restore with one click
 - Enable/disable autostart at boot per container
 - Interface available in English, Swedish, German, French, Spanish, Norwegian Bokmål, Danish, and Finnish
 

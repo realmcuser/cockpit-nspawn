@@ -22,6 +22,11 @@ import {
 
 import cockpit from "cockpit";
 import { primaryAddress, formatBytes } from "./utils.js";
+
+function formatCpu(pct) {
+    if (pct === null || pct === undefined) return null;
+    return `${Math.max(0, Math.round(pct))}%`;
+}
 import { MachineActions } from "./MachineActions.jsx";
 import { MachineDetails } from "./MachineDetails.jsx";
 
@@ -49,7 +54,7 @@ function mergeData(machines, images) {
         }));
 
     const runningList = [...running.values()].map(m => ({ ...m, state: "running" }));
-    return [...runningList, ...stopped].sort((a, b) => a.machine.localeCompare(b.machine, 'sv'));
+    return [...runningList, ...stopped].sort((a, b) => a.machine.localeCompare(b.machine, cockpit.language || undefined));
 }
 
 function StatusBadge({ state }) {
@@ -57,7 +62,7 @@ function StatusBadge({ state }) {
     return <Badge style={{ backgroundColor: color === "green" ? "#3e8635" : "#6a6e73", color: "white" }}>{state}</Badge>;
 }
 
-export function Machines({ machines, images, enabledMachines, backupStatuses, onAction, onAddNotification, onRefresh }) {
+export function Machines({ machines, images, enabledMachines, backupStatuses, resourceStats, onAction, onAddNotification, onRefresh }) {
     const [filter, setFilter] = useState("");
     const [expandedRows, setExpandedRows] = useState(new Set());
     const [showCreate, setShowCreate] = useState(false);
@@ -117,6 +122,7 @@ export function Machines({ machines, images, enabledMachines, backupStatuses, on
                         <Th>{_("Status")}</Th>
                         <Th>{_("OS")}</Th>
                         <Th>{_("IP address")}</Th>
+                        <Th>{_("Resources")}</Th>
                         <Th>{_("Type")}</Th>
                         <Th screenReaderText={_("Actions")} />
                     </Tr>
@@ -124,7 +130,7 @@ export function Machines({ machines, images, enabledMachines, backupStatuses, on
                 <Tbody>
                     {filtered.length === 0 && (
                         <Tr>
-                            <Td colSpan={7} style={{ textAlign: "center", color: "#6a6e73", padding: "2rem" }}>
+                            <Td colSpan={8} style={{ textAlign: "center", color: "#6a6e73", padding: "2rem" }}>
                                 {_("No containers found")}
                             </Td>
                         </Tr>
@@ -174,6 +180,18 @@ export function Machines({ machines, images, enabledMachines, backupStatuses, on
                                 <Td dataLabel={_("IP address")}>
                                     {primaryAddress(m.addresses) || <span style={{ color: "#6a6e73" }}>—</span>}
                                 </Td>
+                                <Td dataLabel={_("Resources")}>
+                                    {(() => {
+                                        if (m.state !== 'running') return <span style={{ color: '#6a6e73' }}>—</span>;
+                                        const rs = resourceStats && resourceStats.get(m.machine);
+                                        if (!rs) return <span style={{ color: '#6a6e73' }}>—</span>;
+                                        const mem = rs.memBytes ? formatBytes(rs.memBytes) : null;
+                                        const cpu = formatCpu(rs.cpuPercent);
+                                        const parts = [mem, cpu].filter(Boolean);
+                                        if (parts.length === 0) return <span style={{ color: '#6a6e73' }}>—</span>;
+                                        return <span style={{ fontSize: '0.85em', color: '#151515' }}>{parts.join(' · ')}</span>;
+                                    })()}
+                                </Td>
                                 <Td dataLabel={_("Type")}>
                                     <span style={{ color: "#6a6e73", fontSize: "0.85em" }}>
                                         {m.class || "container"}
@@ -187,12 +205,13 @@ export function Machines({ machines, images, enabledMachines, backupStatuses, on
                                         onAddNotification={onAddNotification}
                                         onExpand={() => toggleExpand(m.machine)}
                                         isExpanded={expandedRows.has(m.machine)}
+                                        onRefresh={onRefresh}
                                     />
                                 </Td>
                             </Tr>
                             {expandedRows.has(m.machine) && (
                                 <Tr isExpanded>
-                                    <Td colSpan={7}>
+                                    <Td colSpan={8}>
                                         <ExpandableRowContent>
                                             <MachineDetails
                                                 machine={m}

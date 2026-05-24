@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     Alert,
     AlertGroup,
@@ -33,6 +33,32 @@ function fetchEnabledMachines() {
         });
         return names;
     }).catch(() => new Set());
+}
+
+async function fetchResourceStats(runningNames) {
+    if (runningNames.length === 0) return new Map();
+    const results = new Map();
+    await Promise.all(runningNames.map(async name => {
+        try {
+            const output = await cockpit.spawn(
+                ['systemctl', 'show',
+                    '--property=MemoryCurrent',
+                    '--property=CPUUsageNSec',
+                    `systemd-nspawn@${name}.service`],
+                { superuser: 'try', err: 'ignore' }
+            );
+            const memMatch = output.match(/MemoryCurrent=(\d+)/);
+            const cpuMatch = output.match(/CPUUsageNSec=(\d+)/);
+            const memVal = memMatch ? parseInt(memMatch[1], 10) : null;
+            const cpuVal = cpuMatch ? parseInt(cpuMatch[1], 10) : null;
+            results.set(name, {
+                memBytes: (memVal !== null && memVal < 1e16) ? memVal : null,
+                cpuNs: (cpuVal !== null && cpuVal < 1e19) ? cpuVal : null,
+                ts: Date.now(),
+            });
+        } catch (_e) {}
+    }));
+    return results;
 }
 
 function fetchBackupStatuses() {
@@ -81,8 +107,10 @@ export function Application() {
     const [images, setImages] = useState([]);
     const [enabledMachines, setEnabledMachines] = useState(new Set());
     const [backupStatuses, setBackupStatuses] = useState(new Map());
+    const [resourceStats, setResourceStats] = useState(new Map());
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState([]);
+    const prevCpuRef = useRef(new Map());
 
     const addNotification = useCallback((notification) => {
         const id = Date.now();
@@ -111,14 +139,45 @@ export function Application() {
                 return [];
             });
 
-        Promise.all([listPromise, imagesPromise, fetchEnabledMachines(), fetchBackupStatuses()])
-            .then(([machineList, imageList, enabled, backupStats]) => {
-                setMachines(machineList);
+        listPromise.then(machineList => {
+            const runningNames = machineList
+                .filter(m => m.service === 'systemd-nspawn' || m.class === 'container')
+                .map(m => m.machine);
+
+            Promise.all([
+                Promise.resolve(machineList),
+                imagesPromise,
+                fetchEnabledMachines(),
+                fetchBackupStatuses(),
+                fetchResourceStats(runningNames),
+            ]).then(([machineList2, imageList, enabled, backupStats, rawRes]) => {
+                const now = Date.now();
+                const display = new Map();
+                rawRes.forEach((stats, name) => {
+                    const prev = prevCpuRef.current.get(name);
+                    let cpuPercent = null;
+                    if (prev && stats.cpuNs !== null && prev.cpuNs !== null) {
+                        const deltaCpu = stats.cpuNs - prev.cpuNs;
+                        const deltaWall = (now - prev.ts) * 1e6;
+                        if (deltaWall > 0 && deltaCpu >= 0) {
+                            cpuPercent = Math.min(999, (deltaCpu / deltaWall) * 100);
+                        }
+                    }
+                    display.set(name, { memBytes: stats.memBytes, cpuPercent });
+                });
+                prevCpuRef.current = new Map(
+                    [...rawRes.entries()]
+                        .filter(([, s]) => s.cpuNs !== null)
+                        .map(([n, s]) => [n, { cpuNs: s.cpuNs, ts: now }])
+                );
+                setMachines(machineList2);
                 setImages(imageList);
                 setEnabledMachines(enabled);
                 setBackupStatuses(backupStats);
+                setResourceStats(display);
                 setLoading(false);
             });
+        });
     }, []);
 
     useEffect(() => {
@@ -210,6 +269,7 @@ export function Application() {
                     images={images}
                     enabledMachines={enabledMachines}
                     backupStatuses={backupStatuses}
+                    resourceStats={resourceStats}
                     onAction={handleAction}
                     onAddNotification={addNotification}
                     onRefresh={fetchData}

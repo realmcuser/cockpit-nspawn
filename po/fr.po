@@ -850,3 +850,49 @@ msgstr "Cela peut prendre plusieurs minutes pour les conteneurs volumineux."
 #: src/BackupDialog.jsx
 msgid "Time in 24-hour format (HH:MM)"
 msgstr "Heure au format 24h (HH:MM)"
+
+# RestoreDialog + Resources column
+#: src/RestoreDialog.jsx
+msgid "Restore: $0"
+msgstr "Restaurer : $0"
+
+#: src/RestoreDialog.jsx
+msgid "List backups"
+msgstr "Lister les sauvegardes"
+
+#: src/RestoreDialog.jsx
+msgid "Restore"
+msgstr "Restaurer"
+
+#: src/RestoreDialog.jsx
+msgid "Available backups"
+msgstr "Sauvegardes disponibles"
+
+#: src/RestoreDialog.jsx
+msgid "Restore in progress…"
+msgstr "Restauration en cours…"
+
+#: src/RestoreDialog.jsx
+msgid "Downloading and extracting backup. This may take several minutes."
+msgstr "Téléchargement et extraction de la sauvegarde. Cela peut prendre plusieurs minutes."
+
+#: src/RestoreDialog.jsx
+msgid "$0 restored successfully"
+msgstr "$0 restauré avec succès"
+
+#: src/RestoreDialog.jsx
+msgid "No backups found on remote host."
+msgstr "Aucune sauvegarde trouvée sur l'hôte distant."
+
+#: src/RestoreDialog.jsx
+msgid "This will replace the container's current filesystem. This action cannot be undone."
+msgstr "Cela remplacera le système de fichiers actuel du conteneur. Cette action ne peut pas être annulée."
+
+#: src/RestoreDialog.jsx
+msgid "Restore failed"
+msgstr "Restauration échouée"
+
+#: src/machines.jsx
+msgid "Resources"
+msgstr "Ressources"
+

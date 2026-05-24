@@ -852,3 +852,49 @@ msgstr "Dies kann bei großen Containern mehrere Minuten dauern."
 #: src/BackupDialog.jsx
 msgid "Time in 24-hour format (HH:MM)"
 msgstr "Uhrzeit im 24-Stunden-Format (HH:MM)"
+
+# RestoreDialog + Resources column
+#: src/RestoreDialog.jsx
+msgid "Restore: $0"
+msgstr "Wiederherstellen: $0"
+
+#: src/RestoreDialog.jsx
+msgid "List backups"
+msgstr "Sicherungen auflisten"
+
+#: src/RestoreDialog.jsx
+msgid "Restore"
+msgstr "Wiederherstellen"
+
+#: src/RestoreDialog.jsx
+msgid "Available backups"
+msgstr "Verfügbare Sicherungen"
+
+#: src/RestoreDialog.jsx
+msgid "Restore in progress…"
+msgstr "Wiederherstellung läuft…"
+
+#: src/RestoreDialog.jsx
+msgid "Downloading and extracting backup. This may take several minutes."
+msgstr "Sicherung wird heruntergeladen und entpackt. Dies kann mehrere Minuten dauern."
+
+#: src/RestoreDialog.jsx
+msgid "$0 restored successfully"
+msgstr "$0 erfolgreich wiederhergestellt"
+
+#: src/RestoreDialog.jsx
+msgid "No backups found on remote host."
+msgstr "Keine Sicherungen auf dem Remote-Host gefunden."
+
+#: src/RestoreDialog.jsx
+msgid "This will replace the container's current filesystem. This action cannot be undone."
+msgstr "Dadurch wird das aktuelle Dateisystem des Containers ersetzt. Diese Aktion kann nicht rückgängig gemacht werden."
+
+#: src/RestoreDialog.jsx
+msgid "Restore failed"
+msgstr "Wiederherstellung fehlgeschlagen"
+
+#: src/machines.jsx
+msgid "Resources"
+msgstr "Ressourcen"
+

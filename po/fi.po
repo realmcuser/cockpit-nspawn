@@ -846,3 +846,49 @@ msgstr "Tämä voi kestää useita minuutteja suurille konteille."
 #: src/BackupDialog.jsx
 msgid "Time in 24-hour format (HH:MM)"
 msgstr "Aika 24 tunnin muodossa (TT:MM)"
+
+# RestoreDialog + Resources column
+#: src/RestoreDialog.jsx
+msgid "Restore: $0"
+msgstr "Palauta: $0"
+
+#: src/RestoreDialog.jsx
+msgid "List backups"
+msgstr "Listaa varmuuskopiot"
+
+#: src/RestoreDialog.jsx
+msgid "Restore"
+msgstr "Palauta"
+
+#: src/RestoreDialog.jsx
+msgid "Available backups"
+msgstr "Saatavilla olevat varmuuskopiot"
+
+#: src/RestoreDialog.jsx
+msgid "Restore in progress…"
+msgstr "Palautus käynnissä…"
+
+#: src/RestoreDialog.jsx
+msgid "Downloading and extracting backup. This may take several minutes."
+msgstr "Ladataan ja puretaan varmuuskopiota. Tämä voi kestää useita minuutteja."
+
+#: src/RestoreDialog.jsx
+msgid "$0 restored successfully"
+msgstr "$0 palautettu onnistuneesti"
+
+#: src/RestoreDialog.jsx
+msgid "No backups found on remote host."
+msgstr "Etäkoneessa ei löytynyt varmuuskopioita."
+
+#: src/RestoreDialog.jsx
+msgid "This will replace the container's current filesystem. This action cannot be undone."
+msgstr "Tämä korvaa säilön nykyisen tiedostojärjestelmän. Toimintoa ei voi peruuttaa."
+
+#: src/RestoreDialog.jsx
+msgid "Restore failed"
+msgstr "Palautus epäonnistui"
+
+#: src/machines.jsx
+msgid "Resources"
+msgstr "Resurssit"
+

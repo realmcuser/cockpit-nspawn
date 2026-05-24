@@ -34,16 +34,20 @@ function formatSize(bytes) {
     return ` · ${Math.round(bytes / (1024 ** 2))} MB`;
 }
 
+function shq(s) {
+    return String(s).replace(/'/g, "'\\''");
+}
+
 function makeScript(name, cfg) {
     const ret = parseInt(cfg.retention, 10);
     const stopDuring = cfg.stop_during_backup ? 'true' : 'false';
     return `#!/bin/bash
 set -euo pipefail
-NAME='${name}'
-HOST='${cfg.host}'
-RUSER='${cfg.user}'
-RPATH='${cfg.path}'
-KEY='${cfg.key}'
+NAME='${shq(name)}'
+HOST='${shq(cfg.host)}'
+RUSER='${shq(cfg.user)}'
+RPATH='${shq(cfg.path)}'
+KEY='${shq(cfg.key)}'
 RETENTION=${ret}
 STOP_DURING_BACKUP=${stopDuring}
 

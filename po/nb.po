@@ -846,3 +846,49 @@ msgstr "Dette kan ta flere minutter for store containere."
 #: src/BackupDialog.jsx
 msgid "Time in 24-hour format (HH:MM)"
 msgstr "Tid i 24-timersformat (TT:MM)"
+
+# RestoreDialog + Resources column
+#: src/RestoreDialog.jsx
+msgid "Restore: $0"
+msgstr "Gjenopprett: $0"
+
+#: src/RestoreDialog.jsx
+msgid "List backups"
+msgstr "List sikkerhetskopier"
+
+#: src/RestoreDialog.jsx
+msgid "Restore"
+msgstr "Gjenopprett"
+
+#: src/RestoreDialog.jsx
+msgid "Available backups"
+msgstr "Tilgjengelige sikkerhetskopier"
+
+#: src/RestoreDialog.jsx
+msgid "Restore in progress…"
+msgstr "Gjenoppretting pågår…"
+
+#: src/RestoreDialog.jsx
+msgid "Downloading and extracting backup. This may take several minutes."
+msgstr "Laster ned og pakker ut sikkerhetskopi. Dette kan ta flere minutter."
+
+#: src/RestoreDialog.jsx
+msgid "$0 restored successfully"
+msgstr "$0 ble gjenopprettet"
+
+#: src/RestoreDialog.jsx
+msgid "No backups found on remote host."
+msgstr "Ingen sikkerhetskopier funnet på ekstern vert."
+
+#: src/RestoreDialog.jsx
+msgid "This will replace the container's current filesystem. This action cannot be undone."
+msgstr "Dette erstatter containerens nåværende filsystem. Handlingen kan ikke angres."
+
+#: src/RestoreDialog.jsx
+msgid "Restore failed"
+msgstr "Gjenoppretting mislyktes"
+
+#: src/machines.jsx
+msgid "Resources"
+msgstr "Ressurser"
+

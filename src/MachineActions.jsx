@@ -21,10 +21,11 @@ import { MachineRdpInfo } from "./MachineRdpInfo.jsx";
 import { EditNetworkDialog } from "./EditNetworkDialog.jsx";
 import { EditResourcesDialog } from "./EditResourcesDialog.jsx";
 import { BackupDialog } from "./BackupDialog.jsx";
+import { RestoreDialog } from "./RestoreDialog.jsx";
 
 const { gettext: _, format } = cockpit;
 
-export function MachineActions({ machine, isAutostart, onAction, onAddNotification, onExpand, isExpanded }) {
+export function MachineActions({ machine, isAutostart, onAction, onAddNotification, onExpand, isExpanded, onRefresh }) {
     const [open, setOpen] = useState(false);
     const [showTerminal, setShowTerminal] = useState(false);
     const [showLogs, setShowLogs] = useState(false);
@@ -34,6 +35,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showEditNetwork, setShowEditNetwork] = useState(false);
     const [showEditResources, setShowEditResources] = useState(false);
     const [showBackup, setShowBackup] = useState(false);
+    const [showRestore, setShowRestore] = useState(false);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -117,6 +119,12 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                         onClick={() => { setOpen(false); setShowBackup(true); }}
                     >
                         {_("Backup…")}
+                    </DropdownItem>
+                    <DropdownItem
+                        key="restore"
+                        onClick={() => { setOpen(false); setShowRestore(true); }}
+                    >
+                        {_("Restore…")}
                     </DropdownItem>
                     <DropdownItem
                         key="details"
@@ -204,6 +212,16 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                     machineName={name}
                     onClose={() => setShowBackup(false)}
                     onAddNotification={onAddNotification}
+                />
+            )}
+
+            {showRestore && (
+                <RestoreDialog
+                    machineName={name}
+                    machineState={machine.state}
+                    onClose={() => setShowRestore(false)}
+                    onAddNotification={onAddNotification}
+                    onRefresh={onRefresh}
                 />
             )}
 

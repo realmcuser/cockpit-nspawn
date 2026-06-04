@@ -934,3 +934,34 @@ msgstr "Unidades fallidas"
 msgid "No failed units"
 msgstr "Sin unidades fallidas"
 
+#: src/InstallCockpitDialog.jsx
+msgid "Install Cockpit in container"
+msgstr "Instalar Cockpit en el contenedor"
+
+#: src/InstallCockpitDialog.jsx
+msgid "Installs Cockpit inside the container and applies the required workarounds for running in a systemd-nspawn environment (static service users, crypto policy)."
+msgstr "Instala Cockpit dentro del contenedor y aplica las soluciones necesarias para ejecutarse en un entorno systemd-nspawn (usuarios de servicio estáticos, política de cifrado)."
+
+#: src/InstallCockpitDialog.jsx
+msgid "Installing…"
+msgstr "Instalando…"
+
+#: src/InstallCockpitDialog.jsx
+msgid "Install"
+msgstr "Instalar"
+
+#: src/InstallCockpitDialog.jsx
+msgid "Installation failed"
+msgstr "Error de instalación"
+
+#: src/InstallCockpitDialog.jsx
+msgid "Cockpit installed successfully"
+msgstr "Cockpit instalado correctamente"
+
+#: src/InstallCockpitDialog.jsx
+msgid "Cockpit installed. Connect to port 9090 on the container's IP address."
+msgstr "Cockpit instalado. Conéctese al puerto 9090 en la dirección IP del contenedor."
+
+#: src/InstallCockpitDialog.jsx
+msgid "Install Cockpit…"
+msgstr "Instalar Cockpit…"

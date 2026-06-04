@@ -197,7 +197,11 @@ export function Application() {
 
         const promise = action === 'remove'
             ? removeMachine(machineName)
-            : spawnMachinectl(commands[action]);
+            : action === 'autostart-enable'
+                ? spawnMachinectl(['enable', machineName]).then(() =>
+                    cockpit.spawn(['systemctl', 'enable', 'machines.target'], { superuser: 'require' })
+                )
+                : spawnMachinectl(commands[action]);
 
         if (!promise) return;
 

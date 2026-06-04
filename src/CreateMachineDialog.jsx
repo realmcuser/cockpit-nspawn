@@ -88,6 +88,12 @@ const DISTRO_TEMPLATES = {
             'vim-minimal', 'less',
         ],
     },
+    debian: {
+        label: 'Debian',
+        type: 'debootstrap',
+        defaultVersion: 'bookworm',
+        mirror: 'https://deb.debian.org/debian',
+    },
 };
 
 // ----------------------------------------------------------------
@@ -280,19 +286,96 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
         const name = bootName.trim();
         const machineRoot = `/var/lib/machines/${name}`;
         const template = DISTRO_TEMPLATES[distro];
-        const osLabel = `${template.label} ${version}${betaRelease ? ' Beta' : ''}`;
-        const repoArgs = (distro === 'fedora' && betaRelease)
-            ? [
-                '--disablerepo=*',
-                `--repofrompath=bs-fedora,https://dl.fedoraproject.org/pub/fedora/linux/development/${version}/Everything/x86_64/os/`,
-                '--enablerepo=bs-fedora',
-            ]
-            : template.repoArgs(version);
+        const isDebootstrap = template.type === 'debootstrap';
+        const osLabel = isDebootstrap
+            ? `${template.label} ${version}`
+            : `${template.label} ${version}${betaRelease ? ' Beta' : ''}`;
+        const repoArgs = isDebootstrap ? [] : (
+            (distro === 'fedora' && betaRelease)
+                ? [
+                    '--disablerepo=*',
+                    `--repofrompath=bs-fedora,https://dl.fedoraproject.org/pub/fedora/linux/development/${version}/Everything/x86_64/os/`,
+                    '--enablerepo=bs-fedora',
+                ]
+                : template.repoArgs(version)
+        );
 
         try {
             // Step 1: create directory
             append(`=== Skapar ${machineRoot} ===\n`);
             await cockpit.spawn(['mkdir', '-p', machineRoot], { superuser: 'require', err: 'out' });
+
+            if (isDebootstrap) {
+                // ---- Debian bootstrap via debootstrap ----
+
+                // Ensure debootstrap is available on the host
+                append('\n=== Kontrollerar debootstrap ===\n');
+                try {
+                    await cockpit.spawn(['which', 'debootstrap'], { err: 'out' });
+                    append('debootstrap hittad.\n');
+                } catch (noDb) {
+                    append('debootstrap saknas — installerar...\n');
+                    await cockpit.spawn(
+                        ['dnf', 'install', '-y', 'debootstrap'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+                }
+
+                append(`\n=== Bootstrappar ${osLabel} ===\n`);
+                append('(Hämtar paket från internet — tar vanligen 3–8 minuter)\n\n');
+                await cockpit.spawn(
+                    ['debootstrap',
+                     '--include=openssh-server,sudo,less,curl,ca-certificates,dbus,systemd-resolved',
+                     version,
+                     machineRoot,
+                     template.mirror],
+                    { superuser: 'require', err: 'out' }
+                ).stream(append);
+                append('\n=== debootstrap klar ===\n');
+
+                // Set container hostname
+                await cockpit.file(`${machineRoot}/etc/hostname`, { superuser: 'require' })
+                    .replace(name + '\n');
+                const hostsContent = await cockpit.file(`${machineRoot}/etc/hosts`, { superuser: 'require' }).read();
+                if (hostsContent && !hostsContent.includes('127.0.1.1')) {
+                    await cockpit.file(`${machineRoot}/etc/hosts`, { superuser: 'require' })
+                        .replace(hostsContent + `127.0.1.1\t${name}\n`);
+                }
+                append(`Hostname satt till ${name}.\n`);
+
+                // Configure networking via systemd-networkd (DHCP on container interface host0)
+                append('\n=== Konfigurerar nätverk (systemd-networkd) ===\n');
+                await cockpit.spawn(
+                    ['mkdir', '-p', `${machineRoot}/etc/systemd/network`],
+                    { superuser: 'require' }
+                );
+                await cockpit.file(
+                    `${machineRoot}/etc/systemd/network/80-container-host0.network`,
+                    { superuser: 'require' }
+                ).replace('[Match]\nName=host0\n\n[Network]\nDHCP=yes\n');
+                await cockpit.spawn(
+                    ['systemctl', '--root', machineRoot, 'enable',
+                     'systemd-networkd', 'systemd-resolved', 'ssh'],
+                    { superuser: 'require', err: 'out' }
+                );
+                // resolv.conf → systemd-resolved stub so apt/DNS works in the container
+                await cockpit.spawn(
+                    ['ln', '-sf', '/run/systemd/resolve/resolv.conf',
+                     `${machineRoot}/etc/resolv.conf`],
+                    { superuser: 'require', err: 'out' }
+                );
+                append('Nätverk (systemd-networkd/resolved) och SSH aktiverade.\n');
+
+                // Mask systemd-firstboot to prevent interactive boot blocking
+                try {
+                    await cockpit.spawn(
+                        ['systemctl', '--root', machineRoot, 'mask', 'systemd-firstboot.service'],
+                        { superuser: 'require', err: 'out' }
+                    );
+                } catch (maskErr) { /* ignore */ }
+
+            } else {
+                // ---- RPM/DNF bootstrap path (AlmaLinux, Fedora) ----
 
             // Step 2a: Install 'filesystem' first WITHOUT tsflags.
             // RPM 6.0 / dnf5 does not guarantee that 'filesystem' installs before
@@ -387,6 +470,8 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
             } catch (maskErr) {
                 append(`Varning: kunde inte maskas systemd-firstboot (${maskErr.message}).\n`);
             }
+
+            } // end of RPM/DNF else block
 
             // Step 4: set root password.
             // Generate SHA-512 hash via openssl and write directly to /etc/shadow.
@@ -525,10 +610,10 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 await spawnMachinectl(['start', name]).stream(append);
             }
 
-            // Step 8: install desktop environment inside the running container.
+            // Step 8: install desktop environment inside the running container (DNF distros only).
             // Done post-boot so that DNF scriptlets (icon caches, dbus, glib-schemas
             // etc.) run correctly inside the container rather than in the installroot.
-            if (desktop !== 'none' && autoStart) {
+            if (!isDebootstrap && desktop !== 'none' && autoStart) {
                 const deCfg = DESKTOP_CONFIG[desktop];
                 append(`\n=== Installerar skrivbordsmiljö (${desktop.toUpperCase()}) ===\n`);
                 append('(Kan ta 5–15 minuter — hämtar paket från internet)\n\n');
@@ -993,14 +1078,16 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
             setRunning(false);
         } catch (ex) {
             append(`\n[FEL] ${ex.message}\n`);
-            // Try to read dnf5 log — grep for errors to avoid noise from host activity
-            try {
-                const log = await cockpit.spawn(
-                    ['grep', '-i', '-E', 'error|critical|failed|transaction', '/var/log/dnf5.log'],
-                    { superuser: 'require', err: 'ignore' }
-                );
-                if (log.trim()) append(`\n--- dnf5.log (fel-rader) ---\n${log}\n`);
-            } catch (logErr) { /* log not present */ }
+            if (!isDebootstrap) {
+                // Try to read dnf5 log — grep for errors to avoid noise from host activity
+                try {
+                    const log = await cockpit.spawn(
+                        ['grep', '-i', '-E', 'error|critical|failed|transaction', '/var/log/dnf5.log'],
+                        { superuser: 'require', err: 'ignore' }
+                    );
+                    if (log.trim()) append(`\n--- dnf5.log (fel-rader) ---\n${log}\n`);
+                } catch (logErr) { /* log not present */ }
+            }
             setError(ex.message || 'Bootstrap misslyckades');
             setRunning(false);
         }
@@ -1020,7 +1107,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     {/* ---- Method selector ---- */}
                     <FormGroup role="group" isInline fieldId="create-type" label={_("Method")}>
                         <Radio
-                            id="type-bootstrap" name="create-type" label={_("Bootstrap (DNF)")}
+                            id="type-bootstrap" name="create-type" label={_("Bootstrap")}
                             isChecked={type === 'bootstrap'} onChange={() => setType('bootstrap')}
                             isDisabled={running}
                         />
@@ -1059,6 +1146,8 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                         onChange={() => {
                                             setDistro(key);
                                             setVersion(DISTRO_TEMPLATES[key].defaultVersion);
+                                            if (DISTRO_TEMPLATES[key].type === 'debootstrap')
+                                                setDesktop('none');
                                         }}
                                         isDisabled={running}
                                     />
@@ -1077,11 +1166,13 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 <FormHelperText>
                                     <HelperText>
                                         <HelperTextItem>
-                                            {format(_("Repo: $0"), distro === 'almalinux'
-                                                ? `repo.almalinux.org/almalinux/${version || '?'}/`
-                                                : betaRelease
-                                                    ? `dl.fedoraproject.org/pub/fedora/linux/development/${version || '?'}/`
-                                                    : `dl.fedoraproject.org/pub/fedora/linux/releases/${version || '?'}/`)}
+                                            {distro === 'debian'
+                                                ? _("Suite: bookworm (stable), trixie (testing), bullseye (oldstable)")
+                                                : format(_("Repo: $0"), distro === 'almalinux'
+                                                    ? `repo.almalinux.org/almalinux/${version || '?'}/`
+                                                    : betaRelease
+                                                        ? `dl.fedoraproject.org/pub/fedora/linux/development/${version || '?'}/`
+                                                        : `dl.fedoraproject.org/pub/fedora/linux/releases/${version || '?'}/`)}
                                         </HelperTextItem>
                                     </HelperText>
                                 </FormHelperText>
@@ -1169,6 +1260,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 </>
                             )}
 
+                            {distro === 'debian' && (
+                                <Alert isInline variant="info"
+                                    title={_("Desktop environments not yet available for Debian")}
+                                >
+                                    {_("Desktop environment bootstrap is currently only supported for AlmaLinux and Fedora.")}
+                                </Alert>
+                            )}
+
                             {distro === 'almalinux' && Number(version) >= 10 && (
                                 <Alert isInline variant="info"
                                     title={_("Desktop environments not available for AlmaLinux 10")}
@@ -1188,34 +1287,34 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     label={DESKTOP_CONFIG.xfce.isAvailable?.(distro, version) === false ? "XFCE (" + _("not available for this version") + ")" : "XFCE"}
                                     isChecked={desktop === 'xfce'}
                                     onChange={() => setDesktop('xfce')}
-                                    isDisabled={running || DESKTOP_CONFIG.xfce.isAvailable?.(distro, version) === false}
+                                    isDisabled={running || distro === 'debian' || DESKTOP_CONFIG.xfce.isAvailable?.(distro, version) === false}
                                 />
                                 <Radio
                                     id="de-kde" name="boot-desktop"
                                     label={DESKTOP_CONFIG.kde.isAvailable?.(distro, version) === false ? "KDE Plasma (" + _("not available for this version") + ")" : "KDE Plasma"}
                                     isChecked={desktop === 'kde'}
                                     onChange={() => setDesktop('kde')}
-                                    isDisabled={running || DESKTOP_CONFIG.kde.isAvailable?.(distro, version) === false}
+                                    isDisabled={running || distro === 'debian' || DESKTOP_CONFIG.kde.isAvailable?.(distro, version) === false}
                                 />
                                 <Radio
                                     id="de-gnome" name="boot-desktop"
                                     label={DESKTOP_CONFIG.gnome.isAvailable?.(distro, version) === false ? "GNOME (" + _("not available for this version") + ")" : "GNOME"}
                                     isChecked={desktop === 'gnome'} onChange={() => setDesktop('gnome')}
-                                    isDisabled={running || DESKTOP_CONFIG.gnome.isAvailable?.(distro, version) === false}
+                                    isDisabled={running || distro === 'debian' || DESKTOP_CONFIG.gnome.isAvailable?.(distro, version) === false}
                                 />
                                 <Radio
                                     id="de-weston" name="boot-desktop"
                                     label={DESKTOP_CONFIG.weston.isAvailable?.(distro, version) === false ? "Weston (" + _("not available for this version") + ")" : _("Weston (Wayland)")}
                                     isChecked={desktop === 'weston'}
                                     onChange={() => setDesktop('weston')}
-                                    isDisabled={running || DESKTOP_CONFIG.weston.isAvailable?.(distro, version) === false}
+                                    isDisabled={running || distro === 'debian' || DESKTOP_CONFIG.weston.isAvailable?.(distro, version) === false}
                                 />
                                 <Radio
                                     id="de-kde-vnc" name="boot-desktop"
                                     label={DESKTOP_CONFIG.kde_vnc.isAvailable?.(distro, version) === false ? "KDE Plasma VNC (" + _("not available for this version") + ")" : _("KDE Plasma (Wayland VNC)")}
                                     isChecked={desktop === 'kde_vnc'}
                                     onChange={() => setDesktop('kde_vnc')}
-                                    isDisabled={running || DESKTOP_CONFIG.kde_vnc.isAvailable?.(distro, version) === false}
+                                    isDisabled={running || distro === 'debian' || DESKTOP_CONFIG.kde_vnc.isAvailable?.(distro, version) === false}
                                 />
                             </FormGroup>
 

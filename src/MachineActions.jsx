@@ -23,6 +23,7 @@ import { EditResourcesDialog } from "./EditResourcesDialog.jsx";
 import { BackupDialog } from "./BackupDialog.jsx";
 import { RestoreDialog } from "./RestoreDialog.jsx";
 import { NspawnConfigDialog } from "./NspawnConfigDialog.jsx";
+import { InstallCockpitDialog } from "./InstallCockpitDialog.jsx";
 
 const { gettext: _, format } = cockpit;
 
@@ -38,6 +39,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showBackup, setShowBackup] = useState(false);
     const [showRestore, setShowRestore] = useState(false);
     const [showNspawnConfig, setShowNspawnConfig] = useState(false);
+    const [showInstallCockpit, setShowInstallCockpit] = useState(false);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -95,6 +97,14 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                             >
                                 {_("Open display…")}
                             </DropdownItem>
+                            {machine.os !== 'debian' && machine.os !== 'ubuntu' && (
+                                <DropdownItem
+                                    key="install-cockpit"
+                                    onClick={() => { setOpen(false); setShowInstallCockpit(true); }}
+                                >
+                                    {_("Install Cockpit…")}
+                                </DropdownItem>
+                            )}
                         </>
                     )}
                     <Divider />
@@ -238,6 +248,14 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                     machineName={name}
                     machineState={machine.state}
                     onClose={() => setShowNspawnConfig(false)}
+                    onAddNotification={onAddNotification}
+                />
+            )}
+
+            {showInstallCockpit && (
+                <InstallCockpitDialog
+                    machineName={name}
+                    onClose={() => setShowInstallCockpit(false)}
                     onAddNotification={onAddNotification}
                 />
             )}

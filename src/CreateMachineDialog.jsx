@@ -25,6 +25,7 @@ import { HelpIcon } from '@patternfly/react-icons';
 
 import cockpit from 'cockpit';
 import { spawnMachinectl } from './utils.js';
+import { DeviceBindingEditor } from './DeviceBindingEditor.jsx';
 
 const { gettext: _, format } = cockpit;
 
@@ -228,6 +229,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
     const [kbdLayout, setKbdLayout] = useState('se');
     const [memoryMax, setMemoryMax] = useState('');
     const [cpuQuota, setCpuQuota] = useState('');
+    const [deviceBindings, setDeviceBindings] = useState([]);
     const [autoStart, setAutoStart] = useState(true);
     const [autoEnable, setAutoEnable] = useState(false);
 
@@ -301,6 +303,20 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
         );
 
         try {
+            // Validate bridge exists before starting any long-running work
+            if (network === 'bridge') {
+                const bridge = bridgeName.trim() || 'bridge0';
+                try {
+                    await cockpit.spawn(['test', '-d', `/sys/class/net/${bridge}`],
+                        { superuser: 'require' });
+                } catch (_e) {
+                    throw new Error(format(
+                        _("Bridge interface $0 does not exist on this host. Create it first via Cockpit → Network → Add bridge."),
+                        bridge
+                    ));
+                }
+            }
+
             // Step 1: create directory
             append(`=== Skapar ${machineRoot} ===\n`);
             await cockpit.spawn(['mkdir', '-p', machineRoot], { superuser: 'require', err: 'out' });
@@ -540,6 +556,11 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 if (cpuQuota.trim()) nspawnLines.push(`CPUQuota=${cpuQuota.trim()}`);
                 nspawnLines.push('');
             }
+            if (deviceBindings.length > 0) {
+                nspawnLines.push('[Files]');
+                deviceBindings.forEach(d => nspawnLines.push(`Bind=${d}`));
+                nspawnLines.push('');
+            }
             const nspawnContent = nspawnLines.join('\n');
 
             await cockpit.file(`/etc/systemd/nspawn/${name}.nspawn`, { superuser: 'require' })
@@ -604,7 +625,17 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 await spawnMachinectl(['enable', name]).stream(append);
             }
 
-            // Step 7: optional start
+            // Step 7: fix SELinux contexts (debootstrap leaves files unlabelled)
+            if (isDebootstrap) {
+                try {
+                    await cockpit.spawn(['restorecon', '-rv', machineRoot],
+                        { superuser: 'require', err: 'out' });
+                } catch (seErr) {
+                    // restorecon may not exist if SELinux is disabled — harmless
+                }
+            }
+
+            // Step 8: optional start
             if (autoStart) {
                 append(`\n=== Startar ${name} ===\n`);
                 await spawnMachinectl(['start', name]).stream(append);
@@ -1432,6 +1463,12 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                     isDisabled={running}
                                 />
                             </FormGroup>
+
+                            <DeviceBindingEditor
+                                bindings={deviceBindings}
+                                onChange={setDeviceBindings}
+                                isDisabled={running}
+                            />
 
                             <Checkbox
                                 id="auto-enable"

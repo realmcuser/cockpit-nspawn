@@ -13,16 +13,55 @@ import {
     TextArea,
 } from '@patternfly/react-core';
 import cockpit from 'cockpit';
+import { DeviceBindingEditor } from './DeviceBindingEditor.jsx';
 
 const { gettext: _, format } = cockpit;
 
 const NSPAWN_DIR = '/etc/systemd/nspawn';
 
+function parseBindings(text) {
+    return (text || '').split('\n')
+        .map(l => l.match(/^Bind=(.+)$/))
+        .filter(Boolean)
+        .map(m => m[1].trim());
+}
+
+function applyBindings(text, bindings) {
+    // Remove all existing Bind= lines (and the [Files] section header if it becomes empty)
+    let lines = (text || '').split('\n');
+    lines = lines.filter(l => !/^Bind=/.test(l));
+
+    // Remove a now-empty [Files] section header (header with no subsequent key=value before next section)
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].trim() === '[Files]') {
+            // Look ahead: skip blank lines, see if next non-blank is another section or EOF
+            let j = i + 1;
+            while (j < lines.length && lines[j].trim() === '') j++;
+            if (j >= lines.length || lines[j].startsWith('[')) {
+                // Skip blank lines before [Files] that would be orphaned
+                while (out.length > 0 && out[out.length - 1].trim() === '') out.pop();
+                continue; // skip [Files] header
+            }
+        }
+        out.push(lines[i]);
+    }
+
+    if (bindings.length === 0) return out.join('\n');
+
+    // Append [Files] section at end
+    while (out.length > 0 && out[out.length - 1].trim() === '') out.pop();
+    out.push('', '[Files]');
+    bindings.forEach(b => out.push(`Bind=${b}`));
+    return out.join('\n');
+}
+
 export function NspawnConfigDialog({ machineName, machineState, onClose, onAddNotification }) {
-    const [content, setContent] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState(null);
+    const [content, setContent]           = useState('');
+    const [deviceBindings, setDeviceBindings] = useState([]);
+    const [loading, setLoading]           = useState(true);
+    const [saving, setSaving]             = useState(false);
+    const [error, setError]               = useState(null);
 
     const filePath = `${NSPAWN_DIR}/${machineName}.nspawn`;
 
@@ -30,14 +69,27 @@ export function NspawnConfigDialog({ machineName, machineState, onClose, onAddNo
         cockpit.file(filePath, { superuser: 'try' })
             .read()
             .then(c => {
-                setContent(c || '');
+                const text = c || '';
+                setContent(text);
+                setDeviceBindings(parseBindings(text));
                 setLoading(false);
             })
             .catch(() => {
                 setContent('');
+                setDeviceBindings([]);
                 setLoading(false);
             });
     }, [filePath]);
+
+    const handleBindingsChange = (newBindings) => {
+        setDeviceBindings(newBindings);
+        setContent(prev => applyBindings(prev, newBindings));
+    };
+
+    const handleContentChange = (newText) => {
+        setContent(newText);
+        setDeviceBindings(parseBindings(newText));
+    };
 
     async function doSave() {
         setSaving(true);
@@ -68,11 +120,16 @@ export function NspawnConfigDialog({ machineName, machineState, onClose, onAddNo
                     />
                 )}
                 <Form>
+                    <DeviceBindingEditor
+                        bindings={deviceBindings}
+                        onChange={handleBindingsChange}
+                        isDisabled={loading || saving}
+                    />
                     <FormGroup label={filePath}>
                         <TextArea
                             value={content}
-                            onChange={(_e, v) => setContent(v)}
-                            rows={16}
+                            onChange={(_e, v) => handleContentChange(v)}
+                            rows={14}
                             resizeOrientation="vertical"
                             isDisabled={loading || saving}
                             style={{ fontFamily: 'monospace', fontSize: '0.875em' }}

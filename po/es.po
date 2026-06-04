@@ -965,3 +965,39 @@ msgstr "Cockpit instalado. Conéctese al puerto 9090 en la dirección IP del con
 #: src/InstallCockpitDialog.jsx
 msgid "Install Cockpit…"
 msgstr "Instalar Cockpit…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Bridge interface $0 does not exist on this host. Create it first via Cockpit → Network → Add bridge."
+msgstr "La interfaz de puente $0 no existe en este host. Créela primero desde Cockpit → Red → Añadir puente."
+
+#: src/DeviceBindingEditor.jsx
+msgid "Device bindings"
+msgstr "Vinculaciones de dispositivos"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Select host device"
+msgstr "Seleccionar dispositivo del host"
+
+#: src/DeviceBindingEditor.jsx
+msgid "No devices found on host"
+msgstr "No se encontraron dispositivos en el host"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add selected device"
+msgstr "Añadir dispositivo seleccionado"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add"
+msgstr "Añadir"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Custom device path"
+msgstr "Ruta de dispositivo personalizada"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add custom device path"
+msgstr "Añadir ruta de dispositivo personalizada"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Devices are bound read-write into the container. Requires restart to take effect."
+msgstr "Los dispositivos se vinculan con acceso de lectura y escritura al contenedor. Requiere reinicio para que surta efecto."

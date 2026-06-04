@@ -961,3 +961,39 @@ msgstr "Cockpit asennettu. Yhdistä porttiin 9090 säilön IP-osoitteessa."
 #: src/InstallCockpitDialog.jsx
 msgid "Install Cockpit…"
 msgstr "Asenna Cockpit…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Bridge interface $0 does not exist on this host. Create it first via Cockpit → Network → Add bridge."
+msgstr "Silta-rajapintaa $0 ei ole tällä isännällä. Luo se ensin kohdasta Cockpit → Verkko → Lisää silta."
+
+#: src/DeviceBindingEditor.jsx
+msgid "Device bindings"
+msgstr "Laitemääritykset"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Select host device"
+msgstr "Valitse isäntälaitteen laite"
+
+#: src/DeviceBindingEditor.jsx
+msgid "No devices found on host"
+msgstr "Isännältä ei löytynyt laitteita"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add selected device"
+msgstr "Lisää valittu laite"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add"
+msgstr "Lisää"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Custom device path"
+msgstr "Mukautettu laitepolku"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add custom device path"
+msgstr "Lisää mukautettu laitepolku"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Devices are bound read-write into the container. Requires restart to take effect."
+msgstr "Laitteet sidotaan luku- ja kirjoitusoikeuksin säiliöön. Vaatii uudelleenkäynnistyksen tullakseen voimaan."

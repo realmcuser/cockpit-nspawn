@@ -969,3 +969,39 @@ msgstr "Cockpit installerat. Anslut till port 9090 på containerns IP-adress."
 #: src/InstallCockpitDialog.jsx
 msgid "Install Cockpit…"
 msgstr "Installera Cockpit…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Bridge interface $0 does not exist on this host. Create it first via Cockpit → Network → Add bridge."
+msgstr "Brygggränssnittet $0 finns inte på den här värden. Skapa det först via Cockpit → Nätverk → Lägg till brygga."
+
+#: src/DeviceBindingEditor.jsx
+msgid "Device bindings"
+msgstr "Enhetsbindningar"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Select host device"
+msgstr "Välj värdenhhet"
+
+#: src/DeviceBindingEditor.jsx
+msgid "No devices found on host"
+msgstr "Inga enheter hittades på värden"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add selected device"
+msgstr "Lägg till vald enhet"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add"
+msgstr "Lägg till"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Custom device path"
+msgstr "Anpassad enhetssökväg"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add custom device path"
+msgstr "Lägg till anpassad enhetssökväg"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Devices are bound read-write into the container. Requires restart to take effect."
+msgstr "Enheter binds med läs- och skrivåtkomst in i containern. Kräver omstart för att träda i kraft."

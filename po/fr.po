@@ -965,3 +965,39 @@ msgstr "Cockpit installé. Connectez-vous au port 9090 sur l'adresse IP du conte
 #: src/InstallCockpitDialog.jsx
 msgid "Install Cockpit…"
 msgstr "Installer Cockpit…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Bridge interface $0 does not exist on this host. Create it first via Cockpit → Network → Add bridge."
+msgstr "L'interface bridge $0 n'existe pas sur cet hôte. Créez-la d'abord via Cockpit → Réseau → Ajouter un bridge."
+
+#: src/DeviceBindingEditor.jsx
+msgid "Device bindings"
+msgstr "Liaisons de périphériques"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Select host device"
+msgstr "Sélectionner un périphérique hôte"
+
+#: src/DeviceBindingEditor.jsx
+msgid "No devices found on host"
+msgstr "Aucun périphérique trouvé sur l'hôte"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add selected device"
+msgstr "Ajouter le périphérique sélectionné"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add"
+msgstr "Ajouter"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Custom device path"
+msgstr "Chemin de périphérique personnalisé"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Add custom device path"
+msgstr "Ajouter un chemin de périphérique personnalisé"
+
+#: src/DeviceBindingEditor.jsx
+msgid "Devices are bound read-write into the container. Requires restart to take effect."
+msgstr "Les périphériques sont montés en lecture-écriture dans le conteneur. Un redémarrage est nécessaire pour que les modifications prennent effet."

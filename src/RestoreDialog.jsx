@@ -26,11 +26,21 @@ function parseBackupTs(path) {
     } catch { return file; }
 }
 
+function parseIncrementalTs(path) {
+    const dir = path.replace(/^.*\//, '');
+    const m = dir.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})$/);
+    if (!m) return dir;
+    try {
+        return new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}`).toLocaleString();
+    } catch { return dir; }
+}
+
 export function RestoreDialog({ machineName, machineState, onClose, onAddNotification, onRefresh }) {
     const [host, setHost] = useState('');
     const [user, setUser] = useState('root');
     const [remotePath, setRemotePath] = useState('/backups');
     const [keyPath, setKeyPath] = useState('/root/.ssh/id_rsa');
+    const [backupType, setBackupType] = useState('full');
     const [backups, setBackups] = useState(null);
     const [selected, setSelected] = useState('');
     const [listing, setListing] = useState(false);
@@ -48,6 +58,7 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
                     setUser(cfg.user || 'root');
                     setRemotePath(cfg.path || '/backups');
                     setKeyPath(cfg.key || '/root/.ssh/id_rsa');
+                    setBackupType(cfg.backup_type || 'full');
                 } catch (_e) {}
             })
             .catch(() => {});
@@ -61,13 +72,16 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
         setSelected('');
         const escapedPath = remotePath.trim().replace(/'/g, "'\\''");
         try {
+            const listCmd = backupType === 'incremental'
+                ? `ls -1dt '${escapedPath}/${machineName}/'[0-9]* 2>/dev/null || true`
+                : `ls -1t '${escapedPath}/${machineName}-'*.tar.gz 2>/dev/null || true`;
             const output = await cockpit.spawn(
                 ['ssh', '-i', keyPath.trim(),
                     '-o', 'StrictHostKeyChecking=accept-new',
                     '-o', 'BatchMode=yes',
                     '-o', 'ConnectTimeout=10',
                     `${user.trim()}@${host.trim()}`,
-                    `ls -1t '${escapedPath}/${machineName}-'*.tar.gz 2>/dev/null || true`],
+                    listCmd],
                 { superuser: 'require', err: 'message' }
             );
             const list = output.trim().split('\n').filter(Boolean);
@@ -85,10 +99,6 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
         setRestoring(true);
         setError(null);
         const wasRunning = machineState === 'running';
-        const localTmp = `/var/tmp/nspawn-restore-${machineName}.tar.gz`;
-
-        const cleanup = () =>
-            cockpit.spawn(['rm', '-f', localTmp], { superuser: 'require', err: 'ignore' }).catch(() => {});
 
         try {
             if (wasRunning) {
@@ -106,24 +116,39 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
                 }
             }
 
-            await cockpit.spawn(
-                ['scp', '-i', keyPath.trim(),
-                    '-o', 'StrictHostKeyChecking=accept-new',
-                    `${user.trim()}@${host.trim()}:${selected}`, localTmp],
-                { superuser: 'require', err: 'message' }
-            );
-
-            await cockpit.spawn(
-                ['rm', '-rf', `/var/lib/machines/${machineName}`],
-                { superuser: 'require', err: 'message' }
-            );
-
-            await cockpit.spawn(
-                ['tar', '-xzf', localTmp, '-C', '/var/lib/machines'],
-                { superuser: 'require', err: 'message' }
-            );
-
-            await cleanup();
+            if (backupType === 'incremental') {
+                await cockpit.spawn(
+                    ['rsync', '-az', '--delete',
+                        '-e', `ssh -i ${keyPath.trim()} -o StrictHostKeyChecking=accept-new -o BatchMode=yes`,
+                        `${user.trim()}@${host.trim()}:${selected}/`,
+                        `/var/lib/machines/${machineName}/`],
+                    { superuser: 'require', err: 'message' }
+                );
+            } else {
+                const localTmp = `/var/tmp/nspawn-restore-${machineName}.tar.gz`;
+                const cleanup = () =>
+                    cockpit.spawn(['rm', '-f', localTmp], { superuser: 'require', err: 'ignore' }).catch(() => {});
+                try {
+                    await cockpit.spawn(
+                        ['scp', '-i', keyPath.trim(),
+                            '-o', 'StrictHostKeyChecking=accept-new',
+                            `${user.trim()}@${host.trim()}:${selected}`, localTmp],
+                        { superuser: 'require', err: 'message' }
+                    );
+                    await cockpit.spawn(
+                        ['rm', '-rf', `/var/lib/machines/${machineName}`],
+                        { superuser: 'require', err: 'message' }
+                    );
+                    await cockpit.spawn(
+                        ['tar', '-xzf', localTmp, '-C', '/var/lib/machines'],
+                        { superuser: 'require', err: 'message' }
+                    );
+                    await cleanup();
+                } catch (ex) {
+                    await cleanup();
+                    throw ex;
+                }
+            }
 
             if (wasRunning) {
                 await cockpit.spawn(
@@ -136,7 +161,6 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
             onRefresh();
             onClose();
         } catch (ex) {
-            await cleanup();
             setError(ex.message || _("Restore failed"));
             setRestoring(false);
         }
@@ -181,7 +205,9 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
                                 key={b}
                                 id={b}
                                 name="backup-select"
-                                label={`${parseBackupTs(b)}  (${b.replace(/^.*\//, '')})`}
+                                label={backupType === 'incremental'
+                                    ? `${parseIncrementalTs(b)}  (${b.replace(/^.*\//, '')})`
+                                    : `${parseBackupTs(b)}  (${b.replace(/^.*\//, '')})`}
                                 value={b}
                                 isChecked={selected === b}
                                 onChange={() => setSelected(b)}

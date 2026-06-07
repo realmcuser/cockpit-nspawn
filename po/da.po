@@ -997,3 +997,27 @@ msgstr "Tilføj brugerdefineret enhedssti"
 #: src/DeviceBindingEditor.jsx
 msgid "Devices are bound read-write into the container. Requires restart to take effect."
 msgstr "Enheder bindes med læse- og skriveadgang ind i containeren. Kræver genstart for at træde i kraft."
+
+#: src/BackupDialog.jsx
+msgid "Backup type"
+msgstr "Backuptype"
+
+#: src/BackupDialog.jsx
+msgid "Full backup"
+msgstr "Fuld backup"
+
+#: src/BackupDialog.jsx
+msgid "Creates a tar.gz archive, transferred via SCP"
+msgstr "Opretter et tar.gz-arkiv, overført via SCP"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup"
+msgstr "Inkrementel backup"
+
+#: src/BackupDialog.jsx
+msgid "rsync snapshot with hardlinks — requires rsync on local and remote host"
+msgstr "rsync-øjebliksbillede med hårde links — kræver rsync på lokal og ekstern vært"
+
+#: src/BackupDialog.jsx
+msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
+msgstr "Inkrementelle øjebliksbilleder gemmes som NAME/YYYYMMDD-HHMMSS/-mapper under denne sti"

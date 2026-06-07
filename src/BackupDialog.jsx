@@ -12,6 +12,7 @@ import {
     ModalHeader,
     ModalFooter,
     NumberInput,
+    Radio,
     TextInput,
 } from '@patternfly/react-core';
 import cockpit from 'cockpit';
@@ -41,6 +42,81 @@ function shq(s) {
 function makeScript(name, cfg) {
     const ret = parseInt(cfg.retention, 10);
     const stopDuring = cfg.stop_during_backup ? 'true' : 'false';
+
+    if (cfg.backup_type === 'incremental') {
+        return `#!/bin/bash
+set -euo pipefail
+NAME='${shq(name)}'
+HOST='${shq(cfg.host)}'
+RUSER='${shq(cfg.user)}'
+RPATH='${shq(cfg.path)}'
+KEY='${shq(cfg.key)}'
+RETENTION=${ret}
+STOP_DURING_BACKUP=${stopDuring}
+
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+STATUS_FILE='${STATUS_DIR}/${name}.json'
+ERR_FILE="/var/tmp/nspawn-backup-err-${name}"
+WAS_RUNNING=false
+REMOTE_BASE="$RPATH/$NAME"
+REMOTE_DEST="$REMOTE_BASE/$TIMESTAMP"
+REMOTE_LATEST="$REMOTE_BASE/latest"
+
+cleanup() { rm -f "$ERR_FILE"; }
+trap cleanup EXIT
+
+mkdir -p '${STATUS_DIR}'
+
+write_status() {
+    printf '{"result":"%s","timestamp":"%s","size_bytes":0,"message":"%s"}\\n' \\
+        "$1" "$(date -Iseconds)" "\${2:-}" > "$STATUS_FILE"
+}
+
+if [ "$STOP_DURING_BACKUP" = true ] && machinectl show "$NAME" --property=State 2>/dev/null | grep -q "running"; then
+    WAS_RUNNING=true
+    machinectl poweroff "$NAME" 2>/dev/null || machinectl terminate "$NAME" 2>/dev/null || true
+    for _ in $(seq 1 30); do
+        machinectl show "$NAME" --property=State 2>/dev/null | grep -q "running" || break
+        sleep 1
+    done
+fi
+
+if ! ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o BatchMode=yes \\
+        "$RUSER@$HOST" "mkdir -p '$REMOTE_DEST'" 2>"$ERR_FILE"; then
+    write_status "failed" "$(head -1 "$ERR_FILE" | tr '"' "'")"
+    [ "$WAS_RUNNING" = true ] && machinectl start "$NAME" || true
+    exit 1
+fi
+
+LINK_DEST_ARG=""
+if ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o BatchMode=yes \\
+        "$RUSER@$HOST" "test -e '$REMOTE_LATEST'" 2>/dev/null; then
+    LINK_DEST_ARG="--link-dest=$REMOTE_LATEST/"
+fi
+
+if ! rsync -az --delete $LINK_DEST_ARG \\
+        -e "ssh -i \\"$KEY\\" -o StrictHostKeyChecking=accept-new -o BatchMode=yes" \\
+        "/var/lib/machines/$NAME/" \\
+        "$RUSER@$HOST:$REMOTE_DEST/" 2>"$ERR_FILE"; then
+    write_status "failed" "$(head -1 "$ERR_FILE" | tr '"' "'")"
+    [ "$WAS_RUNNING" = true ] && machinectl start "$NAME" || true
+    exit 1
+fi
+
+[ "$WAS_RUNNING" = true ] && machinectl start "$NAME" || true
+
+ssh -i "$KEY" "$RUSER@$HOST" "ln -sfn '$REMOTE_DEST' '$REMOTE_LATEST'" || true
+
+if [ "$RETENTION" -gt 0 ]; then
+    ssh -i "$KEY" "$RUSER@$HOST" \\
+        "ls -1dt '$REMOTE_BASE'/[0-9]* 2>/dev/null | tail -n +\$((RETENTION+1)) | xargs -r rm -rf" || true
+fi
+
+printf '{"result":"success","timestamp":"%s","size_bytes":0,"message":""}\\n' \\
+    "$(date -Iseconds)" > "$STATUS_FILE"
+`;
+    }
+
     return `#!/bin/bash
 set -euo pipefail
 NAME='${shq(name)}'
@@ -117,6 +193,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     const [schedule, setSchedule] = useState('02:00');
     const [retention, setRetention] = useState(3);
     const [stopDuring, setStopDuring] = useState(true);
+    const [backupType, setBackupType] = useState('full');
     const [status, setStatus] = useState(null);
     const [hasConfig, setHasConfig] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -144,6 +221,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                     setSchedule(cfg.schedule || '02:00');
                     setRetention(cfg.retention ?? 3);
                     setStopDuring(cfg.stop_during_backup || false);
+                    setBackupType(cfg.backup_type || 'full');
                     setHasConfig(true);
                 } catch (_e) {}
             })
@@ -174,6 +252,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             schedule: schedule.trim(),
             retention,
             stop_during_backup: stopDuring,
+            backup_type: backupType,
         };
         const scriptPath = `${CONFIG_DIR}/${machineName}.sh`;
         const serviceName = `cockpit-nspawn-backup-${machineName}`;
@@ -310,7 +389,11 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                     <FormGroup label={_("Remote path")}>
                         <TextInput value={remotePath} onChange={(_e, v) => setRemotePath(v)} placeholder="/backups" />
                         <HelperText>
-                            <HelperTextItem>{_("Backups are stored as NAME-YYYYMMDD-HHMMSS.tar.gz in this directory")}</HelperTextItem>
+                            <HelperTextItem>
+                                {backupType === 'incremental'
+                                    ? _("Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path")
+                                    : _("Backups are stored as NAME-YYYYMMDD-HHMMSS.tar.gz in this directory")}
+                            </HelperTextItem>
                         </HelperText>
                     </FormGroup>
                     <FormGroup label={_("SSH private key")}>
@@ -337,6 +420,24 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                         <HelperText>
                             <HelperTextItem>{_("Number of backup copies to keep on remote")}</HelperTextItem>
                         </HelperText>
+                    </FormGroup>
+                    <FormGroup label={_("Backup type")}>
+                        <Radio
+                            id="backup-type-full"
+                            name="backup-type"
+                            label={_("Full backup")}
+                            description={_("Creates a tar.gz archive, transferred via SCP")}
+                            isChecked={backupType === 'full'}
+                            onChange={() => setBackupType('full')}
+                        />
+                        <Radio
+                            id="backup-type-incremental"
+                            name="backup-type"
+                            label={_("Incremental backup")}
+                            description={_("rsync snapshot with hardlinks — requires rsync on local and remote host")}
+                            isChecked={backupType === 'incremental'}
+                            onChange={() => setBackupType('incremental')}
+                        />
                     </FormGroup>
                     <FormGroup label={_("Options")}>
                         <Checkbox

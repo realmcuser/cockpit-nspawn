@@ -1001,3 +1001,27 @@ msgstr "Añadir ruta de dispositivo personalizada"
 #: src/DeviceBindingEditor.jsx
 msgid "Devices are bound read-write into the container. Requires restart to take effect."
 msgstr "Los dispositivos se vinculan con acceso de lectura y escritura al contenedor. Requiere reinicio para que surta efecto."
+
+#: src/BackupDialog.jsx
+msgid "Backup type"
+msgstr "Tipo de copia de seguridad"
+
+#: src/BackupDialog.jsx
+msgid "Full backup"
+msgstr "Copia de seguridad completa"
+
+#: src/BackupDialog.jsx
+msgid "Creates a tar.gz archive, transferred via SCP"
+msgstr "Crea un archivo tar.gz, transferido mediante SCP"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup"
+msgstr "Copia de seguridad incremental"
+
+#: src/BackupDialog.jsx
+msgid "rsync snapshot with hardlinks — requires rsync on local and remote host"
+msgstr "Instantánea rsync con enlaces duros — requiere rsync en el host local y remoto"
+
+#: src/BackupDialog.jsx
+msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
+msgstr "Las instantáneas incrementales se almacenan como directorios NAME/YYYYMMDD-HHMMSS/ bajo esta ruta"

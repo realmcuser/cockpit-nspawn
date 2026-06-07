@@ -3,4 +3,6 @@ dist/
 pkg/
 starter-kit/
 *.LEGAL.txt
-.claude/
+.claude/*
+!.claude/settings.json
+!.claude/hooks/

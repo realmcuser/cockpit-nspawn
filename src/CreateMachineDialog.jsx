@@ -17,6 +17,7 @@ import {
     ModalFooter,
     ModalHeader,
     Popover,
+    Progress,
     Radio,
     Spinner,
     TextInput,
@@ -24,7 +25,7 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 
 import cockpit from 'cockpit';
-import { spawnMachinectl } from './utils.js';
+import { spawnMachinectl, formatBytes } from './utils.js';
 import { DeviceBindingEditor } from './DeviceBindingEditor.jsx';
 
 const { gettext: _, format } = cockpit;
@@ -197,6 +198,40 @@ const KEYBOARD_LAYOUTS = [
     { value: 'se', label: 'Swedish (se)' },
 ];
 
+// Stream a browser File to a server path via Cockpit fswrite1 channel.
+// Sends 256 KB chunks to avoid saturating the WebSocket.
+function streamUpload(file, serverPath, onProgress) {
+    const CHUNK = 256 * 1024;
+    const channel = cockpit.channel({
+        payload: 'fswrite1',
+        path: serverPath,
+        superuser: 'require',
+        binary: true,
+    });
+    return new Promise((resolve, reject) => {
+        channel.addEventListener('close', (_ev, options) => {
+            if (options.problem)
+                reject(new Error(options.message || options.problem));
+            else
+                resolve();
+        });
+        let offset = 0;
+        const pump = () => {
+            if (offset >= file.size) {
+                channel.control({ command: 'done' });
+                return;
+            }
+            file.slice(offset, offset + CHUNK).arrayBuffer().then(buf => {
+                channel.send(new Uint8Array(buf));
+                offset += buf.byteLength;
+                if (onProgress) onProgress(offset, file.size);
+                pump();
+            }).catch(reject);
+        };
+        pump();
+    });
+}
+
 function detectFormat(url) {
     const u = url.toLowerCase();
     if (u.match(/\.(raw|img)(\.gz|\.xz|\.bz2)?(\?.*)?$/)) return 'raw';
@@ -212,6 +247,11 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
     const [url, setUrl] = useState('');
     const [pullFormat, setPullFormat] = useState('auto');
     const [pullName, setPullName] = useState('');
+
+    // Upload state
+    const [uploadFile, setUploadFile] = useState(null);
+    const [uploadName, setUploadName] = useState('');
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     // Clone state
     const [source, setSource] = useState(images[0]?.name || '');
@@ -251,6 +291,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
         if (type === 'pull') return url.trim() !== '';
         if (type === 'clone') return source !== '' && cloneName.trim() !== '';
         if (type === 'bootstrap') return bootName.trim() !== '';
+        if (type === 'upload') return uploadFile !== null && uploadName.trim() !== '';
         return false;
     })();
 
@@ -275,6 +316,28 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 onAddNotification({ type: 'success', title: _("Container cloned") });
                 setDone(true);
                 setRunning(false);
+            } else if (type === 'upload') {
+                const name = uploadName.trim();
+                const tmpPath = `/var/tmp/cockpit-nspawn-upload-${Date.now()}.tar.gz`;
+                const cleanup = () => cockpit.spawn(['rm', '-f', tmpPath], { superuser: 'require' }).catch(() => {});
+                try {
+                    setUploadProgress(0);
+                    append(_("Uploading file to server…") + '\n');
+                    await streamUpload(uploadFile, tmpPath, (sent, total) => {
+                        setUploadProgress(Math.round(sent / total * 100));
+                    });
+                    setUploadProgress(100);
+                    append(_("Importing container…") + '\n');
+                    await spawnMachinectl(['import-tar', tmpPath, name]).stream(append);
+                    await cleanup();
+                    onRefresh();
+                    onAddNotification({ type: 'success', title: format(_("Container $0 imported"), name) });
+                    setDone(true);
+                    setRunning(false);
+                } catch (ex) {
+                    await cleanup();
+                    throw ex;
+                }
             } else {
                 await runBootstrap();
             }
@@ -1152,6 +1215,11 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                             isChecked={type === 'clone'} onChange={() => setType('clone')}
                             isDisabled={running || images.length === 0}
                         />
+                        <Radio
+                            id="type-upload" name="create-type" label={_("Upload from file")}
+                            isChecked={type === 'upload'} onChange={() => setType('upload')}
+                            isDisabled={running}
+                        />
                     </FormGroup>
 
                     {/* ---- Bootstrap form ---- */}
@@ -1542,6 +1610,49 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         </>
                     )}
 
+                    {/* ---- Upload from file form ---- */}
+                    {type === 'upload' && (
+                        <>
+                            <FormGroup label={_("Container archive")} fieldId="upload-file" isRequired>
+                                <input
+                                    id="upload-file"
+                                    type="file"
+                                    accept=".tar.gz,.tar"
+                                    disabled={running}
+                                    style={{ display: 'block', padding: '0.25rem 0' }}
+                                    onChange={(e) => {
+                                        const f = e.target.files[0];
+                                        if (!f) return;
+                                        setUploadFile(f);
+                                        if (!uploadName)
+                                            setUploadName(f.name.replace(/\.(tar\.gz|tar)$/, ''));
+                                    }}
+                                />
+                                <FormHelperText>
+                                    <HelperText><HelperTextItem>
+                                        {_("Select a .tar.gz container archive exported from machinectl or cockpit-nspawn.")}
+                                    </HelperTextItem></HelperText>
+                                </FormHelperText>
+                            </FormGroup>
+                            <FormGroup label={_("Container name")} fieldId="upload-name" isRequired>
+                                <TextInput
+                                    id="upload-name" value={uploadName}
+                                    onChange={(_e, v) => setUploadName(v)}
+                                    placeholder={_("my-container")}
+                                    isDisabled={running}
+                                />
+                            </FormGroup>
+                            {running && uploadFile && uploadProgress < 100 && (
+                                <Progress
+                                    value={uploadProgress}
+                                    title={format(_("Uploading… $0 of $1"),
+                                        formatBytes(Math.round(uploadProgress / 100 * uploadFile.size)),
+                                        formatBytes(uploadFile.size))}
+                                />
+                            )}
+                        </>
+                    )}
+
                     {/* ---- Output log ---- */}
                     {showOutput && (
                         <FormGroup label={_("Output")} fieldId="bootstrap-output">
@@ -1575,7 +1686,9 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 ? format(_("$0 is ready to use."), bootName.trim())
                                 : type === 'clone'
                                     ? format(_("$0 has been cloned."), cloneName.trim())
-                                    : _("Container pulled and ready.")}
+                                    : type === 'upload'
+                                        ? format(_("$0 has been imported."), uploadName.trim())
+                                        : _("Container pulled and ready.")}
                         </Alert>
                     )}
 
@@ -1601,7 +1714,11 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                         >
                             {running && <Spinner size="sm" style={{ marginRight: '0.5rem' }} />}
                             {running
-                                ? (type === 'bootstrap' ? _("Bootstrapping...") : _("Creating..."))
+                                ? type === 'bootstrap'
+                                    ? _("Bootstrapping...")
+                                    : type === 'upload'
+                                        ? (uploadProgress < 100 ? _("Uploading…") : _("Importing…"))
+                                        : _("Creating...")
                                 : _("Create")}
                         </Button>
                         <Button variant="link" onClick={onClose} isDisabled={running}>

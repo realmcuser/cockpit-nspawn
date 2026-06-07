@@ -1073,3 +1073,43 @@ msgstr "MariaDB root-salasana"
 #: src/BackupDialog.jsx
 msgid "Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore."
 msgstr "Suorittaa mysqldump --single-transaction käynnissä olevassa säiliössä. Vedos kulkee jokaisen tilannevedoksen mukana ja palautetaan automaattisesti palautuksen yhteydessä."
+
+#: src/CreateMachineDialog.jsx
+msgid "Upload from file"
+msgstr "Lähetä tiedostosta"
+
+#: src/CreateMachineDialog.jsx
+msgid "Container archive"
+msgstr "Säiliöarkisto"
+
+#: src/CreateMachineDialog.jsx
+msgid "Select a .tar.gz container archive exported from machinectl or cockpit-nspawn."
+msgstr "Valitse .tar.gz-säiliöarkisto, joka on viety machinectlillä tai cockpit-nspawnilla."
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading… $0 of $1"
+msgstr "Lähetetään… $0 / $1"
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading file to server…"
+msgstr "Lähetetään tiedostoa palvelimelle…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Importing container…"
+msgstr "Tuodaan säiliötä…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Container $0 imported"
+msgstr "Säiliö $0 tuotu"
+
+#: src/CreateMachineDialog.jsx
+msgid "$0 has been imported."
+msgstr "$0 on tuotu."
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading…"
+msgstr "Lähetetään…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Importing…"
+msgstr "Tuodaan…"

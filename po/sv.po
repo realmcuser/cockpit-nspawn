@@ -1081,3 +1081,43 @@ msgstr "MariaDB root-lösenord"
 #: src/BackupDialog.jsx
 msgid "Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore."
 msgstr "Kör mysqldump --single-transaction inuti den körande containern. Dumpfilen följer med varje ögonblicksbild och återställs automatiskt vid restore."
+
+#: src/CreateMachineDialog.jsx
+msgid "Upload from file"
+msgstr "Ladda upp från fil"
+
+#: src/CreateMachineDialog.jsx
+msgid "Container archive"
+msgstr "Containerarkiv"
+
+#: src/CreateMachineDialog.jsx
+msgid "Select a .tar.gz container archive exported from machinectl or cockpit-nspawn."
+msgstr "Välj ett .tar.gz-containerarkiv exporterat från machinectl eller cockpit-nspawn."
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading… $0 of $1"
+msgstr "Laddar upp… $0 av $1"
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading file to server…"
+msgstr "Laddar upp fil till servern…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Importing container…"
+msgstr "Importerar container…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Container $0 imported"
+msgstr "Container $0 importerad"
+
+#: src/CreateMachineDialog.jsx
+msgid "$0 has been imported."
+msgstr "$0 har importerats."
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading…"
+msgstr "Laddar upp…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Importing…"
+msgstr "Importerar…"

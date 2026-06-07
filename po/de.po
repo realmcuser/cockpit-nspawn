@@ -1079,3 +1079,43 @@ msgstr "MariaDB-Root-Passwort"
 #: src/BackupDialog.jsx
 msgid "Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore."
 msgstr "Führt mysqldump --single-transaction im laufenden Container aus. Der Dump wird mit jedem Snapshot gespeichert und bei der Wiederherstellung automatisch eingespielt."
+
+#: src/CreateMachineDialog.jsx
+msgid "Upload from file"
+msgstr "Aus Datei hochladen"
+
+#: src/CreateMachineDialog.jsx
+msgid "Container archive"
+msgstr "Container-Archiv"
+
+#: src/CreateMachineDialog.jsx
+msgid "Select a .tar.gz container archive exported from machinectl or cockpit-nspawn."
+msgstr "Wählen Sie ein .tar.gz-Containerarchiv aus, das von machinectl oder cockpit-nspawn exportiert wurde."
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading… $0 of $1"
+msgstr "Hochladen… $0 von $1"
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading file to server…"
+msgstr "Datei wird auf den Server hochgeladen…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Importing container…"
+msgstr "Container wird importiert…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Container $0 imported"
+msgstr "Container $0 importiert"
+
+#: src/CreateMachineDialog.jsx
+msgid "$0 has been imported."
+msgstr "$0 wurde importiert."
+
+#: src/CreateMachineDialog.jsx
+msgid "Uploading…"
+msgstr "Hochladen…"
+
+#: src/CreateMachineDialog.jsx
+msgid "Importing…"
+msgstr "Importieren…"

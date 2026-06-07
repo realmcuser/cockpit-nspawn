@@ -1003,3 +1003,27 @@ msgstr "Benutzerdefinierten Gerätepfad hinzufügen"
 #: src/DeviceBindingEditor.jsx
 msgid "Devices are bound read-write into the container. Requires restart to take effect."
 msgstr "Geräte werden mit Lese- und Schreibzugriff in den Container eingebunden. Erfordert einen Neustart, um wirksam zu werden."
+
+#: src/BackupDialog.jsx
+msgid "Backup type"
+msgstr "Backup-Typ"
+
+#: src/BackupDialog.jsx
+msgid "Full backup"
+msgstr "Vollsicherung"
+
+#: src/BackupDialog.jsx
+msgid "Creates a tar.gz archive, transferred via SCP"
+msgstr "Erstellt ein tar.gz-Archiv, übertragen via SCP"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup"
+msgstr "Inkrementelle Sicherung"
+
+#: src/BackupDialog.jsx
+msgid "rsync snapshot with hardlinks — requires rsync on local and remote host"
+msgstr "rsync-Snapshot mit Hardlinks — erfordert rsync auf lokalem und entferntem Host"
+
+#: src/BackupDialog.jsx
+msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
+msgstr "Inkrementelle Snapshots werden als NAME/YYYYMMDD-HHMMSS/-Verzeichnisse unter diesem Pfad gespeichert"

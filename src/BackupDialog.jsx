@@ -95,7 +95,7 @@ if ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o BatchMode=yes \\
 fi
 
 if ! rsync -az --delete $LINK_DEST_ARG \\
-        -e "ssh -i $KEY -o StrictHostKeyChecking=accept-new -o BatchMode=yes" \\
+        -e "ssh -i \\"$KEY\\" -o StrictHostKeyChecking=accept-new -o BatchMode=yes" \\
         "/var/lib/machines/$NAME/" \\
         "$RUSER@$HOST:$REMOTE_DEST/" 2>"$ERR_FILE"; then
     write_status "failed" "$(head -1 "$ERR_FILE" | tr '"' "'")"

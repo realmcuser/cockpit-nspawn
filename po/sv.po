@@ -1005,3 +1005,27 @@ msgstr "Lägg till anpassad enhetssökväg"
 #: src/DeviceBindingEditor.jsx
 msgid "Devices are bound read-write into the container. Requires restart to take effect."
 msgstr "Enheter binds med läs- och skrivåtkomst in i containern. Kräver omstart för att träda i kraft."
+
+#: src/BackupDialog.jsx
+msgid "Backup type"
+msgstr "Backuptyp"
+
+#: src/BackupDialog.jsx
+msgid "Full backup"
+msgstr "Fullständig backup"
+
+#: src/BackupDialog.jsx
+msgid "Creates a tar.gz archive, transferred via SCP"
+msgstr "Skapar ett tar.gz-arkiv som överförs via SCP"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup"
+msgstr "Inkrementell backup"
+
+#: src/BackupDialog.jsx
+msgid "rsync snapshot with hardlinks — requires rsync on local and remote host"
+msgstr "rsync-ögonblicksbild med hårda länkar — kräver rsync på lokal och fjärrvärd"
+
+#: src/BackupDialog.jsx
+msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
+msgstr "Inkrementella ögonblicksbilder lagras som NAME/YYYYMMDD-HHMMSS/-kataloger under den här sökvägen"

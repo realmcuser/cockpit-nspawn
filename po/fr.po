@@ -1001,3 +1001,27 @@ msgstr "Ajouter un chemin de périphérique personnalisé"
 #: src/DeviceBindingEditor.jsx
 msgid "Devices are bound read-write into the container. Requires restart to take effect."
 msgstr "Les périphériques sont montés en lecture-écriture dans le conteneur. Un redémarrage est nécessaire pour que les modifications prennent effet."
+
+#: src/BackupDialog.jsx
+msgid "Backup type"
+msgstr "Type de sauvegarde"
+
+#: src/BackupDialog.jsx
+msgid "Full backup"
+msgstr "Sauvegarde complète"
+
+#: src/BackupDialog.jsx
+msgid "Creates a tar.gz archive, transferred via SCP"
+msgstr "Crée une archive tar.gz, transférée via SCP"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup"
+msgstr "Sauvegarde incrémentielle"
+
+#: src/BackupDialog.jsx
+msgid "rsync snapshot with hardlinks — requires rsync on local and remote host"
+msgstr "Instantané rsync avec liens physiques — nécessite rsync sur l'hôte local et distant"
+
+#: src/BackupDialog.jsx
+msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
+msgstr "Les instantanés incrémentiels sont stockés sous forme de répertoires NAME/YYYYMMDD-HHMMSS/ sous ce chemin"

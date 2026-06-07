@@ -997,3 +997,27 @@ msgstr "Lisää mukautettu laitepolku"
 #: src/DeviceBindingEditor.jsx
 msgid "Devices are bound read-write into the container. Requires restart to take effect."
 msgstr "Laitteet sidotaan luku- ja kirjoitusoikeuksin säiliöön. Vaatii uudelleenkäynnistyksen tullakseen voimaan."
+
+#: src/BackupDialog.jsx
+msgid "Backup type"
+msgstr "Varmuuskopiotyyppi"
+
+#: src/BackupDialog.jsx
+msgid "Full backup"
+msgstr "Täydellinen varmuuskopio"
+
+#: src/BackupDialog.jsx
+msgid "Creates a tar.gz archive, transferred via SCP"
+msgstr "Luo tar.gz-arkiston, siirretään SCP:llä"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup"
+msgstr "Inkrementaalinen varmuuskopio"
+
+#: src/BackupDialog.jsx
+msgid "rsync snapshot with hardlinks — requires rsync on local and remote host"
+msgstr "rsync-tilannevedos kovalinkeillä — vaatii rsync:n paikallisella ja etäisännällä"
+
+#: src/BackupDialog.jsx
+msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
+msgstr "Inkrementaaliset tilannevedokset tallennetaan NAME/YYYYMMDD-HHMMSS/-hakemistoina tämän polun alle"

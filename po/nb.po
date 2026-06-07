@@ -997,3 +997,27 @@ msgstr "Legg til egendefinert enhetssøkesti"
 #: src/DeviceBindingEditor.jsx
 msgid "Devices are bound read-write into the container. Requires restart to take effect."
 msgstr "Enheter bindes med lese- og skrivetilgang inn i containeren. Krever omstart for å tre i kraft."
+
+#: src/BackupDialog.jsx
+msgid "Backup type"
+msgstr "Sikkerhetskopieringstype"
+
+#: src/BackupDialog.jsx
+msgid "Full backup"
+msgstr "Full sikkerhetskopi"
+
+#: src/BackupDialog.jsx
+msgid "Creates a tar.gz archive, transferred via SCP"
+msgstr "Oppretter et tar.gz-arkiv, overført via SCP"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup"
+msgstr "Inkrementell sikkerhetskopi"
+
+#: src/BackupDialog.jsx
+msgid "rsync snapshot with hardlinks — requires rsync on local and remote host"
+msgstr "rsync-øyeblikksbilde med hardelenker — krever rsync på lokal og ekstern vert"
+
+#: src/BackupDialog.jsx
+msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
+msgstr "Inkrementelle øyeblikksbilder lagres som NAME/YYYYMMDD-HHMMSS/-mapper under denne stien"

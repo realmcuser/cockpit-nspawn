@@ -118,6 +118,13 @@ export function ExportMachineDialog({ machineName, onClose }) {
         }, 1000);
 
         try {
+            // Socket files (MariaDB, Samba, Podman etc.) cannot be archived by tar.
+            // They are always runtime-only artifacts with no data — safe to remove.
+            await cockpit.spawn(
+                ['find', `/var/lib/machines/${machineName}`, '-type', 's', '-delete'],
+                { superuser: 'require', err: 'ignore' }
+            ).catch(() => {});
+
             const proc = cockpit.spawn(
                 ['machinectl', 'export-tar', machineName, tmpPath],
                 { superuser: 'require', err: 'message' }

@@ -1121,3 +1121,24 @@ msgstr "Laddar upp…"
 #: src/CreateMachineDialog.jsx
 msgid "Importing…"
 msgstr "Importerar…"
+
+#: src/MachineActions.jsx
+msgid "Rename…"
+msgstr "Byt namn…"
+
+#: src/MachineActions.jsx
+msgid "Rename: $0"
+msgstr "Byt namn: $0"
+
+
+#: src/MachineActions.jsx
+msgid "Rename"
+msgstr "Byt namn"
+
+#: src/MachineActions.jsx
+msgid "Rename failed"
+msgstr "Namnbyte misslyckades"
+
+#: src/MachineActions.jsx
+msgid "$0 renamed to $1"
+msgstr "$0 bytte namn till $1"

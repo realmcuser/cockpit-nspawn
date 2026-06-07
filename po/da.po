@@ -1113,3 +1113,24 @@ msgstr "Uploader…"
 #: src/CreateMachineDialog.jsx
 msgid "Importing…"
 msgstr "Importerer…"
+
+#: src/MachineActions.jsx
+msgid "Rename…"
+msgstr "Omdøb…"
+
+#: src/MachineActions.jsx
+msgid "Rename: $0"
+msgstr "Omdøb: $0"
+
+
+#: src/MachineActions.jsx
+msgid "Rename"
+msgstr "Omdøb"
+
+#: src/MachineActions.jsx
+msgid "Rename failed"
+msgstr "Omdøbning mislykkedes"
+
+#: src/MachineActions.jsx
+msgid "$0 renamed to $1"
+msgstr "$0 omdøbt til $1"

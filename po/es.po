@@ -1117,3 +1117,24 @@ msgstr "Subiendo…"
 #: src/CreateMachineDialog.jsx
 msgid "Importing…"
 msgstr "Importando…"
+
+#: src/MachineActions.jsx
+msgid "Rename…"
+msgstr "Renombrar…"
+
+#: src/MachineActions.jsx
+msgid "Rename: $0"
+msgstr "Renombrar: $0"
+
+
+#: src/MachineActions.jsx
+msgid "Rename"
+msgstr "Renombrar"
+
+#: src/MachineActions.jsx
+msgid "Rename failed"
+msgstr "Error al renombrar"
+
+#: src/MachineActions.jsx
+msgid "$0 renamed to $1"
+msgstr "$0 renombrado a $1"

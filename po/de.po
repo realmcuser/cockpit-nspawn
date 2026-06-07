@@ -1119,3 +1119,24 @@ msgstr "Hochladen…"
 #: src/CreateMachineDialog.jsx
 msgid "Importing…"
 msgstr "Importieren…"
+
+#: src/MachineActions.jsx
+msgid "Rename…"
+msgstr "Umbenennen…"
+
+#: src/MachineActions.jsx
+msgid "Rename: $0"
+msgstr "Umbenennen: $0"
+
+
+#: src/MachineActions.jsx
+msgid "Rename"
+msgstr "Umbenennen"
+
+#: src/MachineActions.jsx
+msgid "Rename failed"
+msgstr "Umbenennen fehlgeschlagen"
+
+#: src/MachineActions.jsx
+msgid "$0 renamed to $1"
+msgstr "$0 wurde in $1 umbenannt"

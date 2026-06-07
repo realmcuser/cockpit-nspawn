@@ -1117,3 +1117,24 @@ msgstr "Téléversement…"
 #: src/CreateMachineDialog.jsx
 msgid "Importing…"
 msgstr "Importation…"
+
+#: src/MachineActions.jsx
+msgid "Rename…"
+msgstr "Renommer…"
+
+#: src/MachineActions.jsx
+msgid "Rename: $0"
+msgstr "Renommer : $0"
+
+
+#: src/MachineActions.jsx
+msgid "Rename"
+msgstr "Renommer"
+
+#: src/MachineActions.jsx
+msgid "Rename failed"
+msgstr "Échec du renommage"
+
+#: src/MachineActions.jsx
+msgid "$0 renamed to $1"
+msgstr "$0 renommé en $1"

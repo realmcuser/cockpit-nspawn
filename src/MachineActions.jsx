@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import {
+    Alert,
     Button,
     Dropdown,
     DropdownItem,
     DropdownList,
+    Form,
+    FormGroup,
     MenuToggle,
     Modal,
     ModalBody,
     ModalFooter,
     ModalHeader,
     Divider,
+    TextInput,
 } from "@patternfly/react-core";
 import { EllipsisVIcon } from "@patternfly/react-icons";
 
@@ -40,6 +44,10 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showRestore, setShowRestore] = useState(false);
     const [showNspawnConfig, setShowNspawnConfig] = useState(false);
     const [showInstallCockpit, setShowInstallCockpit] = useState(false);
+    const [showRename, setShowRename] = useState(false);
+    const [renameTo, setRenameTo] = useState('');
+    const [renaming, setRenaming] = useState(false);
+    const [renameError, setRenameError] = useState(null);
 
     const isRunning = machine.state === "running";
     const name = machine.machine;
@@ -47,6 +55,53 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const doAction = (action) => {
         setOpen(false);
         onAction(action, name);
+    };
+
+    const doRename = async () => {
+        setRenaming(true);
+        setRenameError(null);
+        const newName = renameTo.trim();
+        try {
+            await cockpit.spawn(
+                ['mv', `/var/lib/machines/${name}`, `/var/lib/machines/${newName}`],
+                { superuser: 'require', err: 'message' }
+            );
+            // Rename .nspawn config if it exists
+            await cockpit.spawn(['test', '-f', `/etc/systemd/nspawn/${name}.nspawn`], { superuser: 'require' })
+                .then(() => cockpit.spawn(['mv',
+                    `/etc/systemd/nspawn/${name}.nspawn`,
+                    `/etc/systemd/nspawn/${newName}.nspawn`],
+                { superuser: 'require' }))
+                .catch(() => {});
+            // Move backup config if it exists
+            await cockpit.spawn(['test', '-f', `/etc/cockpit-nspawn/backup/${name}.json`], { superuser: 'require' })
+                .then(() => cockpit.spawn(['mv',
+                    `/etc/cockpit-nspawn/backup/${name}.json`,
+                    `/etc/cockpit-nspawn/backup/${newName}.json`],
+                { superuser: 'require' }))
+                .catch(() => {});
+            // Stop and remove old backup timer/service so it doesn't run for the old name
+            await cockpit.spawn(['systemctl', 'stop', `cockpit-nspawn-backup-${name}.timer`],
+                { superuser: 'require', err: 'ignore' }).catch(() => {});
+            await cockpit.spawn(['systemctl', 'disable', `cockpit-nspawn-backup-${name}.timer`],
+                { superuser: 'require', err: 'ignore' }).catch(() => {});
+            await cockpit.spawn(['rm', '-f',
+                `/etc/systemd/system/cockpit-nspawn-backup-${name}.timer`,
+                `/etc/systemd/system/cockpit-nspawn-backup-${name}.service`],
+            { superuser: 'require', err: 'ignore' }).catch(() => {});
+            // Update autostart
+            if (isAutostart) {
+                await cockpit.spawn(['machinectl', 'disable', name], { superuser: 'require', err: 'ignore' }).catch(() => {});
+                await cockpit.spawn(['machinectl', 'enable', newName], { superuser: 'require', err: 'ignore' }).catch(() => {});
+            }
+            await cockpit.spawn(['systemctl', 'daemon-reload'], { superuser: 'require' });
+            onAddNotification({ type: 'success', title: format(_("$0 renamed to $1"), name, newName) });
+            setShowRename(false);
+            onRefresh();
+        } catch (ex) {
+            setRenameError(ex.message || _("Rename failed"));
+            setRenaming(false);
+        }
     };
 
     return (
@@ -154,6 +209,12 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                         <>
                             <Divider />
                             <DropdownItem
+                                key="rename"
+                                onClick={() => { setOpen(false); setRenameTo(name); setRenameError(null); setShowRename(true); }}
+                            >
+                                {_("Rename…")}
+                            </DropdownItem>
+                            <DropdownItem
                                 key="edit-network"
                                 onClick={() => { setOpen(false); setShowEditNetwork(true); }}
                             >
@@ -258,6 +319,42 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                     onClose={() => setShowInstallCockpit(false)}
                     onAddNotification={onAddNotification}
                 />
+            )}
+
+            {showRename && (
+                <Modal isOpen onClose={() => !renaming && setShowRename(false)} variant="small">
+                    <ModalHeader title={format(_("Rename: $0"), name)} />
+                    <ModalBody>
+                        <Form>
+                            <FormGroup label={_("New name")} fieldId="rename-input" isRequired>
+                                <TextInput
+                                    id="rename-input"
+                                    value={renameTo}
+                                    onChange={(_e, v) => setRenameTo(v)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' && renameTo.trim() && renameTo.trim() !== name) doRename(); }}
+                                    isDisabled={renaming}
+                                    autoFocus
+                                />
+                            </FormGroup>
+                        </Form>
+                        {renameError && (
+                            <Alert variant="danger" isInline title={renameError} style={{ marginTop: '1rem' }} />
+                        )}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            variant="primary"
+                            onClick={doRename}
+                            isDisabled={!renameTo.trim() || renameTo.trim() === name || renaming}
+                            isLoading={renaming}
+                        >
+                            {_("Rename")}
+                        </Button>
+                        <Button variant="link" onClick={() => setShowRename(false)} isDisabled={renaming}>
+                            {_("Cancel")}
+                        </Button>
+                    </ModalFooter>
+                </Modal>
             )}
 
             {showRemoveConfirm && (

@@ -1113,3 +1113,24 @@ msgstr "Laster opp…"
 #: src/CreateMachineDialog.jsx
 msgid "Importing…"
 msgstr "Importerer…"
+
+#: src/MachineActions.jsx
+msgid "Rename…"
+msgstr "Gi nytt navn…"
+
+#: src/MachineActions.jsx
+msgid "Rename: $0"
+msgstr "Gi nytt navn: $0"
+
+
+#: src/MachineActions.jsx
+msgid "Rename"
+msgstr "Gi nytt navn"
+
+#: src/MachineActions.jsx
+msgid "Rename failed"
+msgstr "Navnendring mislyktes"
+
+#: src/MachineActions.jsx
+msgid "$0 renamed to $1"
+msgstr "$0 fikk nytt navn til $1"

@@ -1113,3 +1113,24 @@ msgstr "Lähetetään…"
 #: src/CreateMachineDialog.jsx
 msgid "Importing…"
 msgstr "Tuodaan…"
+
+#: src/MachineActions.jsx
+msgid "Rename…"
+msgstr "Nimeä uudelleen…"
+
+#: src/MachineActions.jsx
+msgid "Rename: $0"
+msgstr "Nimeä uudelleen: $0"
+
+
+#: src/MachineActions.jsx
+msgid "Rename"
+msgstr "Nimeä uudelleen"
+
+#: src/MachineActions.jsx
+msgid "Rename failed"
+msgstr "Uudelleennimeäminen epäonnistui"
+
+#: src/MachineActions.jsx
+msgid "$0 renamed to $1"
+msgstr "$0 nimetty uudelleen nimeksi $1"

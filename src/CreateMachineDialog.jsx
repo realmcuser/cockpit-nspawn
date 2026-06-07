@@ -198,38 +198,23 @@ const KEYBOARD_LAYOUTS = [
     { value: 'se', label: 'Swedish (se)' },
 ];
 
-// Stream a browser File to a server path via Cockpit fswrite1 channel.
-// Sends 256 KB chunks to avoid saturating the WebSocket.
-function streamUpload(file, serverPath, onProgress) {
-    const CHUNK = 256 * 1024;
-    const channel = cockpit.channel({
-        payload: 'fswrite1',
-        path: serverPath,
-        superuser: 'require',
-        binary: true,
-    });
-    return new Promise((resolve, reject) => {
-        channel.addEventListener('close', (_ev, options) => {
-            if (options.problem)
-                reject(new Error(options.message || options.problem));
-            else
-                resolve();
-        });
-        let offset = 0;
-        const pump = () => {
-            if (offset >= file.size) {
-                channel.control({ command: 'done' });
-                return;
-            }
-            file.slice(offset, offset + CHUNK).arrayBuffer().then(buf => {
-                channel.send(new Uint8Array(buf));
-                offset += buf.byteLength;
-                if (onProgress) onProgress(offset, file.size);
-                pump();
-            }).catch(reject);
-        };
-        pump();
-    });
+// Stream a browser File to a server path via cockpit.spawn + stdin.
+// Sends 512 KB chunks. Works on all Cockpit versions.
+async function streamUpload(file, serverPath, onProgress) {
+    const CHUNK = 512 * 1024;
+    const proc = cockpit.spawn(
+        ['bash', '-c', 'cat > "$1"', '_', serverPath],
+        { superuser: 'require', binary: true, err: 'message' }
+    );
+    let offset = 0;
+    while (offset < file.size) {
+        const end = Math.min(offset + CHUNK, file.size);
+        const buf = await file.slice(offset, end).arrayBuffer();
+        offset = end;
+        proc.input(new Uint8Array(buf), offset < file.size);
+        if (onProgress) onProgress(offset, file.size);
+    }
+    await proc;
 }
 
 function detectFormat(url) {

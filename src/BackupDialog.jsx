@@ -5,6 +5,8 @@ import {
     Checkbox,
     Form,
     FormGroup,
+    FormSelect,
+    FormSelectOption,
     HelperText,
     HelperTextItem,
     Modal,
@@ -39,9 +41,40 @@ function shq(s) {
     return String(s).replace(/'/g, "'\\''");
 }
 
+// Shared mysqldump block inserted before rsync/tar in both script variants.
+// Writes a temp credentials file into the container filesystem (never on argv),
+// runs mysqldump inside the running container, then removes credentials.
+// Must run BEFORE stop_during_backup so the container is still up.
+function mysqldumpBlock(cfg) {
+    if (!cfg.mariadb_backup) return '';
+    const pw = shq(cfg.mariadb_password || '');
+    return `
+DB_DUMP="/var/lib/machines/$NAME/var/tmp/cockpit-nspawn-db.sql"
+DB_MYCNF="/var/lib/machines/$NAME/root/.cockpit-nspawn-mycnf"
+
+if machinectl show "$NAME" --property=State 2>/dev/null | grep -q "running"; then
+    printf '[client]\\npassword=%s\\n' '${pw}' > "$DB_MYCNF"
+    chmod 600 "$DB_MYCNF"
+    if ! systemd-run --machine="$NAME" --wait -- \\
+            bash -c 'mysqldump --defaults-extra-file=/root/.cockpit-nspawn-mycnf --single-transaction --all-databases > /var/tmp/cockpit-nspawn-db.sql 2>/dev/null'; then
+        rm -f "$DB_MYCNF"
+        write_status "failed" "mysqldump failed — is MariaDB running and password correct?"
+        exit 1
+    fi
+    rm -f "$DB_MYCNF"
+else
+    write_status "failed" "MariaDB backup enabled but container is not running"
+    exit 1
+fi
+`;
+}
+
 function makeScript(name, cfg) {
     const ret = parseInt(cfg.retention, 10);
     const stopDuring = cfg.stop_during_backup ? 'true' : 'false';
+    const dbBlock = mysqldumpBlock(cfg);
+    const dbCleanup = cfg.mariadb_backup
+        ? `rm -f "/var/lib/machines/$NAME/var/tmp/cockpit-nspawn-db.sql"\n` : '';
 
     if (cfg.backup_type === 'incremental') {
         return `#!/bin/bash
@@ -71,7 +104,7 @@ write_status() {
     printf '{"result":"%s","timestamp":"%s","size_bytes":0,"message":"%s"}\\n' \\
         "$1" "$(date -Iseconds)" "\${2:-}" > "$STATUS_FILE"
 }
-
+${dbBlock}
 if [ "$STOP_DURING_BACKUP" = true ] && machinectl show "$NAME" --property=State 2>/dev/null | grep -q "running"; then
     WAS_RUNNING=true
     machinectl poweroff "$NAME" 2>/dev/null || machinectl terminate "$NAME" 2>/dev/null || true
@@ -104,7 +137,7 @@ if ! rsync -az --delete $LINK_DEST_ARG \\
 fi
 
 [ "$WAS_RUNNING" = true ] && machinectl start "$NAME" || true
-
+${dbCleanup}
 ssh -i "$KEY" "$RUSER@$HOST" "ln -sfn '$REMOTE_DEST' '$REMOTE_LATEST'" || true
 
 if [ "$RETENTION" -gt 0 ]; then
@@ -142,7 +175,7 @@ write_status() {
     printf '{"result":"%s","timestamp":"%s","size_bytes":0,"message":"%s"}\\n' \\
         "$1" "$(date -Iseconds)" "\${2:-}" > "$STATUS_FILE"
 }
-
+${dbBlock}
 if [ "$STOP_DURING_BACKUP" = true ] && machinectl show "$NAME" --property=State 2>/dev/null | grep -q "running"; then
     WAS_RUNNING=true
     machinectl poweroff "$NAME" 2>/dev/null || machinectl terminate "$NAME" 2>/dev/null || true
@@ -161,7 +194,7 @@ fi
 SIZE=$(stat -c%s "$TMPFILE")
 
 [ "$WAS_RUNNING" = true ] && machinectl start "$NAME" || true
-
+${dbCleanup}
 if ! ssh -i "$KEY" -o StrictHostKeyChecking=accept-new -o BatchMode=yes \\
         "$RUSER@$HOST" "mkdir -p '$RPATH'" 2>"$ERR_FILE"; then
     write_status "failed" "$(head -1 "$ERR_FILE" | tr '"' "'")"
@@ -185,15 +218,38 @@ printf '{"result":"success","timestamp":"%s","size_bytes":%d,"message":""}\\n' \
 `;
 }
 
+const SCHEDULE_OPTIONS = [
+    { value: '1h',    label: 'Every hour' },
+    { value: '2h',    label: 'Every 2 hours' },
+    { value: '4h',    label: 'Every 4 hours' },
+    { value: '6h',    label: 'Every 6 hours' },
+    { value: '12h',   label: 'Every 12 hours' },
+    { value: 'daily', label: 'Once per day' },
+];
+
+function buildOnCalendar(freq, time) {
+    switch (freq) {
+    case '1h':  return 'hourly';
+    case '2h':  return '*-*-* 00/2:00:00';
+    case '4h':  return '*-*-* 00/4:00:00';
+    case '6h':  return '*-*-* 00/6:00:00';
+    case '12h': return '*-*-* 00/12:00:00';
+    default:    return `*-*-* ${time}:00`;
+    }
+}
+
 export function BackupDialog({ machineName, onClose, onAddNotification }) {
     const [host, setHost] = useState('');
     const [user, setUser] = useState('root');
     const [remotePath, setRemotePath] = useState('/backups');
     const [keyPath, setKeyPath] = useState('/root/.ssh/id_rsa');
-    const [schedule, setSchedule] = useState('02:00');
+    const [scheduleFreq, setScheduleFreq] = useState('daily');
+    const [scheduleTime, setScheduleTime] = useState('02:00');
     const [retention, setRetention] = useState(3);
     const [stopDuring, setStopDuring] = useState(true);
     const [backupType, setBackupType] = useState('full');
+    const [mariadbBackup, setMariadbBackup] = useState(false);
+    const [mariadbPassword, setMariadbPassword] = useState('');
     const [status, setStatus] = useState(null);
     const [hasConfig, setHasConfig] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -218,10 +274,13 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                     setUser(cfg.user || 'root');
                     setRemotePath(cfg.path || '/backups');
                     setKeyPath(cfg.key || '/root/.ssh/id_rsa');
-                    setSchedule(cfg.schedule || '02:00');
+                    setScheduleFreq(cfg.schedule_freq || (cfg.schedule ? 'daily' : 'daily'));
+                    setScheduleTime(cfg.schedule_time || cfg.schedule || '02:00');
                     setRetention(cfg.retention ?? 3);
                     setStopDuring(cfg.stop_during_backup || false);
                     setBackupType(cfg.backup_type || 'full');
+                    setMariadbBackup(cfg.mariadb_backup || false);
+                    setMariadbPassword(cfg.mariadb_password || '');
                     setHasConfig(true);
                 } catch (_e) {}
             })
@@ -238,21 +297,25 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
 
     async function doSave() {
         if (!host.trim()) { setError(_("Host is required")); return; }
-        if (!/^\d{1,2}:\d{2}$/.test(schedule.trim())) {
-            setError(_("Schedule must be in HH:MM format (e.g. 02:00)"));
+        if (scheduleFreq === 'daily' && !/^\d{1,2}:\d{2}$/.test(scheduleTime.trim())) {
+            setError(_("Time must be in HH:MM format (e.g. 02:00)"));
             return;
         }
         setSaving(true);
         setError(null);
+        const onCalendar = buildOnCalendar(scheduleFreq, scheduleTime.trim());
         const cfg = {
             host: host.trim(),
             user: user.trim() || 'root',
             path: remotePath.trim() || '/backups',
             key: keyPath.trim(),
-            schedule: schedule.trim(),
+            schedule_freq: scheduleFreq,
+            schedule_time: scheduleTime.trim(),
             retention,
             stop_during_backup: stopDuring,
             backup_type: backupType,
+            mariadb_backup: mariadbBackup,
+            mariadb_password: mariadbBackup ? mariadbPassword : '',
         };
         const scriptPath = `${CONFIG_DIR}/${machineName}.sh`;
         const serviceName = `cockpit-nspawn-backup-${machineName}`;
@@ -266,7 +329,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             await cockpit.file(`${SYSTEMD_DIR}/${serviceName}.service`, { superuser: 'require' })
                 .replace(`[Unit]\nDescription=Backup nspawn container ${machineName}\n\n[Service]\nType=oneshot\nExecStart=${scriptPath}\n`);
             await cockpit.file(`${SYSTEMD_DIR}/${serviceName}.timer`, { superuser: 'require' })
-                .replace(`[Unit]\nDescription=Scheduled backup of nspawn container ${machineName}\n\n[Timer]\nOnCalendar=*-*-* ${cfg.schedule}:00\nPersistent=true\n\n[Install]\nWantedBy=timers.target\n`);
+                .replace(`[Unit]\nDescription=Scheduled backup of nspawn container ${machineName}\n\n[Timer]\nOnCalendar=${onCalendar}\nPersistent=true\n\n[Install]\nWantedBy=timers.target\n`);
             await cockpit.spawn(['systemctl', 'daemon-reload'], { superuser: 'require' });
             await cockpit.spawn(['systemctl', 'enable', '--now', `${serviceName}.timer`], { superuser: 'require' });
             setHasConfig(true);
@@ -402,10 +465,30 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                             <HelperTextItem>{_("Key must be pre-authorized on the remote host (ssh-copy-id)")}</HelperTextItem>
                         </HelperText>
                     </FormGroup>
-                    <FormGroup label={_("Daily schedule")}>
-                        <TextInput value={schedule} onChange={(_e, v) => setSchedule(v)} placeholder="02:00" style={{ maxWidth: '8rem' }} />
+                    <FormGroup label={_("Schedule")}>
+                        <FormSelect
+                            value={scheduleFreq}
+                            onChange={(_e, v) => setScheduleFreq(v)}
+                            style={{ maxWidth: '16rem' }}
+                        >
+                            {SCHEDULE_OPTIONS.map(o => (
+                                <FormSelectOption key={o.value} value={o.value} label={_(o.label)} />
+                            ))}
+                        </FormSelect>
+                        {scheduleFreq === 'daily' && (
+                            <TextInput
+                                value={scheduleTime}
+                                onChange={(_e, v) => setScheduleTime(v)}
+                                placeholder="02:00"
+                                style={{ maxWidth: '8rem', marginTop: '0.5rem' }}
+                            />
+                        )}
                         <HelperText>
-                            <HelperTextItem>{_("Time in 24-hour format (HH:MM)")}</HelperTextItem>
+                            <HelperTextItem>
+                                {scheduleFreq === 'daily'
+                                    ? _("Time in 24-hour format (HH:MM)")
+                                    : _("Incremental backup recommended for sub-daily schedules")}
+                            </HelperTextItem>
                         </HelperText>
                     </FormGroup>
                     <FormGroup label={_("Retention")}>
@@ -449,6 +532,31 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                         <HelperText>
                             <HelperTextItem>{_("Recommended for containers running databases")}</HelperTextItem>
                         </HelperText>
+                    </FormGroup>
+                    <FormGroup label={_("MariaDB / MySQL")}>
+                        <Checkbox
+                            id="mariadb-backup"
+                            label={_("Run mysqldump before backup (zero-downtime database backup)")}
+                            isChecked={mariadbBackup}
+                            onChange={(_e, v) => setMariadbBackup(v)}
+                        />
+                        {mariadbBackup && (
+                            <>
+                                <TextInput
+                                    id="mariadb-password"
+                                    type="password"
+                                    value={mariadbPassword}
+                                    onChange={(_e, v) => setMariadbPassword(v)}
+                                    placeholder={_("MariaDB root password")}
+                                    style={{ marginTop: '0.5rem', maxWidth: '20rem' }}
+                                />
+                                <HelperText>
+                                    <HelperTextItem>
+                                        {_("Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore.")}
+                                    </HelperTextItem>
+                                </HelperText>
+                            </>
+                        )}
                     </FormGroup>
                 </Form>
 

@@ -1027,3 +1027,55 @@ msgstr "rsync-Snapshot mit Hardlinks — erfordert rsync auf lokalem und entfern
 #: src/BackupDialog.jsx
 msgid "Incremental snapshots are stored as NAME/YYYYMMDD-HHMMSS/ directories under this path"
 msgstr "Inkrementelle Snapshots werden als NAME/YYYYMMDD-HHMMSS/-Verzeichnisse unter diesem Pfad gespeichert"
+
+#: src/BackupDialog.jsx
+msgid "Schedule"
+msgstr "Zeitplan"
+
+#: src/BackupDialog.jsx
+msgid "Every hour"
+msgstr "Stündlich"
+
+#: src/BackupDialog.jsx
+msgid "Every 2 hours"
+msgstr "Alle 2 Stunden"
+
+#: src/BackupDialog.jsx
+msgid "Every 4 hours"
+msgstr "Alle 4 Stunden"
+
+#: src/BackupDialog.jsx
+msgid "Every 6 hours"
+msgstr "Alle 6 Stunden"
+
+#: src/BackupDialog.jsx
+msgid "Every 12 hours"
+msgstr "Alle 12 Stunden"
+
+#: src/BackupDialog.jsx
+msgid "Once per day"
+msgstr "Einmal täglich"
+
+#: src/BackupDialog.jsx
+msgid "Incremental backup recommended for sub-daily schedules"
+msgstr "Inkrementelle Sicherung empfohlen für Intervalle kürzer als täglich"
+
+#: src/BackupDialog.jsx
+msgid "Time must be in HH:MM format (e.g. 02:00)"
+msgstr "Die Uhrzeit muss im Format HH:MM angegeben werden (z.B. 02:00)"
+
+#: src/BackupDialog.jsx
+msgid "MariaDB / MySQL"
+msgstr "MariaDB / MySQL"
+
+#: src/BackupDialog.jsx
+msgid "Run mysqldump before backup (zero-downtime database backup)"
+msgstr "mysqldump vor dem Backup ausführen (Datenbank-Backup ohne Ausfallzeit)"
+
+#: src/BackupDialog.jsx
+msgid "MariaDB root password"
+msgstr "MariaDB-Root-Passwort"
+
+#: src/BackupDialog.jsx
+msgid "Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore."
+msgstr "Führt mysqldump --single-transaction im laufenden Container aus. Der Dump wird mit jedem Snapshot gespeichert und bei der Wiederherstellung automatisch eingespielt."

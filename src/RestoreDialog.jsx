@@ -41,6 +41,8 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
     const [remotePath, setRemotePath] = useState('/backups');
     const [keyPath, setKeyPath] = useState('/root/.ssh/id_rsa');
     const [backupType, setBackupType] = useState('full');
+    const [mariadbBackup, setMariadbBackup] = useState(false);
+    const [mariadbPassword, setMariadbPassword] = useState('');
     const [backups, setBackups] = useState(null);
     const [selected, setSelected] = useState('');
     const [listing, setListing] = useState(false);
@@ -59,6 +61,8 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
                     setRemotePath(cfg.path || '/backups');
                     setKeyPath(cfg.key || '/root/.ssh/id_rsa');
                     setBackupType(cfg.backup_type || 'full');
+                    setMariadbBackup(cfg.mariadb_backup || false);
+                    setMariadbPassword(cfg.mariadb_password || '');
                 } catch (_e) {}
             })
             .catch(() => {});
@@ -150,7 +154,55 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
                 }
             }
 
-            if (wasRunning) {
+            // MariaDB restore: start container temporarily, wait for DB, restore from dump
+            const dumpPath = `/var/lib/machines/${machineName}/var/tmp/cockpit-nspawn-db.sql`;
+            const dumpExists = await cockpit.spawn(['test', '-f', dumpPath], { superuser: 'require' })
+                .then(() => true).catch(() => false);
+
+            if (mariadbBackup && dumpExists) {
+                await cockpit.spawn(['machinectl', 'start', machineName],
+                    { superuser: 'require', err: 'ignore' });
+
+                // Wait for MariaDB to accept connections (max 60s)
+                const mycnfHost = `/var/lib/machines/${machineName}/root/.cockpit-nspawn-mycnf`;
+                await cockpit.file(mycnfHost, { superuser: 'require' })
+                    .replace(`[client]\npassword=${mariadbPassword}\n`);
+                await cockpit.spawn(['chmod', '600', mycnfHost], { superuser: 'require' });
+
+                let dbReady = false;
+                for (let i = 0; i < 30; i++) {
+                    try {
+                        await cockpit.spawn(
+                            ['systemd-run', `--machine=${machineName}`, '--wait', '--quiet', '--',
+                             'mysqladmin', '--defaults-extra-file=/root/.cockpit-nspawn-mycnf',
+                             '--connect-timeout=2', 'ping'],
+                            { superuser: 'require', err: 'ignore' }
+                        );
+                        dbReady = true;
+                        break;
+                    } catch (_e) {}
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+
+                if (dbReady) {
+                    await cockpit.spawn(
+                        ['systemd-run', `--machine=${machineName}`, '--wait', '--',
+                         'bash', '-c',
+                         'mysql --defaults-extra-file=/root/.cockpit-nspawn-mycnf < /var/tmp/cockpit-nspawn-db.sql' +
+                         ' && rm -f /var/tmp/cockpit-nspawn-db.sql /root/.cockpit-nspawn-mycnf'],
+                        { superuser: 'require', err: 'message' }
+                    );
+                } else {
+                    // Clean up credentials even if DB didn't come up
+                    await cockpit.spawn(['rm', '-f', mycnfHost], { superuser: 'require', err: 'ignore' });
+                }
+
+                // Stop again if container wasn't supposed to be running
+                if (!wasRunning) {
+                    await cockpit.spawn(['machinectl', 'poweroff', machineName],
+                        { superuser: 'require', err: 'ignore' });
+                }
+            } else if (wasRunning) {
                 await cockpit.spawn(
                     ['machinectl', 'start', machineName],
                     { superuser: 'require', err: 'ignore' }

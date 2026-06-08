@@ -2,6 +2,12 @@
 
 nspawn containers can run Podman, making it possible to host container-in-container workloads — for example, migrating an existing Podman-based setup into an isolated nspawn environment with full systemd support.
 
+## Important: the .nspawn configuration file lives on the host
+
+When you export a container and import it on a new host, the `.nspawn` configuration file (`/etc/systemd/nspawn/<name>.nspawn`) is **not** included in the export — it lives on the host, not inside the container. You must create it manually on the new host before starting the container.
+
+cockpit-nspawn creates this file automatically when you bootstrap a new container. When importing a container from another machine, create the appropriate `.nspawn` file for your host distribution (see the configurations below) before starting the container.
+
 ## Host requirements
 
 ### Load ip_tables (Fedora hosts only)
@@ -21,7 +27,9 @@ ip6_tables
 EOF
 ```
 
-AlmaLinux 9 and 10 hosts load `ip_tables` by default — no action needed.
+AlmaLinux 9 hosts load `ip_tables` by default — no action needed.
+
+AlmaLinux 10 does **not** load `ip_tables` at all — the kernel is built without it. See the AlmaLinux 9 container on AlmaLinux 10 host section below.
 
 ## nspawn configuration
 
@@ -43,7 +51,9 @@ Bridge=bridge0
 
 `PrivateUsers=no` is required on Fedora because newer systemd defaults to user namespace mapping (UID remapping). This prevents inner Podman containers from mounting `sysfs` — even with `--privileged` — because the mount is denied at the kernel level when not in the initial user namespace. `PrivateUsers=no` disables the UID remapping and resolves this.
 
-### AlmaLinux 9 / AlmaLinux 10 host
+Fedora's nspawn seccomp filter already includes `bpf` in the allowed syscalls, so `SystemCallFilter=bpf` is not needed here (unlike AlmaLinux 10).
+
+### AlmaLinux 9 host
 
 ```ini
 [Exec]
@@ -58,7 +68,61 @@ Bind=/dev/fuse
 Bridge=bridge0
 ```
 
-AlmaLinux 9 and 10 do not enable `PrivateUsers` by default, so Podman works without that setting.
+AlmaLinux 9 does not enable `PrivateUsers` by default, so Podman works without that setting.
+
+### AlmaLinux 10 host (systemd 257+)
+
+```ini
+[Exec]
+Boot=yes
+Capability=all
+SystemCallFilter=keyctl bpf
+PrivateUsers=no
+
+[Files]
+Bind=/dev/fuse
+
+[Network]
+Bridge=bridge0
+```
+
+Two settings are required that were not needed on AlmaLinux 9:
+
+**`PrivateUsers=no`** — AlmaLinux 10 with systemd 257 enables UID remapping by default, just like Fedora 40+. Without this, inner Podman containers fail to mount `sysfs` because the mount is denied when not in the initial user namespace. Verify with `cat /proc/self/uid_map` inside the container: a mapping like `0 786759680 65536` means remapping is active.
+
+**`SystemCallFilter=bpf`** — systemd 257's default seccomp filter does not include the `bpf()` syscall. crun requires it to set up the cgroup v2 device controller (using eBPF maps), even for simple `podman run` commands. Without it, every `podman run` fails with:
+
+```
+crun: bpf create ``: Operation not permitted: OCI permission denied
+```
+
+Note: `--security-opt seccomp=unconfined` inside Podman does not help — the block happens at the nspawn seccomp layer before Podman's own filters are evaluated. The fix must be in the `.nspawn` file on the host.
+
+### AlmaLinux 9 container on an AlmaLinux 10 host
+
+If you run an AlmaLinux 9 container on an AlmaLinux 10 host, use the AlmaLinux 10 `.nspawn` configuration above, and additionally configure Podman's network backend inside the container to use nftables instead of iptables:
+
+```bash
+mkdir -p /etc/containers
+cat > /etc/containers/containers.conf << 'EOF'
+[network]
+firewall_driver = "nftables"
+EOF
+```
+
+Without this, Podman inside the AlmaLinux 9 container tries to use iptables for NAT, but the AlmaLinux 10 kernel has no `ip_tables` module — it was removed entirely in RHEL 10. Setting `firewall_driver = "nftables"` tells netavark to use nftables directly.
+
+This is a common scenario when migrating existing AlmaLinux 9 containers to a newer host. If you exported the container from an AlmaLinux 9 host and imported it on an AlmaLinux 10 host, add this setting before starting Podman workloads.
+
+## Inside the container: known failing units
+
+### systemd-modules-load.service
+
+This service fails in every nspawn container — containers cannot load kernel modules. The failure is harmless but pollutes `systemctl --failed`. Mask it:
+
+```bash
+systemctl mask systemd-modules-load.service
+```
 
 ## Managing Podman pods with Quadlet
 

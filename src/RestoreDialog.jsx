@@ -77,7 +77,7 @@ export function RestoreDialog({ machineName, machineState, onClose, onAddNotific
         const escapedPath = remotePath.trim().replace(/'/g, "'\\''");
         try {
             const listCmd = backupType === 'incremental'
-                ? `ls -1dt '${escapedPath}/${machineName}/'[0-9]* 2>/dev/null || true`
+                ? `ls -1d '${escapedPath}/${machineName}/'[0-9]* 2>/dev/null | sort -r || true`
                 : `ls -1t '${escapedPath}/${machineName}-'*.tar.gz 2>/dev/null || true`;
             const output = await cockpit.spawn(
                 ['ssh', '-i', keyPath.trim(),

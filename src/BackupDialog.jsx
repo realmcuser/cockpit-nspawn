@@ -142,7 +142,7 @@ ssh -i "$KEY" "$RUSER@$HOST" "ln -sfn '$REMOTE_DEST' '$REMOTE_LATEST'" || true
 
 if [ "$RETENTION" -gt 0 ]; then
     ssh -i "$KEY" "$RUSER@$HOST" \\
-        "ls -1dt '$REMOTE_BASE'/[0-9]* 2>/dev/null | tail -n +\$((RETENTION+1)) | xargs -r rm -rf" || true
+        "ls -1d '$REMOTE_BASE'/[0-9]* 2>/dev/null | sort -r | tail -n +\$((RETENTION+1)) | xargs -r rm -rf" || true
 fi
 
 printf '{"result":"success","timestamp":"%s","size_bytes":0,"message":""}\\n' \\

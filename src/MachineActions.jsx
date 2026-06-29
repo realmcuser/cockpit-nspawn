@@ -87,7 +87,8 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 { superuser: 'require', err: 'ignore' }).catch(() => {});
             await cockpit.spawn(['rm', '-f',
                 `/etc/systemd/system/cockpit-nspawn-backup-${name}.timer`,
-                `/etc/systemd/system/cockpit-nspawn-backup-${name}.service`],
+                `/etc/systemd/system/cockpit-nspawn-backup-${name}.service`,
+                `/etc/cockpit-nspawn/backup/${name}.sh`],
             { superuser: 'require', err: 'ignore' }).catch(() => {});
             // Update autostart
             if (isAutostart) {
@@ -95,6 +96,12 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 await cockpit.spawn(['machinectl', 'enable', newName], { superuser: 'require', err: 'ignore' }).catch(() => {});
             }
             await cockpit.spawn(['systemctl', 'daemon-reload'], { superuser: 'require' });
+            // Clear failed states left over from the old unit names
+            await cockpit.spawn(['systemctl', 'reset-failed',
+                `systemd-nspawn@${name}.service`,
+                `cockpit-nspawn-backup-${name}.service`,
+                `cockpit-nspawn-backup-${name}.timer`],
+            { superuser: 'require', err: 'ignore' }).catch(() => {});
             onAddNotification({ type: 'success', title: format(_("$0 renamed to $1"), name, newName) });
             setShowRename(false);
             onRefresh();

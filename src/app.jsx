@@ -10,12 +10,16 @@ import {
     Spinner,
     EmptyState,
     EmptyStateBody,
+    Tab,
+    Tabs,
+    TabTitleText,
     Title,
 } from '@patternfly/react-core';
 
 import cockpit from 'cockpit';
 import { spawnMachinectl, parseMachinectlJson } from './utils.js';
 import { Machines } from './machines.jsx';
+import { BackupsOverview } from './BackupsOverview.jsx';
 
 const { gettext: _, format } = cockpit;
 
@@ -110,6 +114,7 @@ export function Application() {
     const [resourceStats, setResourceStats] = useState(new Map());
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState([]);
+    const [activeTab, setActiveTab] = useState('containers');
     const prevCpuRef = useRef(new Map());
 
     const addNotification = useCallback((notification) => {
@@ -248,6 +253,11 @@ export function Application() {
         );
     }
 
+    const allNames = [...new Set([
+        ...machines.filter(m => m.service === 'systemd-nspawn' || m.class === 'container').map(m => m.machine),
+        ...images.filter(i => i.type === 'directory' || i.type === 'subvolume').map(i => i.name),
+    ])];
+
     return (
         <Page>
             <AlertGroup isToast isLiveRegion>
@@ -264,20 +274,35 @@ export function Application() {
             </AlertGroup>
 
             <PageSection>
-                <Title headingLevel="h1" size="2xl">{_("Containers (nspawn)")}</Title>
-            </PageSection>
-
-            <PageSection>
-                <Machines
-                    machines={machines}
-                    images={images}
-                    enabledMachines={enabledMachines}
-                    backupStatuses={backupStatuses}
-                    resourceStats={resourceStats}
-                    onAction={handleAction}
-                    onAddNotification={addNotification}
-                    onRefresh={fetchData}
-                />
+                <Title headingLevel="h1" size="2xl" style={{ marginBottom: '1rem' }}>
+                    {_("Containers (nspawn)")}
+                </Title>
+                <Tabs activeKey={activeTab} onSelect={(_e, k) => setActiveTab(k)}>
+                    <Tab eventKey="containers" title={<TabTitleText>{_("Containers")}</TabTitleText>}>
+                        <div style={{ paddingTop: '1rem' }}>
+                            <Machines
+                                machines={machines}
+                                images={images}
+                                enabledMachines={enabledMachines}
+                                backupStatuses={backupStatuses}
+                                resourceStats={resourceStats}
+                                onAction={handleAction}
+                                onAddNotification={addNotification}
+                                onRefresh={fetchData}
+                            />
+                        </div>
+                    </Tab>
+                    <Tab eventKey="backups" title={<TabTitleText>{_("Backups")}</TabTitleText>}>
+                        <div style={{ paddingTop: '1rem' }}>
+                            {activeTab === 'backups' && (
+                                <BackupsOverview
+                                    allNames={allNames}
+                                    backupStatuses={backupStatuses}
+                                />
+                            )}
+                        </div>
+                    </Tab>
+                </Tabs>
             </PageSection>
         </Page>
     );

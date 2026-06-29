@@ -1231,3 +1231,37 @@ msgstr "Jeton d'application"
 msgid "Leave both blank to disable. Create an app at pushover.net to get an app token."
 msgstr "Laisser les deux vides pour désactiver. Créez une application sur pushover.net pour obtenir un jeton d'application."
 
+
+# BackupsOverview.jsx + app.jsx tabs
+
+#: src/BackupsOverview.jsx
+msgid "Loading backup status..."
+msgstr "Chargement de l'état des sauvegardes..."
+
+#: src/BackupsOverview.jsx
+msgid "No containers found."
+msgstr "Aucun conteneur trouvé."
+
+#: src/BackupsOverview.jsx
+msgid "Backup overview"
+msgstr "Vue d'ensemble des sauvegardes"
+
+#: src/BackupsOverview.jsx
+msgid "No backup configured"
+msgstr "Aucune sauvegarde configurée"
+
+#: src/BackupsOverview.jsx
+msgid "Never run"
+msgstr "Jamais exécuté"
+
+#: src/BackupsOverview.jsx
+msgid "Next run"
+msgstr "Prochaine exécution"
+
+#: src/app.jsx
+msgid "Containers"
+msgstr "Conteneurs"
+
+#: src/app.jsx
+msgid "Backups"
+msgstr "Sauvegardes"

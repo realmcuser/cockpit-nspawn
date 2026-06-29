@@ -1227,3 +1227,37 @@ msgstr "Sovellustunnus"
 msgid "Leave both blank to disable. Create an app at pushover.net to get an app token."
 msgstr "Jätä molemmat tyhjiksi poistaaksesi käytöstä. Luo sovellus osoitteessa pushover.net saadaksesi sovellustunnuksen."
 
+
+# BackupsOverview.jsx + app.jsx tabs
+
+#: src/BackupsOverview.jsx
+msgid "Loading backup status..."
+msgstr "Ladataan varmuuskopiointitilaa..."
+
+#: src/BackupsOverview.jsx
+msgid "No containers found."
+msgstr "Kontteja ei löydy."
+
+#: src/BackupsOverview.jsx
+msgid "Backup overview"
+msgstr "Varmuuskopioinnin yleiskatsaus"
+
+#: src/BackupsOverview.jsx
+msgid "No backup configured"
+msgstr "Varmuuskopiointia ei ole määritetty"
+
+#: src/BackupsOverview.jsx
+msgid "Never run"
+msgstr "Ei koskaan suoritettu"
+
+#: src/BackupsOverview.jsx
+msgid "Next run"
+msgstr "Seuraava suoritus"
+
+#: src/app.jsx
+msgid "Containers"
+msgstr "Kontit"
+
+#: src/app.jsx
+msgid "Backups"
+msgstr "Varmuuskopiot"

@@ -1141,7 +1141,7 @@ msgstr "Enkel — behold et fast antall kopier"
 
 #: src/BackupDialog.jsx
 msgid "GFS — Grandfather-Father-Son tiers"
-msgstr "GFS — Bestefar-Far-Sønn-nivåer"
+msgstr "GFS — Farfar-Far-Sønn-nivåer"
 
 #: src/BackupDialog.jsx
 msgid "Set a tier to 0 to disable it. Requires python3 on the backup server."
@@ -1227,3 +1227,37 @@ msgstr "App-token"
 msgid "Leave both blank to disable. Create an app at pushover.net to get an app token."
 msgstr "La begge stå tomme for å deaktivere. Opprett en app på pushover.net for å få et app-token."
 
+
+# BackupsOverview.jsx + app.jsx tabs
+
+#: src/BackupsOverview.jsx
+msgid "Loading backup status..."
+msgstr "Laster sikkerhetskopistatus..."
+
+#: src/BackupsOverview.jsx
+msgid "No containers found."
+msgstr "Ingen containere funnet."
+
+#: src/BackupsOverview.jsx
+msgid "Backup overview"
+msgstr "Sikkerhetskopioversikt"
+
+#: src/BackupsOverview.jsx
+msgid "No backup configured"
+msgstr "Ingen sikkerhetskopiering konfigurert"
+
+#: src/BackupsOverview.jsx
+msgid "Never run"
+msgstr "Aldri kjørt"
+
+#: src/BackupsOverview.jsx
+msgid "Next run"
+msgstr "Neste kjøring"
+
+#: src/app.jsx
+msgid "Containers"
+msgstr "Containere"
+
+#: src/app.jsx
+msgid "Backups"
+msgstr "Sikkerhetskopier"

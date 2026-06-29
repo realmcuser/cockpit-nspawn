@@ -1233,3 +1233,37 @@ msgstr "App-Token"
 msgid "Leave both blank to disable. Create an app at pushover.net to get an app token."
 msgstr "Beide leer lassen zum Deaktivieren. Erstelle eine App auf pushover.net, um einen App-Token zu erhalten."
 
+
+# BackupsOverview.jsx + app.jsx tabs
+
+#: src/BackupsOverview.jsx
+msgid "Loading backup status..."
+msgstr "Backup-Status wird geladen..."
+
+#: src/BackupsOverview.jsx
+msgid "No containers found."
+msgstr "Keine Container gefunden."
+
+#: src/BackupsOverview.jsx
+msgid "Backup overview"
+msgstr "Backup-Übersicht"
+
+#: src/BackupsOverview.jsx
+msgid "No backup configured"
+msgstr "Kein Backup konfiguriert"
+
+#: src/BackupsOverview.jsx
+msgid "Never run"
+msgstr "Noch nie ausgeführt"
+
+#: src/BackupsOverview.jsx
+msgid "Next run"
+msgstr "Nächste Ausführung"
+
+#: src/app.jsx
+msgid "Containers"
+msgstr "Container"
+
+#: src/app.jsx
+msgid "Backups"
+msgstr "Backups"

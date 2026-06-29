@@ -1134,3 +1134,96 @@ msgstr "Uudelleennimeäminen epäonnistui"
 #: src/MachineActions.jsx
 msgid "$0 renamed to $1"
 msgstr "$0 nimetty uudelleen nimeksi $1"
+
+#: src/BackupDialog.jsx
+msgid "Simple — keep a fixed number of copies"
+msgstr "Yksinkertainen — pidä kiinteä määrä kopioita"
+
+#: src/BackupDialog.jsx
+msgid "GFS — Grandfather-Father-Son tiers"
+msgstr "GFS — isoisä-isä-poika-tasot"
+
+#: src/BackupDialog.jsx
+msgid "Set a tier to 0 to disable it. Requires python3 on the backup server."
+msgstr "Aseta taso arvoon 0 poistaaksesi sen käytöstä. Vaatii python3:n varmuuskopiopalvelimelle."
+
+#: src/BackupDialog.jsx
+msgid "Hourly"
+msgstr "Tunneittain"
+
+#: src/BackupDialog.jsx
+msgid "Daily"
+msgstr "Päivittäin"
+
+#: src/BackupDialog.jsx
+msgid "Weekly"
+msgstr "Viikoittain"
+
+#: src/BackupDialog.jsx
+msgid "Monthly"
+msgstr "Kuukausittain"
+
+#: src/BackupDialog.jsx
+msgid "Yearly"
+msgstr "Vuosittain"
+
+#: src/BackupDialog.jsx
+msgid "Notify on"
+msgstr "Ilmoita kun"
+
+#: src/BackupDialog.jsx
+msgid "Failure"
+msgstr "Epäonnistuminen"
+
+#: src/BackupDialog.jsx
+msgid "Success"
+msgstr "Onnistuminen"
+
+#: src/BackupDialog.jsx
+msgid "Configure at least one channel below to enable notifications"
+msgstr "Määritä vähintään yksi kanava alla ottaaksesi ilmoitukset käyttöön"
+
+#: src/BackupDialog.jsx
+msgid "Email (SMTP)"
+msgstr "Sähköposti (SMTP)"
+
+#: src/BackupDialog.jsx
+msgid "SMTP username (e.g. user@gmail.com)"
+msgstr "SMTP-käyttäjätunnus (esim. user@gmail.com)"
+
+#: src/BackupDialog.jsx
+msgid "SMTP password"
+msgstr "SMTP-salasana"
+
+#: src/BackupDialog.jsx
+msgid "Recipient address"
+msgstr "Vastaanottajan osoite"
+
+#: src/BackupDialog.jsx
+msgid "Leave all four fields blank to disable email. Uses curl with STARTTLS/SSL — no local MTA required."
+msgstr "Jätä kaikki neljä kenttää tyhjiksi poistaaksesi sähköpostin käytöstä. Käyttää curlia STARTTLS/SSL:llä — paikallista MTA:ta ei tarvita."
+
+#: src/BackupDialog.jsx
+msgid "Slack webhook URL"
+msgstr "Slack webhook -URL"
+
+#: src/BackupDialog.jsx
+msgid "Leave blank to disable. Create at api.slack.com/apps → Incoming Webhooks."
+msgstr "Jätä tyhjäksi poistaaksesi käytöstä. Luo osoitteessa api.slack.com/apps → Incoming Webhooks."
+
+#: src/BackupDialog.jsx
+msgid "Pushover"
+msgstr "Pushover"
+
+#: src/BackupDialog.jsx
+msgid "User key"
+msgstr "Käyttäjäavain"
+
+#: src/BackupDialog.jsx
+msgid "App token"
+msgstr "Sovellustunnus"
+
+#: src/BackupDialog.jsx
+msgid "Leave both blank to disable. Create an app at pushover.net to get an app token."
+msgstr "Jätä molemmat tyhjiksi poistaaksesi käytöstä. Luo sovellus osoitteessa pushover.net saadaksesi sovellustunnuksen."
+

@@ -1134,3 +1134,96 @@ msgstr "Navnendring mislyktes"
 #: src/MachineActions.jsx
 msgid "$0 renamed to $1"
 msgstr "$0 fikk nytt navn til $1"
+
+#: src/BackupDialog.jsx
+msgid "Simple — keep a fixed number of copies"
+msgstr "Enkel — behold et fast antall kopier"
+
+#: src/BackupDialog.jsx
+msgid "GFS — Grandfather-Father-Son tiers"
+msgstr "GFS — Bestefar-Far-Sønn-nivåer"
+
+#: src/BackupDialog.jsx
+msgid "Set a tier to 0 to disable it. Requires python3 on the backup server."
+msgstr "Sett et nivå til 0 for å deaktivere det. Krever python3 på sikkerhetskopieringsserveren."
+
+#: src/BackupDialog.jsx
+msgid "Hourly"
+msgstr "Hvert time"
+
+#: src/BackupDialog.jsx
+msgid "Daily"
+msgstr "Daglig"
+
+#: src/BackupDialog.jsx
+msgid "Weekly"
+msgstr "Ukentlig"
+
+#: src/BackupDialog.jsx
+msgid "Monthly"
+msgstr "Månedlig"
+
+#: src/BackupDialog.jsx
+msgid "Yearly"
+msgstr "Årlig"
+
+#: src/BackupDialog.jsx
+msgid "Notify on"
+msgstr "Varsle ved"
+
+#: src/BackupDialog.jsx
+msgid "Failure"
+msgstr "Feil"
+
+#: src/BackupDialog.jsx
+msgid "Success"
+msgstr "Suksess"
+
+#: src/BackupDialog.jsx
+msgid "Configure at least one channel below to enable notifications"
+msgstr "Konfigurer minst én kanal nedenfor for å aktivere varsler"
+
+#: src/BackupDialog.jsx
+msgid "Email (SMTP)"
+msgstr "E-post (SMTP)"
+
+#: src/BackupDialog.jsx
+msgid "SMTP username (e.g. user@gmail.com)"
+msgstr "SMTP-brukernavn (f.eks. user@gmail.com)"
+
+#: src/BackupDialog.jsx
+msgid "SMTP password"
+msgstr "SMTP-passord"
+
+#: src/BackupDialog.jsx
+msgid "Recipient address"
+msgstr "Mottakeradresse"
+
+#: src/BackupDialog.jsx
+msgid "Leave all four fields blank to disable email. Uses curl with STARTTLS/SSL — no local MTA required."
+msgstr "La alle fire felt stå tomme for å deaktivere e-post. Bruker curl med STARTTLS/SSL — ingen lokal MTA kreves."
+
+#: src/BackupDialog.jsx
+msgid "Slack webhook URL"
+msgstr "Slack webhook-URL"
+
+#: src/BackupDialog.jsx
+msgid "Leave blank to disable. Create at api.slack.com/apps → Incoming Webhooks."
+msgstr "La stå tomt for å deaktivere. Opprett på api.slack.com/apps → Incoming Webhooks."
+
+#: src/BackupDialog.jsx
+msgid "Pushover"
+msgstr "Pushover"
+
+#: src/BackupDialog.jsx
+msgid "User key"
+msgstr "Brukernøkkel"
+
+#: src/BackupDialog.jsx
+msgid "App token"
+msgstr "App-token"
+
+#: src/BackupDialog.jsx
+msgid "Leave both blank to disable. Create an app at pushover.net to get an app token."
+msgstr "La begge stå tomme for å deaktivere. Opprett en app på pushover.net for å få et app-token."
+

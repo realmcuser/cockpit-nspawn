@@ -33,10 +33,10 @@ function formatSize(bytes) {
     return ` (${(bytes / 1024).toFixed(0)} KB)`;
 }
 
-function formatNextRun(usec) {
-    if (!usec || usec === '0' || usec === 'infinity') return '—';
+function formatNextRun(ms) {
+    if (!ms || ms === '0') return '—';
     try {
-        const d = new Date(parseInt(usec, 10) / 1000);
+        const d = new Date(parseInt(ms, 10));
         return isNaN(d.getTime()) ? '—' : d.toLocaleString();
     } catch (_e) { return '—'; }
 }
@@ -85,12 +85,12 @@ export function BackupsOverview({ allNames, backupStatuses }) {
             await Promise.all([...cfgMap.keys()].map(async name => {
                 try {
                     const out = await cockpit.spawn(
-                        ['systemctl', 'show', '--property=NextElapseUSecRealtime',
-                            `cockpit-nspawn-backup-${name}.timer`],
+                        ['bash', '-c',
+                         `ts=$(systemctl show --property=NextElapseUSecRealtime --value 'cockpit-nspawn-backup-${name}.timer' 2>/dev/null); date -d "$ts" +%s 2>/dev/null || echo 0`],
                         { superuser: 'try', err: 'ignore' }
                     );
-                    const m = out.match(/NextElapseUSecRealtime=(\d+)/);
-                    if (m) nextMap.set(name, m[1]);
+                    const secs = parseInt(out.trim(), 10);
+                    if (secs > 0) nextMap.set(name, String(secs * 1000));
                 } catch (_e) {}
             }));
             setNextRuns(nextMap);

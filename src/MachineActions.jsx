@@ -128,7 +128,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 )}
                 popperProps={{ position: "right" }}
             >
-                <DropdownList>
+                <DropdownList style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                     {!isRunning && (
                         <DropdownItem key="start" onClick={() => doAction("start")}>
                             {_("Start")}

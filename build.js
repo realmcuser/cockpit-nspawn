@@ -27,7 +27,7 @@ const context = await esbuild.context({
     // Typsnitt och bilder är externa — serveras från cockpits static/
     external: ['*.woff', '*.woff2', '*.jpg', '*.svg', '../../assets*'],
     legalComments: 'external',
-    loader: { '.js': 'jsx' },
+    loader: { '.js': 'jsx', '.sh': 'text' },
     minify: production,
     nodePaths,
     sourcemap: !production,

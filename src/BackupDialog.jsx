@@ -16,15 +16,28 @@ import {
     ModalFooter,
     NumberInput,
     Radio,
+    TextArea,
     TextInput,
 } from '@patternfly/react-core';
 import cockpit from 'cockpit';
+
+import DISPATCH_SH from './pull-backup/dispatch.sh';
+import SNAPSHOT_DB_SH from './pull-backup/snapshot-db.sh';
+import RESTORE_AFTER_BACKUP_SH from './pull-backup/restore-after-backup.sh';
 
 const { gettext: _, format } = cockpit;
 
 const CONFIG_DIR = '/etc/cockpit-nspawn/backup';
 const STATUS_DIR = '/etc/cockpit-nspawn/backup-status';
 const SYSTEMD_DIR = '/etc/systemd/system';
+
+// Opposite end of the same trust boundary as nspawn-vault's dispatch.sh
+// (NAME_RE) and vault_config.py's _CONTAINER_NAME_RE — see src/pull-backup/README.md.
+const CONTAINER_NAME_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
+const PULL_DIR = '/usr/local/lib/nspawn-pull';
+const PULL_CREDS_DIR = '/etc/cockpit-nspawn/pull';
+const PULL_AUTHORIZED_KEYS = '/root/.ssh/authorized_keys';
+const PULL_KEY_MARKER = `restrict,command="${PULL_DIR}/dispatch.sh"`;
 
 function formatTs(ts) {
     if (!ts) return '';
@@ -374,6 +387,10 @@ const GFS_TIERS = [
 ];
 
 export function BackupDialog({ machineName, onClose, onAddNotification }) {
+    const nameValid = CONTAINER_NAME_RE.test(machineName);
+    const [mode, setMode]                         = useState('push');
+    const [vaultPubkey, setVaultPubkey]           = useState('');
+    const [installResult, setInstallResult]       = useState(null);
     const [host, setHost]                         = useState('');
     const [user, setUser]                         = useState('root');
     const [remotePath, setRemotePath]             = useState('/backups');
@@ -416,6 +433,8 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 if (!content) return;
                 try {
                     const cfg = JSON.parse(content);
+                    setMode(cfg.mode === 'pull' ? 'pull' : 'push');
+                    setVaultPubkey(cfg.vault_pubkey || '');
                     setHost(cfg.host || '');
                     setUser(cfg.user || 'root');
                     setRemotePath(cfg.path || '/backups');
@@ -540,6 +559,138 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
         }
     }
 
+    // Shared per-host files, common to every pull-mode container on this
+    // source host — installing them again for a second container is a no-op.
+    async function installPullSourceHostFiles() {
+        await cockpit.spawn(['mkdir', '-p', PULL_DIR], { superuser: 'require' });
+        await cockpit.file(`${PULL_DIR}/dispatch.sh`, { superuser: 'require' }).replace(DISPATCH_SH);
+        await cockpit.file(`${PULL_DIR}/snapshot-db.sh`, { superuser: 'require' }).replace(SNAPSHOT_DB_SH);
+        await cockpit.file(`${PULL_DIR}/restore-after-backup.sh`, { superuser: 'require' }).replace(RESTORE_AFTER_BACKUP_SH);
+        await cockpit.spawn(
+            ['chmod', '755', `${PULL_DIR}/dispatch.sh`, `${PULL_DIR}/snapshot-db.sh`, `${PULL_DIR}/restore-after-backup.sh`],
+            { superuser: 'require' }
+        );
+
+        const rrsyncFound = await cockpit.spawn(['which', 'rrsync'], { superuser: 'try', err: 'ignore' }).catch(() => null);
+        if (!rrsyncFound) {
+            await cockpit.spawn(
+                ['install', '-m755', '/usr/share/doc/rsync/support/rrsync', '/usr/local/bin/rrsync'],
+                { superuser: 'require' }
+            );
+        }
+    }
+
+    // Other pull-mode containers on this host may share the same vault's
+    // authorized_keys line — don't remove it out from under them.
+    async function otherPullContainersShareKey(excludeName, pubkey) {
+        const trimmed = pubkey.trim();
+        if (!trimmed) return false;
+        let listing;
+        try {
+            listing = await cockpit.spawn(['ls', CONFIG_DIR], { superuser: 'try', err: 'ignore' });
+        } catch {
+            return false;
+        }
+        const names = listing.split('\n')
+            .filter(f => f.endsWith('.json') && f !== `${excludeName}.json`)
+            .map(f => f.slice(0, -'.json'.length));
+        for (const n of names) {
+            try {
+                const content = await cockpit.file(`${CONFIG_DIR}/${n}.json`, { superuser: 'try' }).read();
+                if (!content) continue;
+                const other = JSON.parse(content);
+                if (other.mode === 'pull' && (other.vault_pubkey || '').trim() === trimmed) return true;
+            } catch {
+                // malformed or unreadable config for another container — ignore it
+            }
+        }
+        return false;
+    }
+
+    async function doSavePull() {
+        if (!nameValid) {
+            setError(format(_("Container name \"$0\" isn't valid for pull backup (only letters, digits, - and _ are allowed)"), machineName));
+            return;
+        }
+        if (!vaultPubkey.trim()) { setError(_("Vault's public key is required")); return; }
+        setSaving(true);
+        setError(null);
+        setInstallResult(null);
+        try {
+            await installPullSourceHostFiles();
+
+            if (mariadbBackup) {
+                await cockpit.spawn(['mkdir', '-p', PULL_CREDS_DIR], { superuser: 'require' });
+                await cockpit.file(`${PULL_CREDS_DIR}/${machineName}.cnf`, { superuser: 'require' })
+                    .replace(`[client]\nuser=backup\npassword=${mariadbPassword}\n`);
+                await cockpit.spawn(['chmod', '600', `${PULL_CREDS_DIR}/${machineName}.cnf`], { superuser: 'require' });
+            } else {
+                await cockpit.spawn(['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.cnf`], { superuser: 'require', err: 'ignore' });
+            }
+
+            const pubkey = vaultPubkey.trim();
+            const existingKeys = await cockpit.file(PULL_AUTHORIZED_KEYS, { superuser: 'require' }).read() || '';
+            if (!existingKeys.includes(pubkey)) {
+                const line = `${PULL_KEY_MARKER} ${pubkey}`;
+                const prefix = existingKeys.trimEnd();
+                await cockpit.file(PULL_AUTHORIZED_KEYS, { superuser: 'require' })
+                    .replace(prefix ? `${prefix}\n${line}\n` : `${line}\n`);
+            }
+
+            const cfg = {
+                mode: 'pull',
+                vault_pubkey: pubkey,
+                mariadb_backup: mariadbBackup,
+                mariadb_password: mariadbBackup ? mariadbPassword : '',
+            };
+            await cockpit.spawn(['mkdir', '-p', CONFIG_DIR], { superuser: 'require' });
+            await cockpit.file(`${CONFIG_DIR}/${machineName}.json`, { superuser: 'require' })
+                .replace(JSON.stringify(cfg, null, 2) + '\n');
+
+            setHasConfig(true);
+
+            let hostname = '';
+            try {
+                hostname = (await cockpit.spawn(['hostname', '-f'], { superuser: 'try', err: 'ignore' })).trim();
+            } catch {
+                hostname = '';
+            }
+            setInstallResult({
+                ok: true,
+                message: hostname
+                    ? format(_("Source host is ready for pull backup. Add \"$0\" and container \"$1\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."), hostname, machineName)
+                    : format(_("Source host is ready for pull backup. Add this host and container \"$0\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."), machineName),
+            });
+            onAddNotification({ type: 'success', title: format(_("Pull backup prepared for $0"), machineName) });
+        } catch (ex) {
+            setError(ex.message || _("Failed to prepare pull backup"));
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    async function doDisablePull() {
+        setError(null);
+        try {
+            const shared = await otherPullContainersShareKey(machineName, vaultPubkey);
+            if (!shared && vaultPubkey.trim()) {
+                const existingKeys = await cockpit.file(PULL_AUTHORIZED_KEYS, { superuser: 'require' }).read() || '';
+                const filtered = existingKeys.split('\n').filter(line => !line.includes(vaultPubkey.trim())).join('\n');
+                await cockpit.file(PULL_AUTHORIZED_KEYS, { superuser: 'require' }).replace(filtered);
+            }
+            await cockpit.spawn(
+                ['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.cnf`, `${CONFIG_DIR}/${machineName}.json`],
+                { superuser: 'require', err: 'ignore' }
+            );
+            setHasConfig(false);
+            setInstallResult(null);
+            onAddNotification({ type: 'success', title: format(_("Pull backup disabled for $0"), machineName) });
+            onClose();
+        } catch (ex) {
+            setError(ex.message || _("Failed to disable pull backup"));
+        }
+    }
+
     async function doBackupNow() {
         setBackingUp(true);
         setError(null);
@@ -623,6 +774,41 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 )}
 
                 <Form isHorizontal>
+                    <FormGroup label={_("Backup mode")}>
+                        <Radio
+                            id="backup-mode-push"
+                            name="backup-mode"
+                            label={_("Push — this host schedules and manages its own backups")}
+                            isChecked={mode === 'push'}
+                            onChange={() => setMode('push')}
+                        />
+                        <Radio
+                            id="backup-mode-pull"
+                            name="backup-mode"
+                            label={_("Pull — a backup vault initiates and manages backups for this container")}
+                            isChecked={mode === 'pull'}
+                            onChange={() => setMode('pull')}
+                            isDisabled={!nameValid}
+                            style={{ marginTop: '0.25rem' }}
+                        />
+                        {!nameValid && (
+                            <HelperText>
+                                <HelperTextItem variant="warning">
+                                    {format(_("Pull backup is unavailable for this container: the name \"$0\" contains characters the vault's dispatcher won't accept (only letters, digits, - and _ are allowed)."), machineName)}
+                                </HelperTextItem>
+                            </HelperText>
+                        )}
+                        {mode === 'pull' && (
+                            <HelperText>
+                                <HelperTextItem>
+                                    {_("This vault owns scheduling, retention, and alerting for pull-mode containers — none of that is configured or visible here.")}
+                                </HelperTextItem>
+                            </HelperText>
+                        )}
+                    </FormGroup>
+
+                    {mode === 'push' && (
+                    <>
                     <FormGroup label={_("SSH host")} isRequired>
                         <TextInput value={host} onChange={(_e, v) => setHost(v)} placeholder="backup.example.com" />
                     </FormGroup>
@@ -755,6 +941,36 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                             <HelperTextItem>{_("Recommended for containers running databases")}</HelperTextItem>
                         </HelperText>
                     </FormGroup>
+                    </>
+                    )}
+
+                    {mode === 'pull' && (
+                    <>
+                    <FormGroup label={_("Vault's public SSH key")} isRequired>
+                        <TextArea
+                            value={vaultPubkey}
+                            onChange={(_e, v) => setVaultPubkey(v)}
+                            placeholder="ssh-ed25519 AAAA... root@vault-hostname"
+                            rows={3}
+                            resizeOrientation="vertical"
+                        />
+                        <HelperText>
+                            <HelperTextItem>
+                                {_("Paste the vault's public key (e.g. the contents of /root/.ssh/nspawn-vault.pub on the vault host). Trusted here with a forced, read-only command — it can never run anything else on this host.")}
+                            </HelperTextItem>
+                        </HelperText>
+                    </FormGroup>
+                    <Alert variant="info" isInline title={_("How pull backup works")} style={{ marginBottom: '1rem' }}>
+                        <p>
+                            {_("Saving here prepares this host: installs the vault's forced-command dispatcher, trusts the vault's key for it, and (if MariaDB is enabled below) writes DB credentials for it to read. The vault itself initiates every connection over SSH and pulls this container's files read-only — nothing here schedules a backup on its own.")}
+                        </p>
+                        <p style={{ marginTop: '0.5rem' }}>
+                            {_("Database consistency comes from a mysqldump taken inside the container before each pull, not a filesystem-level snapshot — the container's filesystem itself is read live.")}
+                        </p>
+                    </Alert>
+                    </>
+                    )}
+
                     <FormGroup label={_("MariaDB / MySQL")}>
                         <Checkbox
                             id="mariadb-backup"
@@ -769,18 +985,22 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                                     type="password"
                                     value={mariadbPassword}
                                     onChange={(_e, v) => setMariadbPassword(v)}
-                                    placeholder={_("MariaDB root password")}
+                                    placeholder={mode === 'pull' ? _("Password for the \"backup\" MySQL user") : _("MariaDB root password")}
                                     style={{ marginTop: '0.5rem', maxWidth: '20rem' }}
                                 />
                                 <HelperText>
                                     <HelperTextItem>
-                                        {_("Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore.")}
+                                        {mode === 'pull'
+                                            ? _("Written to /etc/cockpit-nspawn/pull/<name>.cnf for a MySQL user named \"backup\" with dump privileges — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward.")
+                                            : _("Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore.")}
                                     </HelperTextItem>
                                 </HelperText>
                             </>
                         )}
                     </FormGroup>
 
+                    {mode === 'push' && (
+                    <>
                     <Divider style={{ gridColumn: '1 / -1', marginTop: '0.5rem' }} />
 
                     <FormGroup label={_("Notify on")}>
@@ -861,6 +1081,8 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                             <HelperTextItem>{_("Leave both blank to disable. Create an app at pushover.net to get an app token.")}</HelperTextItem>
                         </HelperText>
                     </FormGroup>
+                    </>
+                    )}
                 </Form>
 
                 {backingUp && (
@@ -878,24 +1100,43 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                         {testResult.message && <p>{testResult.message}</p>}
                     </Alert>
                 )}
+                {installResult && (
+                    <Alert
+                        variant={installResult.ok ? 'success' : 'danger'}
+                        isInline
+                        title={installResult.ok ? _("Pull backup prepared") : _("Failed to prepare pull backup")}
+                        style={{ marginTop: '1rem' }}
+                    >
+                        <p>{installResult.message}</p>
+                    </Alert>
+                )}
                 {error && (
                     <Alert variant="danger" isInline title={error} style={{ marginTop: '1rem' }} />
                 )}
             </ModalBody>
             <ModalFooter>
-                <Button variant="primary" onClick={doSave} isDisabled={!host.trim() || saving} isLoading={saving}>
-                    {_("Save and enable")}
-                </Button>
-                {hasConfig && (
+                {mode === 'push' && (
+                    <Button variant="primary" onClick={doSave} isDisabled={!host.trim() || saving} isLoading={saving}>
+                        {_("Save and enable")}
+                    </Button>
+                )}
+                {mode === 'pull' && (
+                    <Button variant="primary" onClick={doSavePull} isDisabled={!nameValid || !vaultPubkey.trim() || saving} isLoading={saving}>
+                        {_("Save")}
+                    </Button>
+                )}
+                {hasConfig && mode === 'push' && (
                     <Button variant="secondary" onClick={doBackupNow} isDisabled={backingUp} isLoading={backingUp}>
                         {_("Backup now")}
                     </Button>
                 )}
-                <Button variant="secondary" onClick={doTest} isDisabled={testing || !host.trim()} isLoading={testing}>
-                    {_("Test connection")}
-                </Button>
+                {mode === 'push' && (
+                    <Button variant="secondary" onClick={doTest} isDisabled={testing || !host.trim()} isLoading={testing}>
+                        {_("Test connection")}
+                    </Button>
+                )}
                 {hasConfig && (
-                    <Button variant="link" isDanger onClick={doDisable}>
+                    <Button variant="link" isDanger onClick={mode === 'pull' ? doDisablePull : doDisable}>
                         {_("Disable backup")}
                     </Button>
                 )}

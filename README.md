@@ -104,6 +104,10 @@ Restoring will stop the container if it is running, replace its filesystem with 
 
 **Warning:** Restore replaces the container's current filesystem entirely. This cannot be undone.
 
+### Pull backup
+
+Besides the push-mode scheduling above, a container can instead be prepared for **pull backup**, where an external backup vault initiates and manages backups on its own schedule — nothing is scheduled locally. This is the source-host half of a companion project, **[nspawn-vault](https://github.com/realmcuser/nspawn-vault)**, a standalone pull-based backup vault (not a Cockpit module).
+
 ## Running Podman inside an nspawn container
 
 nspawn containers can run Podman for container-in-container workloads. This requires a small amount of host-side preparation, and the required nspawn configuration differs between Fedora and AlmaLinux hosts.

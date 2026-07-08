@@ -303,7 +303,9 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 setRunning(false);
             } else if (type === 'upload') {
                 const name = uploadName.trim();
-                const tmpPath = `/var/tmp/cockpit-nspawn-upload-${Date.now()}.tar.gz`;
+                const extMatch = uploadFile.name.match(/\.(tar\.(gz|xz|bz2|zst)|tgz|txz|tbz2|tzst|tar)$/i);
+                const ext = extMatch ? extMatch[0] : '.tar';
+                const tmpPath = `/var/tmp/cockpit-nspawn-upload-${Date.now()}${ext}`;
                 const cleanup = () => cockpit.spawn(['rm', '-f', tmpPath], { superuser: 'require' }).catch(() => {});
                 try {
                     setUploadProgress(0);
@@ -1602,7 +1604,7 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                 <input
                                     id="upload-file"
                                     type="file"
-                                    accept=".tar.gz,.tar"
+                                    accept=".tar,.tar.gz,.tgz,.tar.xz,.txz,.tar.bz2,.tbz2,.tar.zst,.tzst"
                                     disabled={running}
                                     style={{ display: 'block', padding: '0.25rem 0' }}
                                     onChange={(e) => {
@@ -1610,12 +1612,12 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                                         if (!f) return;
                                         setUploadFile(f);
                                         if (!uploadName)
-                                            setUploadName(f.name.replace(/\.(tar\.gz|tar)$/, ''));
+                                            setUploadName(f.name.replace(/\.(tar\.(gz|xz|bz2|zst)|tgz|txz|tbz2|tzst|tar)$/, ''));
                                     }}
                                 />
                                 <FormHelperText>
                                     <HelperText><HelperTextItem>
-                                        {_("Select a .tar.gz container archive exported from machinectl or cockpit-nspawn.")}
+                                        {_("Select a container archive (.tar, .tar.gz, .tar.xz, .tar.bz2, or .tar.zst) exported from machinectl or cockpit-nspawn.")}
                                     </HelperTextItem></HelperText>
                                 </FormHelperText>
                             </FormGroup>

@@ -4,5 +4,4 @@ pkg/
 starter-kit/
 *.LEGAL.txt
 .claude/
-nspawn-pull-backup-design.md
-cockpit-nspawn-vault-design.md
+PULL-BACKUP-INTEGRATION.md

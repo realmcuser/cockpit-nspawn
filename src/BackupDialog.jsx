@@ -403,6 +403,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     const [stopDuring, setStopDuring]             = useState(true);
     const [backupType, setBackupType]             = useState('full');
     const [mariadbBackup, setMariadbBackup]       = useState(false);
+    const [mariadbUser, setMariadbUser]           = useState('backup');
     const [mariadbPassword, setMariadbPassword]   = useState('');
     const [notifyOnFailure, setNotifyOnFailure]   = useState(true);
     const [notifyOnSuccess, setNotifyOnSuccess]   = useState(false);
@@ -453,6 +454,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                     setStopDuring(cfg.stop_during_backup || false);
                     setBackupType(cfg.backup_type || 'full');
                     setMariadbBackup(cfg.mariadb_backup || false);
+                    setMariadbUser(cfg.mariadb_user || 'backup');
                     setMariadbPassword(cfg.mariadb_password || '');
                     setNotifyOnFailure(cfg.notify_on_failure !== false);
                     setNotifyOnSuccess(cfg.notify_on_success === true);
@@ -613,6 +615,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             return;
         }
         if (!vaultPubkey.trim()) { setError(_("Vault's public key is required")); return; }
+        if (mariadbBackup && !mariadbUser.trim()) { setError(_("MySQL/MariaDB username is required")); return; }
         setSaving(true);
         setError(null);
         setInstallResult(null);
@@ -622,7 +625,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             if (mariadbBackup) {
                 await cockpit.spawn(['mkdir', '-p', PULL_CREDS_DIR], { superuser: 'require' });
                 await cockpit.file(`${PULL_CREDS_DIR}/${machineName}.cnf`, { superuser: 'require' })
-                    .replace(`[client]\nuser=backup\npassword=${mariadbPassword}\n`);
+                    .replace(`[client]\nuser=${mariadbUser.trim()}\npassword=${mariadbPassword}\n`);
                 await cockpit.spawn(['chmod', '600', `${PULL_CREDS_DIR}/${machineName}.cnf`], { superuser: 'require' });
             } else {
                 await cockpit.spawn(['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.cnf`], { superuser: 'require', err: 'ignore' });
@@ -641,6 +644,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 mode: 'pull',
                 vault_pubkey: pubkey,
                 mariadb_backup: mariadbBackup,
+                mariadb_user: mariadbBackup ? mariadbUser.trim() : '',
                 mariadb_password: mariadbBackup ? mariadbPassword : '',
             };
             await cockpit.spawn(['mkdir', '-p', CONFIG_DIR], { superuser: 'require' });
@@ -978,21 +982,43 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                             isChecked={mariadbBackup}
                             onChange={(_e, v) => setMariadbBackup(v)}
                         />
-                        {mariadbBackup && (
+                        {mariadbBackup && mode === 'pull' && (
+                            <>
+                                <TextInput
+                                    id="mariadb-user"
+                                    value={mariadbUser}
+                                    onChange={(_e, v) => setMariadbUser(v)}
+                                    placeholder={_("MySQL/MariaDB username (e.g. backup or root)")}
+                                    style={{ marginTop: '0.5rem', maxWidth: '20rem' }}
+                                />
+                                <TextInput
+                                    id="mariadb-password"
+                                    type="password"
+                                    value={mariadbPassword}
+                                    onChange={(_e, v) => setMariadbPassword(v)}
+                                    placeholder={format(_("Password for \"$0\""), mariadbUser || 'backup')}
+                                    style={{ marginTop: '0.5rem', maxWidth: '20rem' }}
+                                />
+                                <HelperText>
+                                    <HelperTextItem>
+                                        {format(_("Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."), mariadbUser || 'backup')}
+                                    </HelperTextItem>
+                                </HelperText>
+                            </>
+                        )}
+                        {mariadbBackup && mode === 'push' && (
                             <>
                                 <TextInput
                                     id="mariadb-password"
                                     type="password"
                                     value={mariadbPassword}
                                     onChange={(_e, v) => setMariadbPassword(v)}
-                                    placeholder={mode === 'pull' ? _("Password for the \"backup\" MySQL user") : _("MariaDB root password")}
+                                    placeholder={_("MariaDB root password")}
                                     style={{ marginTop: '0.5rem', maxWidth: '20rem' }}
                                 />
                                 <HelperText>
                                     <HelperTextItem>
-                                        {mode === 'pull'
-                                            ? _("Written to /etc/cockpit-nspawn/pull/<name>.cnf for a MySQL user named \"backup\" with dump privileges — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward.")
-                                            : _("Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore.")}
+                                        {_("Uses mysqldump --single-transaction inside the running container. The dump travels with each snapshot and is restored automatically on restore.")}
                                     </HelperTextItem>
                                 </HelperText>
                             </>
@@ -1121,7 +1147,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                     </Button>
                 )}
                 {mode === 'pull' && (
-                    <Button variant="primary" onClick={doSavePull} isDisabled={!nameValid || !vaultPubkey.trim() || saving} isLoading={saving}>
+                    <Button variant="primary" onClick={doSavePull} isDisabled={!nameValid || !vaultPubkey.trim() || (mariadbBackup && !mariadbUser.trim()) || saving} isLoading={saving}>
                         {_("Save")}
                     </Button>
                 )}

@@ -518,6 +518,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             await cockpit.spawn(['mkdir', '-p', CONFIG_DIR], { superuser: 'require' });
             await cockpit.file(`${CONFIG_DIR}/${machineName}.json`, { superuser: 'require' })
                 .replace(JSON.stringify(cfg, null, 2) + '\n');
+            await cockpit.spawn(['chmod', '600', `${CONFIG_DIR}/${machineName}.json`], { superuser: 'require' });
             await cockpit.file(scriptPath, { superuser: 'require' })
                 .replace(makeScript(machineName, cfg));
             await cockpit.spawn(['chmod', '+x', scriptPath], { superuser: 'require' });
@@ -650,6 +651,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             await cockpit.spawn(['mkdir', '-p', CONFIG_DIR], { superuser: 'require' });
             await cockpit.file(`${CONFIG_DIR}/${machineName}.json`, { superuser: 'require' })
                 .replace(JSON.stringify(cfg, null, 2) + '\n');
+            await cockpit.spawn(['chmod', '600', `${CONFIG_DIR}/${machineName}.json`], { superuser: 'require' });
 
             setHasConfig(true);
 

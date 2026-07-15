@@ -415,6 +415,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     const [notifyPushoverUser, setNotifyPushoverUser]   = useState('');
     const [notifyPushoverToken, setNotifyPushoverToken] = useState('');
     const [status, setStatus]       = useState(null);
+    const [dbDumpStatus, setDbDumpStatus] = useState(null);
     const [hasConfig, setHasConfig] = useState(false);
     const [saving, setSaving]       = useState(false);
     const [testing, setTesting]     = useState(false);
@@ -475,6 +476,14 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             .then(content => {
                 if (!content) return;
                 try { setStatus(JSON.parse(content)); } catch (_e) {}
+            })
+            .catch(() => {});
+
+        cockpit.file(`${STATUS_DIR}/${machineName}-dbdump.json`, { superuser: 'try' })
+            .read()
+            .then(content => {
+                if (!content) return;
+                try { setDbDumpStatus(JSON.parse(content)); } catch (_e) {}
             })
             .catch(() => {});
     }, [machineName]);
@@ -685,10 +694,11 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 await cockpit.file(PULL_AUTHORIZED_KEYS, { superuser: 'require' }).replace(filtered);
             }
             await cockpit.spawn(
-                ['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.cnf`, `${CONFIG_DIR}/${machineName}.json`],
+                ['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.cnf`, `${CONFIG_DIR}/${machineName}.json`, `${STATUS_DIR}/${machineName}-dbdump.json`],
                 { superuser: 'require', err: 'ignore' }
             );
             setHasConfig(false);
+            setDbDumpStatus(null);
             setInstallResult(null);
             onAddNotification({ type: 'success', title: format(_("Pull backup disabled for $0"), machineName) });
             onClose();
@@ -766,7 +776,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
         <Modal isOpen onClose={onClose} variant="medium">
             <ModalHeader title={format(_("Backup: $0"), machineName)} />
             <ModalBody>
-                {status && (
+                {status && mode === 'push' && (
                     <Alert
                         variant={status.result === 'success' ? 'success' : 'warning'}
                         isInline
@@ -776,6 +786,23 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                         style={{ marginBottom: '1rem' }}
                     >
                         {status.message && <p>{status.message}</p>}
+                    </Alert>
+                )}
+
+                {dbDumpStatus && mode === 'pull' && (
+                    <Alert
+                        variant={dbDumpStatus.result === 'success' ? 'success' : 'warning'}
+                        isInline
+                        title={dbDumpStatus.result === 'success'
+                            ? format(_("Last DB dump: $0$1"), formatTs(dbDumpStatus.timestamp), formatSize(dbDumpStatus.size_bytes))
+                            : format(_("Last DB dump failed: $0"), formatTs(dbDumpStatus.timestamp))}
+                        style={{ marginBottom: '1rem' }}
+                    >
+                        {dbDumpStatus.message && <p>{dbDumpStatus.message}</p>}
+                        {dbDumpStatus.result === 'success' && dbDumpStatus.dump_path && (
+                            <p>{format(_("Saved as $0 inside the container — rides along with the vault's pull, so look for it under that same path once synced."), dbDumpStatus.dump_path)}</p>
+                        )}
+                        <p>{_("This only reflects the database dump step run on this host — not whether the vault's pull of the container itself has completed.")}</p>
                     </Alert>
                 )}
 

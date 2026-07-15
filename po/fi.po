@@ -1261,3 +1261,117 @@ msgstr "Kontit"
 #: src/app.jsx
 msgid "Backups"
 msgstr "Varmuuskopiot"
+
+# Pull-backup strings added 2026-07-15
+
+#: src/BackupDialog.jsx
+msgid "Backup mode"
+msgstr "Varmuuskopiointitila"
+
+#: src/BackupDialog.jsx
+msgid "Container name \"$0\" isn't valid for pull backup (only letters, digits, - and _ are allowed)"
+msgstr "Kontin nimi \"$0\" ei kelpaa pull-varmuuskopiointiin (vain kirjaimet, numerot, - ja _ ovat sallittuja)"
+
+#: src/BackupDialog.jsx
+msgid "Database consistency comes from a mysqldump taken inside the container before each pull, not a filesystem-level snapshot — the container's filesystem itself is read live."
+msgstr "Tietokannan eheys perustuu mysqldump-vedokseen, joka otetaan kontin sisällä ennen jokaista noutoa, ei tiedostojärjestelmätason snapshotiin — kontin oma tiedostojärjestelmä luetaan suoraan käynnissä olevasta järjestelmästä."
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable pull backup"
+msgstr "Pull-varmuuskopioinnin poistaminen käytöstä epäonnistui"
+
+#: src/BackupDialog.jsx
+msgid "Failed to prepare pull backup"
+msgstr "Pull-varmuuskopioinnin valmistelu epäonnistui"
+
+#: src/BackupDialog.jsx
+msgid "How pull backup works"
+msgstr "Näin pull-varmuuskopiointi toimii"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump failed: $0"
+msgstr "Viimeisin tietokantavedos epäonnistui: $0"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump: $0$1"
+msgstr "Viimeisin tietokantavedos: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username (e.g. backup or root)"
+msgstr "MySQL/MariaDB-käyttäjätunnus (esim. backup tai root)"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username is required"
+msgstr "MySQL/MariaDB-käyttäjätunnus vaaditaan"
+
+#: src/BackupDialog.jsx
+msgid "Password for \"$0\""
+msgstr "Salasana käyttäjälle \"$0\""
+
+#: src/BackupDialog.jsx
+msgid "Paste the vault's public key (e.g. the contents of /root/.ssh/nspawn-vault.pub on the vault host). Trusted here with a forced, read-only command — it can never run anything else on this host."
+msgstr "Liitä holvin julkinen avain (esim. tiedoston /root/.ssh/nspawn-vault.pub sisältö holvi-hostilla). Siihen luotetaan täällä pakotetulla, kirjoitussuojatulla komennolla — se ei voi koskaan suorittaa mitään muuta tällä hostilla."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup disabled for $0"
+msgstr "Pull-varmuuskopiointi poistettu käytöstä kontille $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup is unavailable for this container: the name \"$0\" contains characters the vault's dispatcher won't accept (only letters, digits, - and _ are allowed)."
+msgstr "Pull-varmuuskopiointi ei ole käytettävissä tälle kontille: nimi \"$0\" sisältää merkkejä, joita holvin dispatcher ei hyväksy (vain kirjaimet, numerot, - ja _ ovat sallittuja)."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared"
+msgstr "Pull-varmuuskopiointi valmisteltu"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared for $0"
+msgstr "Pull-varmuuskopiointi valmisteltu kontille $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull — a backup vault initiates and manages backups for this container"
+msgstr "Pull — varmuuskopiointiholvi käynnistää ja hallinnoi tämän kontin varmuuskopiointia"
+
+#: src/BackupDialog.jsx
+msgid "Push — this host schedules and manages its own backups"
+msgstr "Push — tämä host aikatauluttaa ja hallinnoi omia varmuuskopioitaan"
+
+#: src/BackupDialog.jsx
+msgid "Save"
+msgstr "Tallenna"
+
+#: src/BackupDialog.jsx
+msgid "Saved as $0 inside the container — rides along with the vault's pull, so look for it under that same path once synced."
+msgstr "Tallennettu nimellä $0 kontin sisällä — kulkee holvin noudon mukana, joten etsi se samasta polusta synkronoinnin jälkeen."
+
+#: src/BackupDialog.jsx
+msgid "Saving here prepares this host: installs the vault's forced-command dispatcher, trusts the vault's key for it, and (if MariaDB is enabled below) writes DB credentials for it to read. The vault itself initiates every connection over SSH and pulls this container's files read-only — nothing here schedules a backup on its own."
+msgstr "Tallentaminen täällä valmistelee tämän hostin: asentaa holvin pakotetun komennon dispatcherin, luottaa sen avaimeen, ja (jos MariaDB on otettu käyttöön alla) kirjoittaa tietokannan tunnukset sen luettavaksi. Holvi itse käynnistää jokaisen yhteyden SSH:n kautta ja noutaa tämän kontin tiedostot kirjoitussuojattuna — mikään täällä ei aikatauluta varmuuskopiointia itsestään."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add \"$0\" and container \"$1\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Lähdehost on valmis pull-varmuuskopiointiin. Lisää \"$0\" ja kontti \"$1\" holvin lähdehost-luetteloon (Admin → Lähdehostit) ja testaa sitten yhteys siellä ennen pull-ajastimen käyttöönottoa."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add this host and container \"$0\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Lähdehost on valmis pull-varmuuskopiointiin. Lisää tämä host ja kontti \"$0\" holvin lähdehost-luetteloon (Admin → Lähdehostit) ja testaa sitten yhteys siellä ennen pull-ajastimen käyttöönottoa."
+
+#: src/BackupDialog.jsx
+msgid "This only reflects the database dump step run on this host — not whether the vault's pull of the container itself has completed."
+msgstr "Tämä kertoo vain tällä hostilla suoritetusta tietokantavedosvaiheesta — ei siitä, onko holvin suorittama kontin nouto valmistunut."
+
+#: src/BackupDialog.jsx
+msgid "This vault owns scheduling, retention, and alerting for pull-mode containers — none of that is configured or visible here."
+msgstr "Tämä holvi omistaa aikataulutuksen, säilytyksen ja hälytykset pull-tilan konteille — mitään niistä ei määritetä tai näytetä täällä."
+
+#: src/BackupDialog.jsx
+msgid "Vault's public SSH key"
+msgstr "Holvin julkinen SSH-avain"
+
+#: src/BackupDialog.jsx
+msgid "Vault's public key is required"
+msgstr "Holvin julkinen avain vaaditaan"
+
+#: src/BackupDialog.jsx
+msgid "Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."
+msgstr "Kirjoitettu tiedostoon /etc/cockpit-nspawn/pull/<name>.cnf MySQL/MariaDB-käyttäjälle \"$0\" — holvin snapshot-db.sh suorittaa mysqldump --single-transaction kontin sisällä ennen jokaista noutoa ja poistaa vedoksen taas jälkikäteen. Root-käyttäjän sijaan suositellaan omistettua käyttäjää, jolla on vain vedosoikeudet (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER), koska tämä tunnustiedosto sijaitsee selväkielisenä (oikeudet 600) tällä hostilla."

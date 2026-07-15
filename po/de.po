@@ -1267,3 +1267,117 @@ msgstr "Container"
 #: src/app.jsx
 msgid "Backups"
 msgstr "Backups"
+
+# Pull-backup strings added 2026-07-15
+
+#: src/BackupDialog.jsx
+msgid "Backup mode"
+msgstr "Sicherungsmodus"
+
+#: src/BackupDialog.jsx
+msgid "Container name \"$0\" isn't valid for pull backup (only letters, digits, - and _ are allowed)"
+msgstr "Der Containername \"$0\" ist für Pull-Backup ungültig (nur Buchstaben, Ziffern, - und _ sind erlaubt)"
+
+#: src/BackupDialog.jsx
+msgid "Database consistency comes from a mysqldump taken inside the container before each pull, not a filesystem-level snapshot — the container's filesystem itself is read live."
+msgstr "Die Datenbankkonsistenz wird durch einen mysqldump erreicht, der vor jedem Abruf innerhalb des Containers erstellt wird, nicht durch einen Snapshot auf Dateisystemebene — das Dateisystem des Containers selbst wird live gelesen."
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable pull backup"
+msgstr "Pull-Backup konnte nicht deaktiviert werden"
+
+#: src/BackupDialog.jsx
+msgid "Failed to prepare pull backup"
+msgstr "Pull-Backup konnte nicht vorbereitet werden"
+
+#: src/BackupDialog.jsx
+msgid "How pull backup works"
+msgstr "So funktioniert Pull-Backup"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump failed: $0"
+msgstr "Letzter DB-Dump fehlgeschlagen: $0"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump: $0$1"
+msgstr "Letzter DB-Dump: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username (e.g. backup or root)"
+msgstr "MySQL/MariaDB-Benutzername (z. B. backup oder root)"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username is required"
+msgstr "MySQL/MariaDB-Benutzername ist erforderlich"
+
+#: src/BackupDialog.jsx
+msgid "Password for \"$0\""
+msgstr "Passwort für \"$0\""
+
+#: src/BackupDialog.jsx
+msgid "Paste the vault's public key (e.g. the contents of /root/.ssh/nspawn-vault.pub on the vault host). Trusted here with a forced, read-only command — it can never run anything else on this host."
+msgstr "Öffentlichen Schlüssel des Tresors einfügen (z. B. den Inhalt von /root/.ssh/nspawn-vault.pub auf dem Tresor-Host). Er wird hier mit einem erzwungenen, schreibgeschützten Befehl vertraut — er kann auf diesem Host niemals etwas anderes ausführen."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup disabled for $0"
+msgstr "Pull-Backup für $0 deaktiviert"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup is unavailable for this container: the name \"$0\" contains characters the vault's dispatcher won't accept (only letters, digits, - and _ are allowed)."
+msgstr "Pull-Backup ist für diesen Container nicht verfügbar: der Name \"$0\" enthält Zeichen, die der Dispatcher des Tresors nicht akzeptiert (nur Buchstaben, Ziffern, - und _ sind erlaubt)."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared"
+msgstr "Pull-Backup vorbereitet"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared for $0"
+msgstr "Pull-Backup für $0 vorbereitet"
+
+#: src/BackupDialog.jsx
+msgid "Pull — a backup vault initiates and manages backups for this container"
+msgstr "Pull — ein Backup-Tresor initiiert und verwaltet Backups für diesen Container"
+
+#: src/BackupDialog.jsx
+msgid "Push — this host schedules and manages its own backups"
+msgstr "Push — dieser Host plant und verwaltet seine eigenen Backups"
+
+#: src/BackupDialog.jsx
+msgid "Save"
+msgstr "Speichern"
+
+#: src/BackupDialog.jsx
+msgid "Saved as $0 inside the container — rides along with the vault's pull, so look for it under that same path once synced."
+msgstr "Gespeichert als $0 innerhalb des Containers — wird mit dem Abruf des Tresors übertragen, also unter demselben Pfad suchen, sobald synchronisiert."
+
+#: src/BackupDialog.jsx
+msgid "Saving here prepares this host: installs the vault's forced-command dispatcher, trusts the vault's key for it, and (if MariaDB is enabled below) writes DB credentials for it to read. The vault itself initiates every connection over SSH and pulls this container's files read-only — nothing here schedules a backup on its own."
+msgstr "Das Speichern hier bereitet diesen Host vor: installiert den erzwungenen Befehls-Dispatcher des Tresors, vertraut dessen Schlüssel dafür, und (falls MariaDB unten aktiviert ist) schreibt DB-Zugangsdaten zum Lesen. Der Tresor selbst initiiert jede Verbindung über SSH und holt die Dateien dieses Containers schreibgeschützt ab — nichts hier plant von sich aus ein Backup."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add \"$0\" and container \"$1\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Der Quell-Host ist bereit für Pull-Backup. Fügen Sie \"$0\" und Container \"$1\" zur Quell-Host-Liste des Tresors hinzu (Admin → Quell-Hosts) und testen Sie dort die Verbindung, bevor Sie den Pull-Timer aktivieren."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add this host and container \"$0\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Der Quell-Host ist bereit für Pull-Backup. Fügen Sie diesen Host und Container \"$0\" zur Quell-Host-Liste des Tresors hinzu (Admin → Quell-Hosts) und testen Sie dort die Verbindung, bevor Sie den Pull-Timer aktivieren."
+
+#: src/BackupDialog.jsx
+msgid "This only reflects the database dump step run on this host — not whether the vault's pull of the container itself has completed."
+msgstr "Dies spiegelt nur den auf diesem Host ausgeführten Datenbank-Dump-Schritt wider — nicht, ob der Abruf des Containers durch den Tresor selbst abgeschlossen wurde."
+
+#: src/BackupDialog.jsx
+msgid "This vault owns scheduling, retention, and alerting for pull-mode containers — none of that is configured or visible here."
+msgstr "Dieser Tresor verwaltet Zeitplanung, Aufbewahrung und Benachrichtigungen für Container im Pull-Modus — nichts davon wird hier konfiguriert oder angezeigt."
+
+#: src/BackupDialog.jsx
+msgid "Vault's public SSH key"
+msgstr "Öffentlicher SSH-Schlüssel des Tresors"
+
+#: src/BackupDialog.jsx
+msgid "Vault's public key is required"
+msgstr "Öffentlicher Schlüssel des Tresors ist erforderlich"
+
+#: src/BackupDialog.jsx
+msgid "Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."
+msgstr "Geschrieben nach /etc/cockpit-nspawn/pull/<name>.cnf für den MySQL/MariaDB-Benutzer \"$0\" — das snapshot-db.sh des Tresors führt vor jedem Abruf mysqldump --single-transaction innerhalb des Containers aus und entfernt den Dump danach wieder. Ein dedizierter Benutzer mit ausschließlich Dump-Rechten (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) wird anstelle von root empfohlen, da diese Zugangsdatendatei im Klartext (Modus 600) auf diesem Host liegt."

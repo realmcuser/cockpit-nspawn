@@ -792,6 +792,22 @@ msgid "Key must be pre-authorized on the remote host (ssh-copy-id)"
 msgstr "Nyckeln måste vara förauktoriserad på fjärrvärden (ssh-copy-id)"
 
 #: src/BackupDialog.jsx
+msgid "Last DB dump: $0$1"
+msgstr "Senaste databasdump: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump failed: $0"
+msgstr "Senaste databasdump misslyckades: $0"
+
+#: src/BackupDialog.jsx
+msgid "Saved as $0 inside the container — rides along with the vault's pull, so look for it under that same path once synced."
+msgstr "Sparad som $0 inuti containern — följer med valvets hämtning, så leta efter den under samma sökväg när den har synkats."
+
+#: src/BackupDialog.jsx
+msgid "This only reflects the database dump step run on this host — not whether the vault's pull of the container itself has completed."
+msgstr "Detta visar bara dumpsteget som körs på den här hosten — inte om valvets hämtning av själva containern faktiskt har slutförts."
+
+#: src/BackupDialog.jsx
 msgid "Last backup: $0$1"
 msgstr "Senaste säkerhetskopia: $0$1"
 
@@ -1268,3 +1284,101 @@ msgstr "Containers"
 #: src/app.jsx
 msgid "Backups"
 msgstr "Backuper"
+
+# Pull-backup strings added 2026-07-15
+
+#: src/BackupDialog.jsx
+msgid "Backup mode"
+msgstr "Backup-läge"
+
+#: src/BackupDialog.jsx
+msgid "Container name \"$0\" isn't valid for pull backup (only letters, digits, - and _ are allowed)"
+msgstr "Containernamnet \"$0\" är inte giltigt för pull-backup (endast bokstäver, siffror, - och _ är tillåtna)"
+
+#: src/BackupDialog.jsx
+msgid "Database consistency comes from a mysqldump taken inside the container before each pull, not a filesystem-level snapshot — the container's filesystem itself is read live."
+msgstr "Databaskonsistens uppnås genom en mysqldump som tas inuti containern före varje hämtning, inte en ögonblicksbild på filsystemsnivå — själva containerns filsystem läses live."
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable pull backup"
+msgstr "Det gick inte att inaktivera pull-backup"
+
+#: src/BackupDialog.jsx
+msgid "Failed to prepare pull backup"
+msgstr "Det gick inte att förbereda pull-backup"
+
+#: src/BackupDialog.jsx
+msgid "How pull backup works"
+msgstr "Så fungerar pull-backup"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username (e.g. backup or root)"
+msgstr "MySQL/MariaDB-användarnamn (t.ex. backup eller root)"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username is required"
+msgstr "MySQL/MariaDB-användarnamn krävs"
+
+#: src/BackupDialog.jsx
+msgid "Password for \"$0\""
+msgstr "Lösenord för \"$0\""
+
+#: src/BackupDialog.jsx
+msgid "Paste the vault's public key (e.g. the contents of /root/.ssh/nspawn-vault.pub on the vault host). Trusted here with a forced, read-only command — it can never run anything else on this host."
+msgstr "Klistra in valvets publika nyckel (t.ex. innehållet i /root/.ssh/nspawn-vault.pub på valvhosten). Den betros här med ett tvingat, skrivskyddat kommando — den kan aldrig köra något annat på den här hosten."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup disabled for $0"
+msgstr "Pull-backup inaktiverad för $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup is unavailable for this container: the name \"$0\" contains characters the vault's dispatcher won't accept (only letters, digits, - and _ are allowed)."
+msgstr "Pull-backup är inte tillgängligt för den här containern: namnet \"$0\" innehåller tecken som valvets dispatcher inte accepterar (endast bokstäver, siffror, - och _ är tillåtna)."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared"
+msgstr "Pull-backup förberedd"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared for $0"
+msgstr "Pull-backup förberedd för $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull — a backup vault initiates and manages backups for this container"
+msgstr "Pull — ett backup-valv initierar och hanterar backuper för den här containern"
+
+#: src/BackupDialog.jsx
+msgid "Push — this host schedules and manages its own backups"
+msgstr "Push — den här hosten schemalägger och hanterar sina egna backuper"
+
+#: src/BackupDialog.jsx
+msgid "Save"
+msgstr "Spara"
+
+#: src/BackupDialog.jsx
+msgid "Saving here prepares this host: installs the vault's forced-command dispatcher, trusts the vault's key for it, and (if MariaDB is enabled below) writes DB credentials for it to read. The vault itself initiates every connection over SSH and pulls this container's files read-only — nothing here schedules a backup on its own."
+msgstr "Att spara här förbereder den här hosten: installerar valvets dispatcher för tvingat kommando, betror valvets nyckel för det, och (om MariaDB är aktiverat nedan) skriver databasuppgifter som det kan läsa. Valvet initierar själv varje anslutning via SSH och hämtar containerns filer skrivskyddat — inget här schemalägger en backup på egen hand."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add \"$0\" and container \"$1\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Källhosten är redo för pull-backup. Lägg till \"$0\" och container \"$1\" i valvets lista över källhostar (Admin → Källhostar), och testa sedan anslutningen där innan pull-timern aktiveras."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add this host and container \"$0\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Källhosten är redo för pull-backup. Lägg till den här hosten och container \"$0\" i valvets lista över källhostar (Admin → Källhostar), och testa sedan anslutningen där innan pull-timern aktiveras."
+
+#: src/BackupDialog.jsx
+msgid "This vault owns scheduling, retention, and alerting for pull-mode containers — none of that is configured or visible here."
+msgstr "Det här valvet äger schemaläggning, retention och larm för containrar i pull-läge — inget av det konfigureras eller visas här."
+
+#: src/BackupDialog.jsx
+msgid "Vault's public SSH key"
+msgstr "Valvets publika SSH-nyckel"
+
+#: src/BackupDialog.jsx
+msgid "Vault's public key is required"
+msgstr "Valvets publika nyckel krävs"
+
+#: src/BackupDialog.jsx
+msgid "Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."
+msgstr "Skrivs till /etc/cockpit-nspawn/pull/<name>.cnf för MySQL/MariaDB-användaren \"$0\" — valvets snapshot-db.sh kör mysqldump --single-transaction inuti containern före varje hämtning och tar bort dumpen igen efteråt. En dedikerad användare med enbart dumprättigheter (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) rekommenderas framför root, eftersom den här uppgiftsfilen ligger i klartext (rättighet 600) på den här hosten."

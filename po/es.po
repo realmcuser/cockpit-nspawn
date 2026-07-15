@@ -1265,3 +1265,117 @@ msgstr "Contenedores"
 #: src/app.jsx
 msgid "Backups"
 msgstr "Copias de seguridad"
+
+# Pull-backup strings added 2026-07-15
+
+#: src/BackupDialog.jsx
+msgid "Backup mode"
+msgstr "Modo de copia de seguridad"
+
+#: src/BackupDialog.jsx
+msgid "Container name \"$0\" isn't valid for pull backup (only letters, digits, - and _ are allowed)"
+msgstr "El nombre del contenedor \"$0\" no es válido para la copia de seguridad pull (solo se permiten letras, dígitos, - y _)"
+
+#: src/BackupDialog.jsx
+msgid "Database consistency comes from a mysqldump taken inside the container before each pull, not a filesystem-level snapshot — the container's filesystem itself is read live."
+msgstr "La consistencia de la base de datos se logra mediante un mysqldump realizado dentro del contenedor antes de cada extracción, no mediante una instantánea a nivel de sistema de archivos — el propio sistema de archivos del contenedor se lee en vivo."
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable pull backup"
+msgstr "No se pudo deshabilitar la copia de seguridad pull"
+
+#: src/BackupDialog.jsx
+msgid "Failed to prepare pull backup"
+msgstr "No se pudo preparar la copia de seguridad pull"
+
+#: src/BackupDialog.jsx
+msgid "How pull backup works"
+msgstr "Cómo funciona la copia de seguridad pull"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump failed: $0"
+msgstr "Último volcado de BD fallido: $0"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump: $0$1"
+msgstr "Último volcado de BD: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username (e.g. backup or root)"
+msgstr "Nombre de usuario de MySQL/MariaDB (p. ej. backup o root)"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username is required"
+msgstr "Se requiere el nombre de usuario de MySQL/MariaDB"
+
+#: src/BackupDialog.jsx
+msgid "Password for \"$0\""
+msgstr "Contraseña para \"$0\""
+
+#: src/BackupDialog.jsx
+msgid "Paste the vault's public key (e.g. the contents of /root/.ssh/nspawn-vault.pub on the vault host). Trusted here with a forced, read-only command — it can never run anything else on this host."
+msgstr "Pegue la clave pública de la bóveda (por ejemplo, el contenido de /root/.ssh/nspawn-vault.pub en el host de la bóveda). Aquí se confía en ella con un comando forzado de solo lectura — nunca puede ejecutar nada más en este host."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup disabled for $0"
+msgstr "Copia de seguridad pull deshabilitada para $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup is unavailable for this container: the name \"$0\" contains characters the vault's dispatcher won't accept (only letters, digits, - and _ are allowed)."
+msgstr "La copia de seguridad pull no está disponible para este contenedor: el nombre \"$0\" contiene caracteres que el dispatcher de la bóveda no acepta (solo se permiten letras, dígitos, - y _)."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared"
+msgstr "Copia de seguridad pull preparada"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared for $0"
+msgstr "Copia de seguridad pull preparada para $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull — a backup vault initiates and manages backups for this container"
+msgstr "Pull — una bóveda de copias de seguridad inicia y gestiona las copias de seguridad de este contenedor"
+
+#: src/BackupDialog.jsx
+msgid "Push — this host schedules and manages its own backups"
+msgstr "Push — este host programa y gestiona sus propias copias de seguridad"
+
+#: src/BackupDialog.jsx
+msgid "Save"
+msgstr "Guardar"
+
+#: src/BackupDialog.jsx
+msgid "Saved as $0 inside the container — rides along with the vault's pull, so look for it under that same path once synced."
+msgstr "Guardado como $0 dentro del contenedor — viaja junto con la extracción de la bóveda, así que búsquelo bajo esa misma ruta una vez sincronizado."
+
+#: src/BackupDialog.jsx
+msgid "Saving here prepares this host: installs the vault's forced-command dispatcher, trusts the vault's key for it, and (if MariaDB is enabled below) writes DB credentials for it to read. The vault itself initiates every connection over SSH and pulls this container's files read-only — nothing here schedules a backup on its own."
+msgstr "Guardar aquí prepara este host: instala el dispatcher de comando forzado de la bóveda, confía en su clave para ello y (si MariaDB está habilitado abajo) escribe las credenciales de la BD para que las lea. La propia bóveda inicia cada conexión por SSH y extrae los archivos de este contenedor en modo de solo lectura — nada aquí programa una copia de seguridad por sí mismo."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add \"$0\" and container \"$1\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "El host de origen está listo para la copia de seguridad pull. Añada \"$0\" y el contenedor \"$1\" a la lista de hosts de origen de la bóveda (Admin → Hosts de origen), y luego pruebe la conexión allí antes de habilitar el temporizador de extracción."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add this host and container \"$0\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "El host de origen está listo para la copia de seguridad pull. Añada este host y el contenedor \"$0\" a la lista de hosts de origen de la bóveda (Admin → Hosts de origen), y luego pruebe la conexión allí antes de habilitar el temporizador de extracción."
+
+#: src/BackupDialog.jsx
+msgid "This only reflects the database dump step run on this host — not whether the vault's pull of the container itself has completed."
+msgstr "Esto solo refleja el paso de volcado de la base de datos ejecutado en este host — no si la extracción del contenedor por parte de la bóveda se ha completado."
+
+#: src/BackupDialog.jsx
+msgid "This vault owns scheduling, retention, and alerting for pull-mode containers — none of that is configured or visible here."
+msgstr "Esta bóveda posee la programación, retención y alertas de los contenedores en modo pull — nada de eso se configura ni se muestra aquí."
+
+#: src/BackupDialog.jsx
+msgid "Vault's public SSH key"
+msgstr "Clave pública SSH de la bóveda"
+
+#: src/BackupDialog.jsx
+msgid "Vault's public key is required"
+msgstr "Se requiere la clave pública de la bóveda"
+
+#: src/BackupDialog.jsx
+msgid "Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."
+msgstr "Escrito en /etc/cockpit-nspawn/pull/<name>.cnf para el usuario de MySQL/MariaDB \"$0\" — el snapshot-db.sh de la bóveda ejecuta mysqldump --single-transaction dentro del contenedor antes de cada extracción y elimina el volcado de nuevo después. Se recomienda un usuario dedicado con solo privilegios de volcado (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) en lugar de root, ya que este archivo de credenciales se encuentra en texto plano (modo 600) en este host."

@@ -1261,3 +1261,117 @@ msgstr "Containere"
 #: src/app.jsx
 msgid "Backups"
 msgstr "Backups"
+
+# Pull-backup strings added 2026-07-15
+
+#: src/BackupDialog.jsx
+msgid "Backup mode"
+msgstr "Backup-tilstand"
+
+#: src/BackupDialog.jsx
+msgid "Container name \"$0\" isn't valid for pull backup (only letters, digits, - and _ are allowed)"
+msgstr "Containernavnet \"$0\" er ikke gyldigt til pull-backup (kun bogstaver, tal, - og _ er tilladt)"
+
+#: src/BackupDialog.jsx
+msgid "Database consistency comes from a mysqldump taken inside the container before each pull, not a filesystem-level snapshot — the container's filesystem itself is read live."
+msgstr "Databasekonsistens opnås via en mysqldump taget inde i containeren før hvert træk, ikke et snapshot på filsystemniveau — selve containerens filsystem læses live."
+
+#: src/BackupDialog.jsx
+msgid "Failed to disable pull backup"
+msgstr "Kunne ikke deaktivere pull-backup"
+
+#: src/BackupDialog.jsx
+msgid "Failed to prepare pull backup"
+msgstr "Kunne ikke forberede pull-backup"
+
+#: src/BackupDialog.jsx
+msgid "How pull backup works"
+msgstr "Sådan fungerer pull-backup"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump failed: $0"
+msgstr "Seneste databasedump mislykkedes: $0"
+
+#: src/BackupDialog.jsx
+msgid "Last DB dump: $0$1"
+msgstr "Seneste databasedump: $0$1"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username (e.g. backup or root)"
+msgstr "MySQL/MariaDB-brugernavn (f.eks. backup eller root)"
+
+#: src/BackupDialog.jsx
+msgid "MySQL/MariaDB username is required"
+msgstr "MySQL/MariaDB-brugernavn er påkrævet"
+
+#: src/BackupDialog.jsx
+msgid "Password for \"$0\""
+msgstr "Adgangskode til \"$0\""
+
+#: src/BackupDialog.jsx
+msgid "Paste the vault's public key (e.g. the contents of /root/.ssh/nspawn-vault.pub on the vault host). Trusted here with a forced, read-only command — it can never run anything else on this host."
+msgstr "Indsæt hvælvets offentlige nøgle (f.eks. indholdet af /root/.ssh/nspawn-vault.pub på hvælv-hosten). Den betros her med en tvungen, skrivebeskyttet kommando — den kan aldrig køre noget andet på denne host."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup disabled for $0"
+msgstr "Pull-backup deaktiveret for $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup is unavailable for this container: the name \"$0\" contains characters the vault's dispatcher won't accept (only letters, digits, - and _ are allowed)."
+msgstr "Pull-backup er ikke tilgængelig for denne container: navnet \"$0\" indeholder tegn, som hvælvets dispatcher ikke accepterer (kun bogstaver, tal, - og _ er tilladt)."
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared"
+msgstr "Pull-backup forberedt"
+
+#: src/BackupDialog.jsx
+msgid "Pull backup prepared for $0"
+msgstr "Pull-backup forberedt for $0"
+
+#: src/BackupDialog.jsx
+msgid "Pull — a backup vault initiates and manages backups for this container"
+msgstr "Pull — et backup-hvælv igangsætter og administrerer backup for denne container"
+
+#: src/BackupDialog.jsx
+msgid "Push — this host schedules and manages its own backups"
+msgstr "Push — denne host planlægger og administrerer selv sine backup"
+
+#: src/BackupDialog.jsx
+msgid "Save"
+msgstr "Gem"
+
+#: src/BackupDialog.jsx
+msgid "Saved as $0 inside the container — rides along with the vault's pull, so look for it under that same path once synced."
+msgstr "Gemt som $0 inde i containeren — følger med hvælvets træk, så led efter den under samme sti, når den er synkroniseret."
+
+#: src/BackupDialog.jsx
+msgid "Saving here prepares this host: installs the vault's forced-command dispatcher, trusts the vault's key for it, and (if MariaDB is enabled below) writes DB credentials for it to read. The vault itself initiates every connection over SSH and pulls this container's files read-only — nothing here schedules a backup on its own."
+msgstr "At gemme her forbereder denne host: installerer hvælvets dispatcher til tvungne kommandoer, betror hvælvets nøgle til den, og (hvis MariaDB er aktiveret nedenfor) skriver database-loginoplysninger, som den kan læse. Hvælvet igangsætter selv hver forbindelse via SSH og henter containerens filer skrivebeskyttet — intet her planlægger selv en backup."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add \"$0\" and container \"$1\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Kildehosten er klar til pull-backup. Tilføj \"$0\" og container \"$1\" til hvælvets liste over kildehosts (Admin → Kildehosts), og test derefter forbindelsen dér, før pull-timeren aktiveres."
+
+#: src/BackupDialog.jsx
+msgid "Source host is ready for pull backup. Add this host and container \"$0\" to the vault's source-host list (Admin → Source hosts), then test the connection there before enabling the pull timer."
+msgstr "Kildehosten er klar til pull-backup. Tilføj denne host og container \"$0\" til hvælvets liste over kildehosts (Admin → Kildehosts), og test derefter forbindelsen dér, før pull-timeren aktiveres."
+
+#: src/BackupDialog.jsx
+msgid "This only reflects the database dump step run on this host — not whether the vault's pull of the container itself has completed."
+msgstr "Dette afspejler kun dump-trinnet, der køres på denne host — ikke om hvælvets træk af selve containeren er fuldført."
+
+#: src/BackupDialog.jsx
+msgid "This vault owns scheduling, retention, and alerting for pull-mode containers — none of that is configured or visible here."
+msgstr "Dette hvælv ejer planlægning, opbevaringsperiode og alarmering for containere i pull-tilstand — intet af det konfigureres eller vises her."
+
+#: src/BackupDialog.jsx
+msgid "Vault's public SSH key"
+msgstr "Hvælvets offentlige SSH-nøgle"
+
+#: src/BackupDialog.jsx
+msgid "Vault's public key is required"
+msgstr "Hvælvets offentlige nøgle er påkrævet"
+
+#: src/BackupDialog.jsx
+msgid "Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."
+msgstr "Skrives til /etc/cockpit-nspawn/pull/<name>.cnf for MySQL/MariaDB-brugeren \"$0\" — hvælvets snapshot-db.sh kører mysqldump --single-transaction inde i containeren før hvert træk og fjerner dumpet igen bagefter. En dedikeret bruger med kun dump-rettigheder (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) anbefales frem for root, da denne loginoplysningsfil ligger i klartekst (rettighed 600) på denne host."

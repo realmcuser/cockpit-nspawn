@@ -47,6 +47,11 @@ export function EditResourcesDialog({ machineName, onClose }) {
         setSaving(true);
         setError(null);
         try {
+            // Container may have been imported outside this UI (e.g. machinectl
+            // import-tar) and never had a .nspawn file written for it before -
+            // the directory itself may not exist yet on a fresh host.
+            await cockpit.spawn(['mkdir', '-p', '/etc/systemd/nspawn'], { superuser: 'require', err: 'message' });
+
             const nspawnFile = cockpit.file(
                 `/etc/systemd/nspawn/${machineName}.nspawn`,
                 { superuser: 'require' }

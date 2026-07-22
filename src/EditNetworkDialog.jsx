@@ -78,6 +78,18 @@ export function EditNetworkDialog({ machineName, onClose }) {
                     ['sysctl', '-p', '/etc/sysctl.d/90-nspawn-nat.conf'],
                     { superuser: 'require', err: 'message' }
                 );
+
+                // NetworkManager's ipv4.method=shared needs dnsmasq to hand out
+                // DHCP leases on the bridge - it's a separate package and not
+                // guaranteed to be installed alongside NetworkManager itself.
+                // Without it the bridge activation fails silently in a retry
+                // loop and br-nspawn never actually comes up.
+                try {
+                    await cockpit.spawn(['which', 'dnsmasq'], { err: 'out' });
+                } catch (noDnsmasq) {
+                    await cockpit.spawn(['dnf', 'install', '-y', 'dnsmasq'], { superuser: 'require', err: 'message' });
+                }
+
                 let natBridgeExists = false;
                 try {
                     await cockpit.spawn(
@@ -101,11 +113,15 @@ export function EditNetworkDialog({ machineName, onClose }) {
                          'connection.autoconnect', 'yes'],
                         { superuser: 'require', err: 'message' }
                     );
-                    await cockpit.spawn(
-                        ['nmcli', 'con', 'up', 'cockpit-nspawn'],
-                        { superuser: 'require', err: 'message' }
-                    );
                 }
+                // Always (re-)activate, not just on first creation - a previous
+                // attempt may have created the connection profile but failed to
+                // bring it up (e.g. dnsmasq was missing at the time), which would
+                // otherwise leave br-nspawn permanently down with no retry.
+                await cockpit.spawn(
+                    ['nmcli', 'con', 'up', 'cockpit-nspawn'],
+                    { superuser: 'require', err: 'message' }
+                );
             } else {
                 newBridge = bridgeName.trim();
             }

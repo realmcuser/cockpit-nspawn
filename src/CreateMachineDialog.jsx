@@ -619,8 +619,9 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
 
             // NAT host-side setup — idempotent, safe to repeat.
             // Uses NetworkManager's built-in "shared" mode: assigns IP, runs dnsmasq
-            // for DHCP, and adds masquerade. Works on Fedora, AlmaLinux 9 and 10
-            // without any extra packages — NetworkManager is always present.
+            // for DHCP, and adds masquerade. NetworkManager itself is always present
+            // on Fedora/AlmaLinux, but dnsmasq is a separate package and not
+            // guaranteed to already be installed - checked and installed below.
             if (network === 'private') {
                 append('\n=== Konfigurerar NAT-nätverk på hosten (körs en gång) ===\n');
 
@@ -631,6 +632,20 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                     ['sysctl', '-p', '/etc/sysctl.d/90-nspawn-nat.conf'],
                     { superuser: 'require', err: 'out' }
                 ).stream(append);
+
+                // NetworkManager's ipv4.method=shared needs dnsmasq for DHCP -
+                // without it, bridge activation fails silently in a retry loop
+                // and br-nspawn never actually comes up.
+                try {
+                    await cockpit.spawn(['which', 'dnsmasq'], { err: 'out' });
+                    append('dnsmasq hittad.\n');
+                } catch (noDnsmasq) {
+                    append('dnsmasq saknas — installerar...\n');
+                    await cockpit.spawn(
+                        ['dnf', 'install', '-y', 'dnsmasq'],
+                        { superuser: 'require', err: 'out' }
+                    ).stream(append);
+                }
 
                 // Create shared NAT bridge via NetworkManager if not already present
                 let natBridgeExists = false;
@@ -656,12 +671,16 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                          'connection.autoconnect', 'yes'],
                         { superuser: 'require', err: 'out' }
                     ).stream(append);
-                    await cockpit.spawn(
-                        ['nmcli', 'con', 'up', 'cockpit-nspawn'],
-                        { superuser: 'require', err: 'out' }
-                    ).stream(append);
-                    append('NAT-brygga br-nspawn skapad: 10.99.0.1/24 (DHCP + masquerade via NetworkManager).\n');
                 }
+                // Always (re-)activate, not just on first creation - a previous
+                // attempt may have created the connection profile but failed to
+                // bring it up (e.g. dnsmasq was missing at the time), which would
+                // otherwise leave br-nspawn permanently down with no retry.
+                await cockpit.spawn(
+                    ['nmcli', 'con', 'up', 'cockpit-nspawn'],
+                    { superuser: 'require', err: 'out' }
+                ).stream(append);
+                append('NAT-brygga br-nspawn klar: 10.99.0.1/24 (DHCP + masquerade via NetworkManager).\n');
             }
 
             // Step 5: daemon-reload

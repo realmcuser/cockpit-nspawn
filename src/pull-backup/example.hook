@@ -1,0 +1,13 @@
+# Example pre-snapshot hook for pre-snapshot.sh.
+#
+# Install at /etc/cockpit-nspawn/pull/<container-name>.hook on the SOURCE
+# host, mode 600 if it contains anything sensitive, owned by root. A single
+# shell command (or short script) run inside the container via systemd-run
+# right before the vault's pull. Optional - if this file doesn't exist,
+# pre-snapshot.sh just skips it for that container - not every container
+# needs one.
+#
+# Examples:
+#   ipa-backup
+#   pg_dump -U postgres mydb > /var/tmp/mydb.sql
+pg_dump -U postgres mydb > /var/tmp/mydb.sql

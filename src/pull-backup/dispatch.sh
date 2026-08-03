@@ -13,9 +13,10 @@
 # ../pull-backup-threat-model.md section 3 for the design this implements,
 # and treat any change here as security-sensitive.
 #
-# Whitelists exactly three things, matching engine/pull.sh on the vault
-# side: `snapshot-db <name>`, `restore-after-backup <name>`, and a
-# read-only rsync of exactly one container's live tree.
+# Whitelists exactly four things, matching engine/pull.sh on the vault
+# side: `pre-snapshot <name>`, `snapshot-db <name>`,
+# `restore-after-backup <name>`, and a read-only rsync of exactly one
+# container's live tree.
 
 set -euo pipefail
 
@@ -29,6 +30,11 @@ NAME_RE='^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$'
 cmd="${SSH_ORIGINAL_COMMAND:-}"
 
 case "$cmd" in
+    "pre-snapshot "*)
+        name="${cmd#pre-snapshot }"
+        [[ "$name" =~ $NAME_RE ]] || { echo "dispatch.sh: rejected container name: '$name'" >&2; exit 1; }
+        exec "$BIN_DIR/pre-snapshot.sh" "$name"
+        ;;
     "snapshot-db "*)
         name="${cmd#snapshot-db }"
         [[ "$name" =~ $NAME_RE ]] || { echo "dispatch.sh: rejected container name: '$name'" >&2; exit 1; }
@@ -46,9 +52,9 @@ case "$cmd" in
         # request outright: the path given to rrsync becomes the confinement
         # root, and the client's own requested path is then resolved
         # *relative to* that root - so handing rrsync the container's own
-        # directory here (e.g. ".../hermes-agent") while the client also
-        # requests "/hermes-agent/" resolves to the nonsensical
-        # ".../hermes-agent/hermes-agent" (confirmed live against a real
+        # directory here (e.g. ".../webapp1") while the client also
+        # requests "/webapp1/" resolves to the nonsensical
+        # ".../webapp1/webapp1" (confirmed live against a real
         # pull - this used to hand rrsync the per-container path directly,
         # which is wrong for exactly this reason). Handing it the *parent*
         # ($CONTAINERS_ROOT) instead lets the client's own relative path

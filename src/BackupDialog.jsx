@@ -22,6 +22,7 @@ import {
 import cockpit from 'cockpit';
 
 import DISPATCH_SH from './pull-backup/dispatch.sh';
+import PRE_SNAPSHOT_SH from './pull-backup/pre-snapshot.sh';
 import SNAPSHOT_DB_SH from './pull-backup/snapshot-db.sh';
 import RESTORE_AFTER_BACKUP_SH from './pull-backup/restore-after-backup.sh';
 
@@ -414,8 +415,11 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     const [notifySlack, setNotifySlack]           = useState('');
     const [notifyPushoverUser, setNotifyPushoverUser]   = useState('');
     const [notifyPushoverToken, setNotifyPushoverToken] = useState('');
+    const [preSnapshotHook, setPreSnapshotHook]         = useState(false);
+    const [preSnapshotCommand, setPreSnapshotCommand]   = useState('');
     const [status, setStatus]       = useState(null);
     const [dbDumpStatus, setDbDumpStatus] = useState(null);
+    const [preSnapshotStatus, setPreSnapshotStatus] = useState(null);
     const [hasConfig, setHasConfig] = useState(false);
     const [saving, setSaving]       = useState(false);
     const [testing, setTesting]     = useState(false);
@@ -457,6 +461,8 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                     setMariadbBackup(cfg.mariadb_backup || false);
                     setMariadbUser(cfg.mariadb_user || 'backup');
                     setMariadbPassword(cfg.mariadb_password || '');
+                    setPreSnapshotHook(!!cfg.pre_snapshot_hook);
+                    setPreSnapshotCommand(cfg.pre_snapshot_hook || '');
                     setNotifyOnFailure(cfg.notify_on_failure !== false);
                     setNotifyOnSuccess(cfg.notify_on_success === true);
                     setNotifySmtpHost(cfg.notify_smtp_host || '');
@@ -484,6 +490,14 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
             .then(content => {
                 if (!content) return;
                 try { setDbDumpStatus(JSON.parse(content)); } catch (_e) {}
+            })
+            .catch(() => {});
+
+        cockpit.file(`${STATUS_DIR}/${machineName}-presnapshot.json`, { superuser: 'try' })
+            .read()
+            .then(content => {
+                if (!content) return;
+                try { setPreSnapshotStatus(JSON.parse(content)); } catch (_e) {}
             })
             .catch(() => {});
     }, [machineName]);
@@ -576,10 +590,13 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
     async function installPullSourceHostFiles() {
         await cockpit.spawn(['mkdir', '-p', PULL_DIR], { superuser: 'require' });
         await cockpit.file(`${PULL_DIR}/dispatch.sh`, { superuser: 'require' }).replace(DISPATCH_SH);
+        await cockpit.file(`${PULL_DIR}/pre-snapshot.sh`, { superuser: 'require' }).replace(PRE_SNAPSHOT_SH);
         await cockpit.file(`${PULL_DIR}/snapshot-db.sh`, { superuser: 'require' }).replace(SNAPSHOT_DB_SH);
         await cockpit.file(`${PULL_DIR}/restore-after-backup.sh`, { superuser: 'require' }).replace(RESTORE_AFTER_BACKUP_SH);
         await cockpit.spawn(
-            ['chmod', '755', `${PULL_DIR}/dispatch.sh`, `${PULL_DIR}/snapshot-db.sh`, `${PULL_DIR}/restore-after-backup.sh`],
+            ['chmod', '755',
+                `${PULL_DIR}/dispatch.sh`, `${PULL_DIR}/pre-snapshot.sh`,
+                `${PULL_DIR}/snapshot-db.sh`, `${PULL_DIR}/restore-after-backup.sh`],
             { superuser: 'require' }
         );
 
@@ -626,6 +643,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
         }
         if (!vaultPubkey.trim()) { setError(_("Vault's public key is required")); return; }
         if (mariadbBackup && !mariadbUser.trim()) { setError(_("MySQL/MariaDB username is required")); return; }
+        if (preSnapshotHook && !preSnapshotCommand.trim()) { setError(_("Pre-snapshot hook command is required")); return; }
         setSaving(true);
         setError(null);
         setInstallResult(null);
@@ -639,6 +657,15 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 await cockpit.spawn(['chmod', '600', `${PULL_CREDS_DIR}/${machineName}.cnf`], { superuser: 'require' });
             } else {
                 await cockpit.spawn(['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.cnf`], { superuser: 'require', err: 'ignore' });
+            }
+
+            if (preSnapshotHook) {
+                await cockpit.spawn(['mkdir', '-p', PULL_CREDS_DIR], { superuser: 'require' });
+                await cockpit.file(`${PULL_CREDS_DIR}/${machineName}.hook`, { superuser: 'require' })
+                    .replace(preSnapshotCommand.trim() + '\n');
+                await cockpit.spawn(['chmod', '600', `${PULL_CREDS_DIR}/${machineName}.hook`], { superuser: 'require' });
+            } else {
+                await cockpit.spawn(['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.hook`], { superuser: 'require', err: 'ignore' });
             }
 
             const pubkey = vaultPubkey.trim();
@@ -656,6 +683,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 mariadb_backup: mariadbBackup,
                 mariadb_user: mariadbBackup ? mariadbUser.trim() : '',
                 mariadb_password: mariadbBackup ? mariadbPassword : '',
+                pre_snapshot_hook: preSnapshotHook ? preSnapshotCommand.trim() : '',
             };
             await cockpit.spawn(['mkdir', '-p', CONFIG_DIR], { superuser: 'require' });
             await cockpit.file(`${CONFIG_DIR}/${machineName}.json`, { superuser: 'require' })
@@ -694,11 +722,15 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                 await cockpit.file(PULL_AUTHORIZED_KEYS, { superuser: 'require' }).replace(filtered);
             }
             await cockpit.spawn(
-                ['rm', '-f', `${PULL_CREDS_DIR}/${machineName}.cnf`, `${CONFIG_DIR}/${machineName}.json`, `${STATUS_DIR}/${machineName}-dbdump.json`],
+                ['rm', '-f',
+                    `${PULL_CREDS_DIR}/${machineName}.cnf`, `${PULL_CREDS_DIR}/${machineName}.hook`,
+                    `${CONFIG_DIR}/${machineName}.json`,
+                    `${STATUS_DIR}/${machineName}-dbdump.json`, `${STATUS_DIR}/${machineName}-presnapshot.json`],
                 { superuser: 'require', err: 'ignore' }
             );
             setHasConfig(false);
             setDbDumpStatus(null);
+            setPreSnapshotStatus(null);
             setInstallResult(null);
             onAddNotification({ type: 'success', title: format(_("Pull backup disabled for $0"), machineName) });
             onClose();
@@ -803,6 +835,19 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                             <p>{format(_("Saved as $0 inside the container — rides along with the vault's pull, so look for it under that same path once synced."), dbDumpStatus.dump_path)}</p>
                         )}
                         <p>{_("This only reflects the database dump step run on this host — not whether the vault's pull of the container itself has completed.")}</p>
+                    </Alert>
+                )}
+
+                {preSnapshotStatus && mode === 'pull' && (
+                    <Alert
+                        variant={preSnapshotStatus.result === 'success' ? 'success' : 'warning'}
+                        isInline
+                        title={preSnapshotStatus.result === 'success'
+                            ? format(_("Last pre-snapshot hook: $0"), formatTs(preSnapshotStatus.timestamp))
+                            : format(_("Last pre-snapshot hook failed: $0"), formatTs(preSnapshotStatus.timestamp))}
+                        style={{ marginBottom: '1rem' }}
+                    >
+                        {preSnapshotStatus.message && <p>{preSnapshotStatus.message}</p>}
                     </Alert>
                 )}
 
@@ -1001,6 +1046,33 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                             {_("Database consistency comes from a mysqldump taken inside the container before each pull, not a filesystem-level snapshot — the container's filesystem itself is read live.")}
                         </p>
                     </Alert>
+
+                    <FormGroup label={_("Pre-snapshot hook (optional)")}>
+                        <Checkbox
+                            id="pre-snapshot-hook"
+                            label={_("Run a command inside the container right before each pull")}
+                            isChecked={preSnapshotHook}
+                            onChange={(_e, v) => setPreSnapshotHook(v)}
+                        />
+                        {preSnapshotHook && (
+                            <>
+                                <TextArea
+                                    id="pre-snapshot-command"
+                                    value={preSnapshotCommand}
+                                    onChange={(_e, v) => setPreSnapshotCommand(v)}
+                                    placeholder={_("e.g. ipa-backup or pg_dump -U postgres mydb > /var/tmp/mydb.sql")}
+                                    rows={2}
+                                    resizeOrientation="vertical"
+                                    style={{ marginTop: '0.5rem' }}
+                                />
+                                <HelperText>
+                                    <HelperTextItem>
+                                        {_("For services with their own backup tooling that mysqldump above doesn't cover (FreeIPA's ipa-backup, pg_dump, etc). Written to /etc/cockpit-nspawn/pull/<name>.hook (mode 600) and run inside the container via systemd-run just before the vault's pull.")}
+                                    </HelperTextItem>
+                                </HelperText>
+                            </>
+                        )}
+                    </FormGroup>
                     </>
                     )}
 
@@ -1176,7 +1248,7 @@ export function BackupDialog({ machineName, onClose, onAddNotification }) {
                     </Button>
                 )}
                 {mode === 'pull' && (
-                    <Button variant="primary" onClick={doSavePull} isDisabled={!nameValid || !vaultPubkey.trim() || (mariadbBackup && !mariadbUser.trim()) || saving} isLoading={saving}>
+                    <Button variant="primary" onClick={doSavePull} isDisabled={!nameValid || !vaultPubkey.trim() || (mariadbBackup && !mariadbUser.trim()) || (preSnapshotHook && !preSnapshotCommand.trim()) || saving} isLoading={saving}>
                         {_("Save")}
                     </Button>
                 )}

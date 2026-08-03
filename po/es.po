@@ -1379,3 +1379,33 @@ msgstr "Se requiere la clave pública de la bóveda"
 #: src/BackupDialog.jsx
 msgid "Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."
 msgstr "Escrito en /etc/cockpit-nspawn/pull/<name>.cnf para el usuario de MySQL/MariaDB \"$0\" — el snapshot-db.sh de la bóveda ejecuta mysqldump --single-transaction dentro del contenedor antes de cada extracción y elimina el volcado de nuevo después. Se recomienda un usuario dedicado con solo privilegios de volcado (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) en lugar de root, ya que este archivo de credenciales se encuentra en texto plano (modo 600) en este host."
+
+# Pre-snapshot hook strings added 2026-08-03
+#: src/BackupDialog.jsx
+msgid "Pre-snapshot hook (optional)"
+msgstr "Hook de preinstantánea (opcional)"
+
+#: src/BackupDialog.jsx
+msgid "Run a command inside the container right before each pull"
+msgstr "Ejecutar un comando dentro del contenedor justo antes de cada extracción"
+
+#: src/BackupDialog.jsx
+msgid "e.g. ipa-backup or pg_dump -U postgres mydb > /var/tmp/mydb.sql"
+msgstr "p. ej. ipa-backup o pg_dump -U postgres mydb > /var/tmp/mydb.sql"
+
+#: src/BackupDialog.jsx
+msgid "For services with their own backup tooling that mysqldump above doesn't cover (FreeIPA's ipa-backup, pg_dump, etc). Written to /etc/cockpit-nspawn/pull/<name>.hook (mode 600) and run inside the container via systemd-run just before the vault's pull."
+msgstr "Para servicios con su propia herramienta de copia de seguridad que mysqldump arriba no cubre (ipa-backup de FreeIPA, pg_dump, etc). Se escribe en /etc/cockpit-nspawn/pull/<name>.hook (modo 600) y se ejecuta dentro del contenedor mediante systemd-run justo antes de la extracción de la bóveda."
+
+#: src/BackupDialog.jsx
+msgid "Pre-snapshot hook command is required"
+msgstr "Se requiere el comando del hook de preinstantánea"
+
+#: src/BackupDialog.jsx
+msgid "Last pre-snapshot hook: $0"
+msgstr "Último hook de preinstantánea: $0"
+
+#: src/BackupDialog.jsx
+msgid "Last pre-snapshot hook failed: $0"
+msgstr "El último hook de preinstantánea falló: $0"
+

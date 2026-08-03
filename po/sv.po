@@ -1382,3 +1382,33 @@ msgstr "Valvets publika nyckel krävs"
 #: src/BackupDialog.jsx
 msgid "Written to /etc/cockpit-nspawn/pull/<name>.cnf for the MySQL/MariaDB user \"$0\" — the vault's snapshot-db.sh runs mysqldump --single-transaction inside the container before each pull and removes the dump again afterward. A dedicated user with only dump privileges (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) is recommended over root, since this credentials file sits in plaintext (mode 600) on this host."
 msgstr "Skrivs till /etc/cockpit-nspawn/pull/<name>.cnf för MySQL/MariaDB-användaren \"$0\" — valvets snapshot-db.sh kör mysqldump --single-transaction inuti containern före varje hämtning och tar bort dumpen igen efteråt. En dedikerad användare med enbart dumprättigheter (SELECT, LOCK TABLES, SHOW VIEW, EVENT, TRIGGER) rekommenderas framför root, eftersom den här uppgiftsfilen ligger i klartext (rättighet 600) på den här hosten."
+
+# Pre-snapshot hook strings added 2026-08-03
+#: src/BackupDialog.jsx
+msgid "Pre-snapshot hook (optional)"
+msgstr "Pre-snapshot-hook (valfritt)"
+
+#: src/BackupDialog.jsx
+msgid "Run a command inside the container right before each pull"
+msgstr "Kör ett kommando inuti containern precis innan varje hämtning"
+
+#: src/BackupDialog.jsx
+msgid "e.g. ipa-backup or pg_dump -U postgres mydb > /var/tmp/mydb.sql"
+msgstr "t.ex. ipa-backup eller pg_dump -U postgres mydb > /var/tmp/mydb.sql"
+
+#: src/BackupDialog.jsx
+msgid "For services with their own backup tooling that mysqldump above doesn't cover (FreeIPA's ipa-backup, pg_dump, etc). Written to /etc/cockpit-nspawn/pull/<name>.hook (mode 600) and run inside the container via systemd-run just before the vault's pull."
+msgstr "För tjänster med eget backup-verktyg som mysqldump ovan inte täcker (FreeIPA:s ipa-backup, pg_dump, etc). Skrivs till /etc/cockpit-nspawn/pull/<name>.hook (rättighet 600) och körs inuti containern via systemd-run precis innan valvets hämtning."
+
+#: src/BackupDialog.jsx
+msgid "Pre-snapshot hook command is required"
+msgstr "Pre-snapshot-hookens kommando krävs"
+
+#: src/BackupDialog.jsx
+msgid "Last pre-snapshot hook: $0"
+msgstr "Senaste pre-snapshot-hook: $0"
+
+#: src/BackupDialog.jsx
+msgid "Last pre-snapshot hook failed: $0"
+msgstr "Senaste pre-snapshot-hook misslyckades: $0"
+

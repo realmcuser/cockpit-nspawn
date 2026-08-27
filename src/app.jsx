@@ -91,6 +91,15 @@ function fetchBackupStatuses() {
 }
 
 function removeMachine(name) {
+    // Best-effort cleanup of the systemd-nspawn@<name>.service drop-in
+    // (MemoryMax=/CPUQuota=/DeviceAllow=, see NspawnConfigDialog.jsx /
+    // CreateMachineDialog.jsx) — neither machinectl nor the manual fallback
+    // below know about it, so it would otherwise be left behind orphaned.
+    const removeDropin = () => cockpit.spawn(
+        ['rm', '-rf', `/etc/systemd/system/systemd-nspawn@${name}.service.d`],
+        { superuser: 'require', err: 'message' }
+    ).catch(() => null);
+
     // Disable autostart first (ignore errors if not enabled)
     return spawnMachinectl(['disable', name]).catch(() => null)
         .then(() => spawnMachinectl(['remove', name]))
@@ -103,7 +112,9 @@ function removeMachine(name) {
                 ['rm', '-f', `/etc/systemd/nspawn/${name}.nspawn`],
                 { superuser: 'require', err: 'message' }
             ));
-        });
+        })
+        .then(() => removeDropin())
+        .then(() => cockpit.spawn(['systemctl', 'daemon-reload'], { superuser: 'require' }).catch(() => null));
 }
 
 export function Application() {

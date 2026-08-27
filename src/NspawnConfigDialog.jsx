@@ -26,43 +26,31 @@ function parseBindings(text) {
         .map(m => m[1].trim());
 }
 
-// Remove a section header if it has no key=value content left before the next
-// section (or EOF) — also drops now-orphaned blank lines right before it.
-function removeIfEmptySection(lines, sectionHeader) {
+function applyBindings(text, bindings) {
+    // Remove all existing Bind= lines (and the [Files] section header if it becomes empty)
+    let lines = (text || '').split('\n');
+    lines = lines.filter(l => !/^Bind=/.test(l));
+
+    // Remove a now-empty [Files] section header (header with no subsequent key=value before next section)
     const out = [];
     for (let i = 0; i < lines.length; i++) {
-        if (lines[i].trim() === sectionHeader) {
+        if (lines[i].trim() === '[Files]') {
+            // Look ahead: skip blank lines, see if next non-blank is another section or EOF
             let j = i + 1;
             while (j < lines.length && lines[j].trim() === '') j++;
             if (j >= lines.length || lines[j].startsWith('[')) {
+                // Skip blank lines before [Files] that would be orphaned
                 while (out.length > 0 && out[out.length - 1].trim() === '') out.pop();
-                continue; // skip the now-empty section header
+                continue; // skip [Files] header
             }
         }
         out.push(lines[i]);
     }
-    return out;
-}
 
-function applyBindings(text, bindings) {
-    // Remove all existing Bind= and matching DeviceAllow= lines we manage,
-    // then drop the [Files]/[Resource] headers if that leaves them empty.
-    let lines = (text || '').split('\n');
-    lines = lines.filter(l => !/^Bind=/.test(l));
-    lines = lines.filter(l => !/^DeviceAllow=\/dev\/\S+ rw$/.test(l));
-    lines = removeIfEmptySection(lines, '[Files]');
-    lines = removeIfEmptySection(lines, '[Resource]');
-
-    const out = lines;
     if (bindings.length === 0) return out.join('\n');
 
-    // Append fresh [Resource] (DeviceAllow=) and [Files] (Bind=) sections at the end.
-    // DeviceAllow= is required — the default DevicePolicy=closed on the
-    // systemd-nspawn@.service template denies device access even though
-    // Bind= makes the node visible in the container's filesystem.
+    // Append [Files] section at end
     while (out.length > 0 && out[out.length - 1].trim() === '') out.pop();
-    out.push('', '[Resource]');
-    bindings.forEach(b => out.push(`DeviceAllow=${b} rw`));
     out.push('', '[Files]');
     bindings.forEach(b => out.push(`Bind=${b}`));
     return out.join('\n');
@@ -109,6 +97,23 @@ export function NspawnConfigDialog({ machineName, machineState, onClose, onAddNo
         try {
             await cockpit.spawn(['mkdir', '-p', NSPAWN_DIR], { superuser: 'require' });
             await cockpit.file(filePath, { superuser: 'require' }).replace(content);
+
+            // DeviceAllow= is a systemd unit property, not a .nspawn settings-file
+            // directive — Bind= above only makes the device node visible in the
+            // container's filesystem, it does not lift the unit's default
+            // DevicePolicy=closed cgroup restriction. Write/refresh a drop-in on
+            // the actual systemd-nspawn@<name>.service unit for that.
+            const dropinDir = `/etc/systemd/system/systemd-nspawn@${machineName}.service.d`;
+            const dropinFile = `${dropinDir}/50-resources.conf`;
+            if (deviceBindings.length > 0) {
+                await cockpit.spawn(['mkdir', '-p', dropinDir], { superuser: 'require' });
+                const serviceLines = ['[Service]', ...deviceBindings.map(d => `DeviceAllow=${d} rw`)];
+                await cockpit.file(dropinFile, { superuser: 'require' })
+                    .replace(serviceLines.join('\n') + '\n');
+            } else {
+                await cockpit.spawn(['rm', '-f', dropinFile], { superuser: 'require' }).catch(() => {});
+            }
+
             await cockpit.spawn(['systemctl', 'daemon-reload'], { superuser: 'require' });
             onAddNotification({ type: 'success', title: format(_("Config saved for $0"), machineName) });
             onClose();

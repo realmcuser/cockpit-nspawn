@@ -592,6 +592,12 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
             append('\n=== Skriver nspawn-konfiguration ===\n');
             await cockpit.spawn(['mkdir', '-p', '/etc/systemd/nspawn'], { superuser: 'require', err: 'out' });
 
+            // MemoryMax=, CPUQuota=, and DeviceAllow= are systemd resource-control
+            // properties, not .nspawn settings-file directives — systemd-nspawn's
+            // settings-file parser only understands a fixed set of keys per section
+            // and silently drops anything else (e.g. "Unknown key 'DeviceAllow' in
+            // section [Exec], ignoring."). They have to go into a drop-in on the
+            // systemd-nspawn@<name>.service UNIT itself instead (written below).
             const nspawnLines = [
                 '[Exec]',
                 'Boot=yes',
@@ -600,16 +606,6 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 network === 'bridge' ? `Bridge=${bridgeName.trim()}` : 'Bridge=br-nspawn',
                 '',
             ];
-            if (memoryMax.trim() || cpuQuota.trim() || deviceBindings.length > 0) {
-                nspawnLines.push('[Resource]');
-                if (memoryMax.trim()) nspawnLines.push(`MemoryMax=${memoryMax.trim()}`);
-                if (cpuQuota.trim()) nspawnLines.push(`CPUQuota=${cpuQuota.trim()}`);
-                // DeviceAllow= is required — the default DevicePolicy=closed on the
-                // systemd-nspawn@.service template denies device access even though
-                // Bind= (below) just makes the node visible in the container's filesystem.
-                deviceBindings.forEach(d => nspawnLines.push(`DeviceAllow=${d} rw`));
-                nspawnLines.push('');
-            }
             if (deviceBindings.length > 0) {
                 nspawnLines.push('[Files]');
                 deviceBindings.forEach(d => nspawnLines.push(`Bind=${d}`));
@@ -620,6 +616,24 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
             await cockpit.file(`/etc/systemd/nspawn/${name}.nspawn`, { superuser: 'require' })
                 .replace(nspawnContent);
             append(`Konfiguration: /etc/systemd/nspawn/${name}.nspawn\n`);
+
+            // MemoryMax=, CPUQuota=, and DeviceAllow= (for device bindings) are
+            // systemd unit properties — write them as a drop-in on the actual
+            // systemd-nspawn@<name>.service unit, not the .nspawn settings file
+            // (see comment above). Bind= above just makes a device node visible
+            // in the container's filesystem; DeviceAllow= here is what actually
+            // lifts the unit's default DevicePolicy=closed cgroup restriction.
+            if (memoryMax.trim() || cpuQuota.trim() || deviceBindings.length > 0) {
+                const dropinDir = `/etc/systemd/system/systemd-nspawn@${name}.service.d`;
+                await cockpit.spawn(['mkdir', '-p', dropinDir], { superuser: 'require', err: 'out' });
+                const serviceLines = ['[Service]'];
+                if (memoryMax.trim()) serviceLines.push(`MemoryMax=${memoryMax.trim()}`);
+                if (cpuQuota.trim()) serviceLines.push(`CPUQuota=${cpuQuota.trim()}`);
+                deviceBindings.forEach(d => serviceLines.push(`DeviceAllow=${d} rw`));
+                await cockpit.file(`${dropinDir}/50-resources.conf`, { superuser: 'require' })
+                    .replace(serviceLines.join('\n') + '\n');
+                append(`Resursgränser/enhetsbehörighet: ${dropinDir}/50-resources.conf\n`);
+            }
 
             // NAT host-side setup — idempotent, safe to repeat.
             // Uses NetworkManager's built-in "shared" mode: assigns IP, runs dnsmasq

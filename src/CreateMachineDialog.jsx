@@ -600,10 +600,14 @@ export function CreateMachineDialog({ images, onClose, onRefresh, onAddNotificat
                 network === 'bridge' ? `Bridge=${bridgeName.trim()}` : 'Bridge=br-nspawn',
                 '',
             ];
-            if (memoryMax.trim() || cpuQuota.trim()) {
+            if (memoryMax.trim() || cpuQuota.trim() || deviceBindings.length > 0) {
                 nspawnLines.push('[Resource]');
                 if (memoryMax.trim()) nspawnLines.push(`MemoryMax=${memoryMax.trim()}`);
                 if (cpuQuota.trim()) nspawnLines.push(`CPUQuota=${cpuQuota.trim()}`);
+                // DeviceAllow= is required — the default DevicePolicy=closed on the
+                // systemd-nspawn@.service template denies device access even though
+                // Bind= (below) just makes the node visible in the container's filesystem.
+                deviceBindings.forEach(d => nspawnLines.push(`DeviceAllow=${d} rw`));
                 nspawnLines.push('');
             }
             if (deviceBindings.length > 0) {

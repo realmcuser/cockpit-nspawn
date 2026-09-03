@@ -142,6 +142,10 @@ msgstr "Supprimer le conteneur"
 msgid "Are you sure you want to remove $0? This action cannot be undone."
 msgstr "Êtes-vous sûr de vouloir supprimer $0 ? Cette action est irréversible."
 
+#: src/MachineActions.jsx:381
+msgid "Type $0 to confirm"
+msgstr "Saisissez $0 pour confirmer"
+
 #: src/MachineActions.jsx:151
 msgid "Cancel"
 msgstr "Annuler"

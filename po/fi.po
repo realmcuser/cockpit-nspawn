@@ -145,6 +145,10 @@ msgstr "Poista kontti"
 msgid "Are you sure you want to remove $0? This action cannot be undone."
 msgstr "Haluatko varmasti poistaa $0? Tätä toimintoa ei voi peruuttaa."
 
+#: src/MachineActions.jsx:381
+msgid "Type $0 to confirm"
+msgstr "Kirjoita $0 vahvistaaksesi"
+
 #: src/MachineActions.jsx:151
 msgid "Cancel"
 msgstr "Peruuta"

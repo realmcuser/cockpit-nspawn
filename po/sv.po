@@ -145,6 +145,10 @@ msgstr "Ta bort container"
 msgid "Are you sure you want to remove $0? This action cannot be undone."
 msgstr "Är du säker på att du vill ta bort $0? Denna åtgärd kan inte ångras."
 
+#: src/MachineActions.jsx:381
+msgid "Type $0 to confirm"
+msgstr "Skriv $0 för att bekräfta"
+
 #: src/MachineActions.jsx:151
 msgid "Cancel"
 msgstr "Avbryt"

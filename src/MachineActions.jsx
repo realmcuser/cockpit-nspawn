@@ -387,6 +387,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                                     value={removeConfirmText}
                                     onChange={(_e, v) => setRemoveConfirmText(v)}
                                     onKeyDown={(e) => { if (e.key === 'Enter' && removeConfirmText === name) { setShowRemoveConfirm(false); doAction("remove"); } }}
+                                    placeholder={name}
                                     autoFocus
                                 />
                             </FormGroup>

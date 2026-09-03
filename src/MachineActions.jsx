@@ -37,6 +37,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
     const [showLogs, setShowLogs] = useState(false);
     const [showExport, setShowExport] = useState(false);
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+    const [removeConfirmText, setRemoveConfirmText] = useState('');
     const [showRdp, setShowRdp] = useState(false);
     const [showEditNetwork, setShowEditNetwork] = useState(false);
     const [showEditResources, setShowEditResources] = useState(false);
@@ -240,7 +241,7 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                             <Divider />
                             <DropdownItem
                                 key="remove"
-                                onClick={() => { setOpen(false); setShowRemoveConfirm(true); }}
+                                onClick={() => { setOpen(false); setRemoveConfirmText(''); setShowRemoveConfirm(true); }}
                                 style={{ color: "#c9190b" }}
                             >
                                 {_("Remove")}
@@ -372,12 +373,30 @@ export function MachineActions({ machine, isAutostart, onAction, onAddNotificati
                 >
                     <ModalHeader title={_("Remove container")} />
                     <ModalBody>
-                        {format(_("Are you sure you want to remove $0? This action cannot be undone."), <strong>{name}</strong>)}
+                        <p>
+                            {format(_("Are you sure you want to remove $0? This action cannot be undone."), <strong>{name}</strong>)}
+                        </p>
+                        <Form>
+                            <FormGroup
+                                label={format(_("Type $0 to confirm"), <strong>{name}</strong>)}
+                                fieldId="remove-confirm-input"
+                                style={{ marginTop: '1rem' }}
+                            >
+                                <TextInput
+                                    id="remove-confirm-input"
+                                    value={removeConfirmText}
+                                    onChange={(_e, v) => setRemoveConfirmText(v)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' && removeConfirmText === name) { setShowRemoveConfirm(false); doAction("remove"); } }}
+                                    autoFocus
+                                />
+                            </FormGroup>
+                        </Form>
                     </ModalBody>
                     <ModalFooter>
                         <Button
                             variant="danger"
                             onClick={() => { setShowRemoveConfirm(false); doAction("remove"); }}
+                            isDisabled={removeConfirmText !== name}
                         >
                             {_("Remove")}
                         </Button>

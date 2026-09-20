@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Claude (container URL forwarder)
+Exec=@HOME@/.local/bin/claude-scheme-forward %u
+NoDisplay=true
+MimeType=x-scheme-handler/claude;

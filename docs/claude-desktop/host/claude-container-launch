@@ -1,0 +1,11 @@
+#!/bin/bash
+# Menu launcher: starts the claude-desktop container if needed, then asks it to start the app.
+dir="$HOME/.local/share/claude-bridge/in"
+if ! machinectl show claude-desktop -p State --value 2>/dev/null | grep -q running; then
+    machinectl start claude-desktop || { notify-send "Claude Desktop" "Could not start the claude-desktop container" 2>/dev/null; exit 1; }
+    notify-send -i claude-desktop "Claude Desktop" "Starting in the container. The window can take up to 30 seconds to appear." 2>/dev/null
+fi
+umask 077
+tmp=$(mktemp "$dir/.tmp.XXXXXX")
+echo launch > "$tmp"
+mv "$tmp" "$dir/$(date +%s%N).url"

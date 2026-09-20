@@ -1,0 +1,23 @@
+#!/bin/bash
+# Handles requests from the host: "launch" starts the app, claude:// URLs are delivered to it.
+shopt -s nullglob
+# Returns 0 if the app was already running, 1 if it had to be started now.
+ensure_app() {
+    systemctl --user is-active --quiet claude-app.service && return 0
+    systemctl --user start claude-app.service
+    sleep 8
+    return 1
+}
+for f in /mnt/bridge/in/*.url; do
+    line=$(head -n1 "$f")
+    rm -f "$f"
+    if [[ "$line" == "launch" ]]; then
+        # A freshly started app shows its own window; only a running app (window closed) must be asked to show it.
+        if ensure_app; then
+            /usr/bin/claude-desktop --ozone-platform=wayland
+        fi
+    elif [[ "$line" =~ ^claude://[^[:space:]]+$ ]]; then
+        ensure_app
+        /usr/bin/claude-desktop --ozone-platform=wayland "$line"
+    fi
+done

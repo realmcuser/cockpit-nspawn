@@ -133,6 +133,23 @@ Desktop environments are bootstrapped via DNF and use **xrdp** (X11), **Weston**
 
 See **[docs/desktop-environments.md](docs/desktop-environments.md)** for the full guide, including a detailed walkthrough of the headless KDE Plasma VNC architecture.
 
+## Running Claude Desktop in a container
+
+> **⚠️ Experimental** — a manual recipe, tested on one machine. Not a feature of the Cockpit module itself, and not affiliated with or endorsed by Anthropic.
+
+Run AI agents and coding assistants such as Claude Desktop in an isolated local container, on Linux hardware you already own. Anthropic ships the Linux desktop app (beta) only as a `.deb`; an nspawn container lets you run that official package on a Fedora or AlmaLinux host without touching the host itself.
+
+Verified on two Fedora 44 / KDE Plasma machines with Debian 13 containers (an Intel laptop and a desktop with an NVIDIA GPU):
+- Native Wayland window on the host desktop
+- Sign-in with Google through a small URL bridge to the host browser
+- Start from the desktop menu, including from a stopped container
+- Cowork (VM-based sessions) with KVM
+- GPU acceleration on Intel. **On NVIDIA the app runs, but with software rendering** (not accelerated).
+
+The container is a convenient separation, not a hardened sandbox: it shares your Wayland socket and GPU with the host.
+
+See **[docs/claude-desktop-in-nspawn.md](docs/claude-desktop-in-nspawn.md)** for the full recipe, scripts and troubleshooting.
+
 ## cockpit-nspawn is tested on
 
 | Distribution | Status |

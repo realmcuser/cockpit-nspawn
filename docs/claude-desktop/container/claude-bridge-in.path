@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch for claude:// URLs from the host
+
+[Path]
+DirectoryNotEmpty=/mnt/bridge/in
+Unit=claude-bridge-in.service
+
+[Install]
+WantedBy=default.target

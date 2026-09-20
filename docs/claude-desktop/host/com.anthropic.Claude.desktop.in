@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Claude Desktop (container)
+Comment=Claude Desktop running in the claude-desktop systemd-nspawn container
+Exec=@HOME@/.local/bin/claude-container-launch
+Icon=claude-desktop
+StartupWMClass=com.anthropic.Claude
+Categories=Network;Utility;
+Terminal=false
+StartupNotify=true

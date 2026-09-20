@@ -1,0 +1,6 @@
+[Unit]
+Description=Claude Desktop
+
+[Service]
+Environment=WAYLAND_DISPLAY=/mnt/wayland-0
+ExecStart=/usr/bin/claude-desktop --ozone-platform=wayland

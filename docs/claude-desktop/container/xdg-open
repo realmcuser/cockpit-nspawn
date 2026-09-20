@@ -1,0 +1,9 @@
+#!/bin/bash
+# Container shim: hand http(s) URLs to the host browser via the shared bridge dir.
+if [[ "$1" =~ ^https?://[^[:space:]]+$ && -d /mnt/bridge/out ]]; then
+    tmp=$(mktemp /mnt/bridge/out/.tmp.XXXXXX)
+    printf '%s\n' "$1" > "$tmp"
+    mv "$tmp" "/mnt/bridge/out/$(date +%s%N).url"
+    exit 0
+fi
+exec /usr/bin/xdg-open "$@"

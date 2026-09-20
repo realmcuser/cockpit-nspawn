@@ -1,0 +1,9 @@
+#!/bin/bash
+# Registered as the host handler for claude:// ; forwards the URL into the container.
+url="$1"
+[[ "$url" =~ ^claude://[^[:space:]]+$ ]] || exit 1
+dir="$HOME/.local/share/claude-bridge/in"
+umask 077
+tmp=$(mktemp "$dir/.tmp.XXXXXX")
+printf '%s\n' "$url" > "$tmp"
+mv "$tmp" "$dir/$(date +%s%N).url"

@@ -1,0 +1,6 @@
+[Unit]
+Description=Open URL from claude-desktop container in host browser
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-bridge-open

@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch for URLs from the claude-desktop container
+
+[Path]
+DirectoryNotEmpty=%h/.local/share/claude-bridge/out
+Unit=claude-bridge-open.service
+
+[Install]
+WantedBy=default.target

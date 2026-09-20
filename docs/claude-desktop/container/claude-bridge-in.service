@@ -1,0 +1,7 @@
+[Unit]
+Description=Forward claude:// URL to Claude Desktop
+
+[Service]
+Type=oneshot
+Environment=WAYLAND_DISPLAY=/mnt/wayland-0
+ExecStart=/usr/local/bin/claude-bridge-in

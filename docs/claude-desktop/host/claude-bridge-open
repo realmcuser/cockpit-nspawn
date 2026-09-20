@@ -1,0 +1,13 @@
+#!/bin/bash
+# Opens http(s) URLs requested by the claude-desktop container in the host default browser.
+dir="$HOME/.local/share/claude-bridge/out"
+shopt -s nullglob
+for f in "$dir"/*.url; do
+    url=$(head -n1 "$f")
+    rm -f "$f"
+    if [[ "$url" =~ ^https?://[^[:space:]]+$ ]]; then
+        xdg-open "$url"
+    else
+        logger -t claude-bridge "rejected non-http(s) URL request"
+    fi
+done
